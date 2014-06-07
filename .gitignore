@@ -1,0 +1,38 @@
+# Directories #
+/build/
+/bin/
+target/
+
+*.class
+ 
+######################
+# Windows
+######################
+ 
+# Windows image file caches
+Thumbs.db 
+ 
+# Folder config file
+Desktop.ini
+ 
+######################
+# OSX
+######################
+ 
+.DS_Store
+ 
+######################
+# Eclipse
+######################
+ 
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+local.properties
+.classpath
+.settings/
+.loadpath
+ 
