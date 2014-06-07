@@ -32,6 +32,5 @@ tmp/**
 tmp/**/*
 *.tmp
 local.properties
-.classpath
 .loadpath
  
