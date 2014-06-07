@@ -37,12 +37,16 @@ import com.language.model.expression.*;
 LineTerminator = \r|\n|\r\n
 WhiteSpace     = {LineTerminator} | [ \t\f]
 
-Identifier = [:jletter:][:jletterdigit:]* 
+Identifier = [A-Za-z\$\_][A-Za-z\$\_0-9]* 
 
 IntegerLiteral = 0 | [1-9][0-9]*
 FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
 %%
+
+";" 				{ return symbol(sym.SEMICOLON, ";"); }
+
+"var" 				{ return symbol(sym.VAR, "var"); }
 
 "+" 				{ return symbol(sym.PLUS, "+"); }
 "-" 				{ return symbol(sym.MINUS, "-"); }
@@ -52,10 +56,6 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "(" 				{ return symbol(sym.LPAREN, "("); }
 ")" 				{ return symbol(sym.RPAREN, ")"); }
 
-\"([^\"\r\n\t]*)\"	{ return symbol(sym.STRING, yytext()); }
-
-'([^\"\r\n\t]*)'	{ return symbol(sym.STRING, yytext()); }
-
 {Identifier}		{ return symbol(sym.ID, yytext()); }
 
 {IntegerLiteral}	{ return symbol(sym.INTEGRAL, yytext()); }
@@ -64,9 +64,10 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
 {WhiteSpace}        { /* ignore */ }
 
-. 					{
-						throw new ParsingException("Illegal character at line " + yyline + ", column " + yycolumn + " >> " + yytext());
-					}
+<YYINITIAL> "//" { yybegin(COMMENT_LINE); } 
+<COMMENT_LINE> [^\n] { }
+<COMMENT_LINE> [\n] { yybegin(YYINITIAL); }
 
-
-
+<YYINITIAL> "/*" { yybegin(COMMENT_BLOCK); } 
+<COMMENT_BLOCK> [^(\*\/)] { }
+<COMMENT_BLOCK> \*\/ { yybegin(YYINITIAL); }
