@@ -24,8 +24,8 @@ Desktop.ini
 ######################
 # Eclipse
 ######################
- 
-.project
+
+.settings/ 
 .metadata
 bin/**
 tmp/**
