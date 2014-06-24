@@ -5,12 +5,6 @@ import java_cup.runtime.*;
 import com.language.model.expression.*;
 import com.language.exceptions.*;
 
-action code {:
- 	public void ImprimeValor(String str) {
-  		System.out.println("El valor del token" + str) ;
-   	}
-:}
-
 terminal PLUS, MINUS;
 terminal TIMES, DIV;
 terminal LPAREN, RPAREN;
@@ -45,9 +39,7 @@ non terminal Expression expr;
 non terminal Expression declaration;
 
 precedence left PLUS, MINUS;
-precedence left TIMES, DIV;
-
-declaration ::= 
+precedence left TIMES, DIV; 
 
 expr	::= INTEGRAL:i
 			{:
