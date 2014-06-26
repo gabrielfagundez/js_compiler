@@ -9,80 +9,58 @@ terminal PLUS, MINUS;
 terminal TIMES, DIV;
 terminal LPAREN, RPAREN;
 
-terminal String VAR;
-
 terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
 terminal String STRING;
 
-terminal String LPAREN
-terminal String RPAREN;
-
-terminal String OR;
-terminal String AND;
-terminal String EQ_EQ;
-terminal String NOT_EQ;
-terminal String GREATER;
-terminal String LOWER;
-terminal String GREATER_EQ;
-terminal String LOWER_EQ;
-
-terminal String TRUE;
-terminal String FALSE;
-
-non terminal Expresion COND;
-non terminal Expresion OREXP;
-non terminal Expresion ANDEXP;
-
 non terminal Expression expr;
-non terminal Expression declaration;
 
 precedence left PLUS, MINUS;
-precedence left TIMES, DIV; 
+precedence left TIMES, DIV;
 
-expr	::= INTEGRAL:i
-			{:
-				RESULT = new Expression(i);
-			:}
+expr    ::= INTEGRAL:i
+            {:
+                RESULT = new Expression(i);
+            :}
 
-		| DECIMAL:d
-			{:
-				RESULT = new Expression(d);
-			:}
+        | DECIMAL:d
+            {:
+                RESULT = new Expression(d);
+            :}
 
-		| STRING:s
-			{:
-				RESULT = new Expression(s);
-			:}
+        | STRING:s
+            {:
+                RESULT = new Expression(s);
+            :}
 
-		| expr:l PLUS expr:r
-			{:
-				RESULT = new Expression("+", l, r);
-			:}
+        | expr:l PLUS expr:r
+            {:
+                RESULT = new Expression("+", l, r);
+            :}
 
-		| expr:l MINUS expr:r
-			{:
-				RESULT = new Expression("-", l, r);
-			:}
+        | expr:l MINUS expr:r
+            {:
+                RESULT = new Expression("-", l, r);
+            :}
 
-		| expr:l TIMES expr:r
-			{:
-				RESULT = new Expression("*", l, r);
-			:}
+        | expr:l TIMES expr:r
+            {:
+                RESULT = new Expression("*", l, r);
+            :}
 
-		| expr:l DIV expr:r
-			{:
-				RESULT = new Expression("/", l, r);
-			:}
+        | expr:l DIV expr:r
+            {:
+                RESULT = new Expression("/", l, r);
+            :}
 
-		| ID:i
-			{:
-				RESULT = new Expression(i, null);
-			:}
+        | ID:i
+            {:
+                RESULT = new Expression(i, null);
+            :}
 
-		| LPAREN expr:e RPAREN
-			{:
-				RESULT = e;
-			:}
-		;
+        | LPAREN expr:e RPAREN
+            {:
+                RESULT = e;
+            :}
+        ;
