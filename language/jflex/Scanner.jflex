@@ -42,6 +42,9 @@ Identifier = [A-Za-z\$\_][A-Za-z\$\_0-9]*
 IntegerLiteral = 0 | [1-9][0-9]*
 FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
+%state COMMENT_LINE
+%state COMMENT_BLOCK
+
 %%
 
 "." 			{return symbol(sym.POINT, "."); }
@@ -49,7 +52,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 ","				{ return symbol(sym.COMMA, ","); }
 "("				{ return symbol(sym.LEFT_ROUND_BRACKETS, "("); }
 ")"				{ return symbol(sym.RIGHT_ROUND_BRACKETS, ")"); }
-"""				{ return symbol(sym.DOUBLE_QUOTE, """); }
+"\""			{ return symbol(sym.DOUBLE_QUOTE, "\""); }
 "'"				{ return symbol(sym.SINGLE_QUOTE, "'"); }
 "["				{ return symbol(sym.LEFT_SQUARE_BRACKETS, "["); }
 "]"				{ return symbol(sym.RIGHT_SQUARE_BRACKETS, "]"); }
@@ -60,7 +63,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
 "\n" 	{ return symbol(sym.LINE_BREAK, "\n"); }
 "\t" 	{ return symbol(sym.TABULATION, "\t"); }
-"\" 	{ return symbol(sym.ESCAPE, "\"); }
+"\\" 	{ return symbol(sym.ESCAPE, "\\"); }
 
 "+" { return symbol(sym.ADDITION, "+"); }
 "-" { return symbol(sym.SUBTRACTION, "-"); }
