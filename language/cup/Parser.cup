@@ -3,6 +3,7 @@ package com.language.parser;
 import java.util.*;
 import java_cup.runtime.*;
 import com.language.model.expression.*;
+import com.language.model.declaration.*;
 import com.language.exceptions.*;
 
 terminal String NULL;
@@ -26,7 +27,7 @@ terminal String ADDITION;
 terminal String SUBTRACTION;
 terminal String MULTIPLICATION;
 terminal String DIVISION;
-terminal String ASSIGNMENT;
+terminal String EQUAL;
 
 terminal String INCREMENT;
 terminal String DECREMENT;
@@ -42,7 +43,7 @@ terminal String GREATER;
 terminal String LESS;
 terminal String GREATER_EQUAL;
 terminal String LESS_EQUAL;
-terminal String EQUAL;
+terminal String EQUAL_EQUAL;
 terminal String NOT_EQUAL;
 
 terminal String BLOCK_BEGIN;
@@ -78,11 +79,35 @@ terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
 
-non terminal Expression expr;
+non terminal Expression expression;
+non terminal Expression primary_expression;
+non terminal Expression simple_expression;
+non terminal Expression function_expression;
+non terminal Expression object_literal; 
+non terminal Expression assignment_expression; 
+non terminal Expression conditional_expression; 
+non terminal Expression parenthesized_expression; 
+non terminal Expression left_side_expression;
+non terminal Expression compound_assignment;
+
+non terminal Declaration variable_definition;
+non terminal Declaration variable_declaration_list;
+non terminal Declaration variable_declaration;
+non terminal Declaration variable_initializer;
 
 
-expr    ::= TRUE:t
-            {:
-                RESULT = new Expression(t);
-            :}
-        ;
+/* Parsing de Definiciones de Variables */
+
+variable_definition ::= 
+    VAR variable_declaration_list {:  :};
+
+variable_declaration_list ::=
+    variable_declaration {:  :}; |
+    variable_declaration_list COMMA variable_declaration {:  :};;
+
+variable_declaration ::= 
+    ID:a variable_initializer {:  :};
+
+variable_initializer ::=
+    /* Esto maneja epsilon */  {:  :}; |
+    EQUAL assignment_expression  {:  :};;
