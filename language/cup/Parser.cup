@@ -10,7 +10,7 @@ terminal String SEMICOLON;
 terminal String COMMA;
 terminal String LEFT_ROUND_BRACKETS;
 terminal String RIGHT_ROUND_BRACKETS;
-terminal String DOUBLE_QUOT;
+terminal String DOUBLE_QUOTE;
 terminal String SINGLE_QUOTE;
 terminal String LEFT_SQUARE_BRACKETS;
 terminal String RIGHT_SQUARE_BRACKETS;
