@@ -6,7 +6,6 @@ import com.language.model.expression.*;
 import com.language.exceptions.*;
 
 terminal String POINT;
-terminal String POINT;
 terminal String SEMICOLON;
 terminal String COMMA;
 terminal String LEFT_ROUND_BRACKETS;
@@ -15,7 +14,7 @@ terminal String DOUBLE_QUOT;
 terminal String SINGLE_QUOTE;
 terminal String LEFT_SQUARE_BRACKETS;
 terminal String RIGHT_SQUARE_BRACKETS;
-terminal String VAR
+terminal String VAR;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
@@ -45,7 +44,6 @@ terminal String EQUAL;
 terminal String NOT_EQUAL;
 
 terminal String BLOCK_BEGIN;
-terminal String BLOCK_BEGIN;
 terminal String IF;
 terminal String ELSE;
 terminal String FOR;
@@ -70,7 +68,7 @@ terminal String REVERSE_FUNCT;
 
 terminal String NAN;
 terminal String IS_NAN;
-terminal String PARSE;
+terminal String PARSE_FUNCT;
 
 terminal String STRING;
 
@@ -80,51 +78,9 @@ terminal String DECIMAL;
 
 non terminal Expression expr;
 
-precedence left PLUS, MINUS;
-precedence left TIMES, DIV;
 
-expr    ::= INTEGRAL:i
+expr    ::= TRUE:t
             {:
-                RESULT = new Expression(i);
-            :}
-
-        | DECIMAL:d
-            {:
-                RESULT = new Expression(d);
-            :}
-
-        | STRING:s
-            {:
-                RESULT = new Expression(s);
-            :}
-
-        | expr:l PLUS expr:r
-            {:
-                RESULT = new Expression("+", l, r);
-            :}
-
-        | expr:l MINUS expr:r
-            {:
-                RESULT = new Expression("-", l, r);
-            :}
-
-        | expr:l TIMES expr:r
-            {:
-                RESULT = new Expression("*", l, r);
-            :}
-
-        | expr:l DIV expr:r
-            {:
-                RESULT = new Expression("/", l, r);
-            :}
-
-        | ID:i
-            {:
-                RESULT = new Expression(i, null);
-            :}
-
-        | LPAREN expr:e RPAREN
-            {:
-                RESULT = e;
+                RESULT = new Expression(t);
             :}
         ;
