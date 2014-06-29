@@ -118,14 +118,14 @@ variable_initializer ::=
 
 /* Parsing de Arrays */
 
-array_literal	::= LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS
-					|
-					LEFT_SQUARE_BRACKETS element_list RIGHT_SQUARE_BRACKETS
-					;
+array_literal ::=
+    LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS |
+    LEFT_SQUARE_BRACKETS element_list RIGHT_SQUARE_BRACKETS
+    ;
 
-element_list	::= literal_element
-					|
-					element_list COMMA literal_element
-					;
+element_list ::=
+    literal_element |
+    element_list COMMA literal_element
+    ;
 
 literal_element	::= NULL;
