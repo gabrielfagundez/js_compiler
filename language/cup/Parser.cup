@@ -5,6 +5,8 @@ import java_cup.runtime.*;
 import com.language.model.expression.*;
 import com.language.exceptions.*;
 
+terminal String NULL;
+
 terminal String POINT;
 terminal String SEMICOLON;
 terminal String COMMA;

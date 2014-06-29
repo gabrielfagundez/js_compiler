@@ -47,6 +47,8 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
 %%
 
+"null"              { return symbol(sym.NULL, "null"); }
+
 "." 				{ return symbol(sym.POINT, "."); }
 ";"					{ return symbol(sym.SEMICOLON, ";"); }
 ","					{ return symbol(sym.COMMA, ","); }
@@ -57,7 +59,6 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "["					{ return symbol(sym.LEFT_SQUARE_BRACKETS, "["); }
 "]"					{ return symbol(sym.RIGHT_SQUARE_BRACKETS, "]"); }
 "var"				{ return symbol(sym.VAR, "var"); }
-{WhiteSpace} 		{ /* ignore */ }
 
 "\n" 				{ return symbol(sym.LINE_BREAK, "\n"); }
 "\t" 				{ return symbol(sym.TABULATION, "\t"); }
@@ -128,3 +129,5 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 {Identifier}		{ return symbol(sym.ID, yytext()); }
 {IntegerLiteral}	{ return symbol(sym.INTEGRAL, yytext()); }
 {FloatLiteral} 		{ return symbol(sym.DECIMAL, yytext()); }
+
+{WhiteSpace}        { /* ignore */ }
