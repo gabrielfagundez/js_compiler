@@ -5,14 +5,78 @@ import java_cup.runtime.*;
 import com.language.model.expression.*;
 import com.language.exceptions.*;
 
-terminal PLUS, MINUS;
-terminal TIMES, DIV;
-terminal LPAREN, RPAREN;
+terminal String POINT;
+terminal String POINT;
+terminal String SEMICOLON;
+terminal String COMMA;
+terminal String LEFT_ROUND_BRACKETS;
+terminal String RIGHT_ROUND_BRACKETS;
+terminal String DOUBLE_QUOT;
+terminal String SINGLE_QUOTE;
+terminal String LEFT_SQUARE_BRACKETS;
+terminal String RIGHT_SQUARE_BRACKETS;
+terminal String VAR
+
+terminal String LINE_BREAK;
+terminal String TABULATION;
+terminal String ESCAPE;
+
+terminal String ADDITION;
+terminal String SUBTRACTION;
+terminal String MULTIPLICATION;
+terminal String DIVISION;
+terminal String ASSIGNMENT;
+
+terminal String INCREMENT;
+terminal String DECREMENT;
+
+terminal String TRUE;
+terminal String FALSE;
+
+terminal String AND;
+terminal String OR;
+terminal String NOT;
+
+terminal String GREATER;
+terminal String LESS;
+terminal String GREATER_EQUAL;
+terminal String LESS_EQUAL;
+terminal String EQUAL;
+terminal String NOT_EQUAL;
+
+terminal String BLOCK_BEGIN;
+terminal String BLOCK_BEGIN;
+terminal String IF;
+terminal String ELSE;
+terminal String FOR;
+terminal String BREAK;
+terminal String CONTINUE;
+
+terminal String LENGTH_FUNCT;
+terminal String CONCAT_FUNCT;
+terminal String TO_UPPER_CASE_FUNCT;
+terminal String TO_LOWER_CASE_FUNCT;
+terminal String CHAR_AT_FUNCT;
+terminal String INDEX_OF_FUNCT;
+terminal String LAST_INDEX_OF_FUNCT;
+terminal String SUBSTRING_FUNCT;
+terminal String SPLIT_FUNCT;
+
+terminal String JOIN_FUNCT;
+terminal String POP_FUNCT;
+terminal String PUSH_FUNCT;
+terminal String SHIFT_FUNCT;
+terminal String REVERSE_FUNCT;
+
+terminal String NAN;
+terminal String IS_NAN;
+terminal String PARSE;
+
+terminal String STRING;
 
 terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
-terminal String STRING;
 
 non terminal Expression expr;
 

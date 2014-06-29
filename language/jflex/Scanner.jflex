@@ -58,7 +58,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "]"					{ return symbol(sym.RIGHT_SQUARE_BRACKETS, "]"); }
 "var"				{ return symbol(sym.VAR, "var"); }
 {WhiteSpace} 		{ /* ignore */ }
-	
+
 "\n" 				{ return symbol(sym.LINE_BREAK, "\n"); }
 "\t" 				{ return symbol(sym.TABULATION, "\t"); }
 "\\" 				{ return symbol(sym.ESCAPE, "\\"); }
@@ -102,15 +102,15 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "break" 			{ return symbol(sym.BREAK, "break"); }
 "continue" 			{ return symbol(sym.CONTINUE, "continue"); }
 
-"length" 			{return symbol(sym.LENGTH, "length"); }
-"concat" 			{return symbol(sym.CONCAT, "concat"); }
-"toUpperCase" 		{return symbol(sym.TO_UPPER_CASE, "toUpperCase"); }
-"toLowerCase" 		{return symbol(sym.TO_LOWER_CASE, "toLowerCase"); }
-"charAt" 			{return symbol(sym.CHAR_AT, "charAt"); }
-"indexOf" 			{return symbol(sym.INDEX_OF, "indexOf"); }
-"lastIndexOf" 		{return symbol(sym.LAST_INDEX_OF, "lastIndexOf"); }
-"substring" 		{return symbol(sym.SUBSTRING, "substring"); }
-"split" 			{return symbol(sym.SPLIT, "split"); }
+"length" 			{return symbol(sym.LENGTH_FUNCT, "length"); }
+"concat" 			{return symbol(sym.CONCAT_FUNCT, "concat"); }
+"toUpperCase" 		{return symbol(sym.TO_UPPER_CASE_FUNCT, "toUpperCase"); }
+"toLowerCase" 		{return symbol(sym.TO_LOWER_CASE_FUNCT, "toLowerCase"); }
+"charAt" 			{return symbol(sym.CHAR_AT_FUNCT, "charAt"); }
+"indexOf" 			{return symbol(sym.INDEX_OF_FUNCT, "indexOf"); }
+"lastIndexOf" 		{return symbol(sym.LAST_INDEX_OF_FUNCT, "lastIndexOf"); }
+"substring" 		{return symbol(sym.SUBSTRING_FUNCT, "substring"); }
+"split" 			{return symbol(sym.SPLIT_FUNCT, "split"); }
 
 "join" 				{return symbol(sym.JOIN_FUNCT, "join"); }
 "pop" 				{return symbol(sym.POP_FUNCT, "pop"); }
@@ -120,8 +120,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 
 "NaN" 				{return symbol(sym.NAN, "NaN"); }
 "isNaN" 			{return symbol(sym.IS_NAN, "isNaN"); }
-"parse" 			{return symbol(sym.PARSE, "parse"); }
-
+"parse" 			{return symbol(sym.PARSE_FUNCT, "parse"); }
 
 \"([^\"\r\n\t]*)\"	{ return symbol(sym.STRING, yytext()); }
 '([^\"\r\n\t]*)'	{ return symbol(sym.STRING, yytext()); }
