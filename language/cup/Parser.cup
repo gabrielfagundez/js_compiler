@@ -79,6 +79,9 @@ terminal String INTEGRAL;
 terminal String DECIMAL;
 
 non terminal Expression expr;
+non terminal ArrayLiteral array_literal;
+non terminal ElementList element_list;
+non terminal LiteralElement literal_element;
 
 
 expr    ::= TRUE:t
@@ -86,3 +89,17 @@ expr    ::= TRUE:t
                 RESULT = new Expression(t);
             :}
         ;
+
+/* Parsing de Arrays */
+
+array_literal	::= LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS
+					|
+					LEFT_SQUARE_BRACKETS element_list RIGHT_SQUARE_BRACKETS
+					;
+
+element_list	::= literal_element
+					|
+					element_list COMMA literal_element
+					;
+
+literal_element	::= NULL;
