@@ -89,14 +89,15 @@ non terminal Expression conditional_expression;
 non terminal Expression parenthesized_expression; 
 non terminal Expression left_side_expression;
 non terminal Expression compound_assignment;
-non terminal Expression array_literal;
-non terminal Expression element_list;
-non terminal Expression literal_element;
 
 non terminal Declaration variable_definition;
 non terminal Declaration variable_declaration_list;
 non terminal Declaration variable_declaration;
 non terminal Declaration variable_initializer;
+
+non terminal ArrayLiteral array_literal;
+non terminal ElementList element_list;
+non terminal LiteralElement literal_element;
 
 
 /* Parsing de Definiciones de Variables */
