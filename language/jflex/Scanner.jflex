@@ -112,11 +112,11 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "substring" 		{return symbol(sym.SUBSTRING, "substring"); }
 "split" 			{return symbol(sym.SPLIT, "split"); }
 
-"join" 				{return symbol(sym., "join"); }
-"pop" 				{return symbol(sym., "pop"); }
-"push" 				{return symbol(sym., "push"); }
-"shift" 			{return symbol(sym., "shift"); }
-"reverse"	 		{return symbol(sym., "reverse"); }
+"join" 				{return symbol(sym.JOIN_FUNCT, "join"); }
+"pop" 				{return symbol(sym.POP_FUNCT, "pop"); }
+"push" 				{return symbol(sym.PUSH_FUNCT, "push"); }
+"shift" 			{return symbol(sym.SHIFT_FUNCT, "shift"); }
+"reverse"	 		{return symbol(sym.REVERSE_FUNCT, "reverse"); }
 
 "NaN" 				{return symbol(sym.NAN, "NaN"); }
 "isNaN" 			{return symbol(sym.IS_NAN, "isNaN"); }
