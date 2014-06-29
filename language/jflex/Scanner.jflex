@@ -68,7 +68,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "-" 				{ return symbol(sym.SUBTRACTION, "-"); }
 "*" 				{ return symbol(sym.MULTIPLICATION, "*"); }
 "/" 				{ return symbol(sym.DIVISION, "/"); }
-"=" 				{ return symbol(sym.ASSIGNMENT, "="); }
+"=" 				{ return symbol(sym.EQUAL, "="); }
 
 "++" 				{ return symbol(sym.INCREMENT, "++"); }
 "--" 				{ return symbol(sym.DECREMENT, "--"); }
@@ -84,7 +84,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "<"	 				{ return symbol(sym.LESS, "<"); }
 ">=" 				{ return symbol(sym.GREATER_EQUAL, ">="); }
 "<=" 				{ return symbol(sym.LESS_EQUAL, "<="); }
-"==" 				{ return symbol(sym.EQUAL, "=="); }
+"==" 				{ return symbol(sym.EQUAL_EQUAL, "=="); }
 "!=" 				{ return symbol(sym.NOT_EQUAL, "!="); }
 
 <YYINITIAL> 	"//" 		{ yybegin(COMMENT_LINE); } 
