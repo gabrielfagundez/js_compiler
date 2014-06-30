@@ -52,22 +52,22 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "." 				{ return symbol(sym.POINT, "."); }
 ";"					{ return symbol(sym.SEMICOLON, ";"); }
 ","					{ return symbol(sym.COMMA, ","); }
-"("					{ return symbol(sym.LEFT_ROUND_BRACKETS, "("); }
-")"					{ return symbol(sym.RIGHT_ROUND_BRACKETS, ")"); }
+"("					{ return symbol(sym.LEFT_ROUND_BRACKET, "("); }
+")"					{ return symbol(sym.RIGHT_ROUND_BRACKET, ")"); }
 "\""				{ return symbol(sym.DOUBLE_QUOTE, "\""); }
 "'"					{ return symbol(sym.SINGLE_QUOTE, "'"); }
-"["					{ return symbol(sym.LEFT_SQUARE_BRACKETS, "["); }
-"]"					{ return symbol(sym.RIGHT_SQUARE_BRACKETS, "]"); }
+"["					{ return symbol(sym.LEFT_SQUARE_BRACKET, "["); }
+"]"					{ return symbol(sym.RIGHT_SQUARE_BRACKET, "]"); }
 "var"				{ return symbol(sym.VAR, "var"); }
 
 "\n" 				{ return symbol(sym.LINE_BREAK, "\n"); }
 "\t" 				{ return symbol(sym.TABULATION, "\t"); }
 "\\" 				{ return symbol(sym.ESCAPE, "\\"); }
 
-"+" 				{ return symbol(sym.ADDITION, "+"); }
-"-" 				{ return symbol(sym.SUBTRACTION, "-"); }
-"*" 				{ return symbol(sym.MULTIPLICATION, "*"); }
-"/" 				{ return symbol(sym.DIVISION, "/"); }
+"+" 				{ return symbol(sym.PLUS, "+"); }
+"-" 				{ return symbol(sym.MINUS, "-"); }
+"*" 				{ return symbol(sym.TIMES, "*"); }
+"/" 				{ return symbol(sym.DIV, "/"); }
 "=" 				{ return symbol(sym.EQUAL, "="); }
 
 "++" 				{ return symbol(sym.INCREMENT, "++"); }
