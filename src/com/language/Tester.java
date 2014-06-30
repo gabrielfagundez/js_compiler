@@ -7,7 +7,7 @@ public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "19 * x + 3";
+		String exptext = "var esteEsElNombreLPM = 1, esteEsElOtro = 'asdasda', yEsteEsForlan = 1.3";
 
 		Expression expobj = ExpressionParser.parse(exptext);
 
