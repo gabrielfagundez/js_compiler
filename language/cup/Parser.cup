@@ -95,6 +95,10 @@ non terminal Declaration variable_declaration_list;
 non terminal Declaration variable_declaration;
 non terminal Declaration variable_initializer;
 
+non terminal ArrayLiteral array_literal;
+non terminal ElementList element_list;
+non terminal LiteralElement literal_element;
+
 
 /* Parsing de Definiciones de Variables */
 
@@ -111,3 +115,18 @@ variable_declaration ::=
 variable_initializer ::=
     /* Esto maneja epsilon */  {:  :}; |
     EQUAL assignment_expression  {:  :};;
+
+
+/* Parsing de Arrays */
+
+array_literal ::=
+    LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS |
+    LEFT_SQUARE_BRACKETS element_list RIGHT_SQUARE_BRACKETS
+    ;
+
+element_list ::=
+    literal_element |
+    element_list COMMA literal_element
+    ;
+
+literal_element	::= NULL;
