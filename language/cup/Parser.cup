@@ -3,7 +3,7 @@ package com.language.parser;
 import java.util.*;
 import java_cup.runtime.*;
 import com.language.model.expression.*;
-import com.language.model.declaration.*;
+import com.language.model.*;
 import com.language.exceptions.*;
 
 terminal String NULL;
@@ -90,10 +90,10 @@ non terminal Expression parenthesized_expression;
 non terminal Expression left_side_expression;
 non terminal Expression compound_assignment;
 
-non terminal Declaration variable_definition;
-non terminal Declaration variable_declaration_list;
-non terminal Declaration variable_declaration;
-non terminal Declaration variable_initializer;
+non terminal Object variable_definition;
+non terminal Object variable_declaration_list;
+non terminal Object variable_declaration;
+non terminal Object variable_initializer;
 
 non terminal ArrayLiteral array_literal;
 non terminal ElementList element_list;
@@ -103,21 +103,52 @@ non terminal LiteralElement literal_element;
 /* Parsing de Definiciones de Variables */
 
 variable_definition ::= 
-    VAR variable_declaration_list {:  :};
+    VAR variable_declaration_list;
 
 variable_declaration_list ::=
-    variable_declaration {:  :}; |
-    variable_declaration_list COMMA variable_declaration {:  :};;
+    variable_declaration |
+    variable_declaration_list COMMA variable_declaration;
 
 variable_declaration ::= 
-    ID:a variable_initializer {:  :};
+    ID:id 
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, null, null);
+            variables.addVariable(var); 
+        :} |
+    ID:id EQUAL STRING:s 
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, s, "string");
+            variables.addVariable(var); 
+        :} |
+    ID:id EQUAL INTEGRAL:i 
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, i, "int");
+            variables.addVariable(var); 
+        :} |
+    ID:id EQUAL DECIMAL:d 
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, d, "float");
+            variables.addVariable(var); 
+        :} |
+    ID:id EQUAL TRUE:t 
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, t, "boolean");
+            variables.addVariable(var); 
+        :} |
+    ID:id EQUAL FALSE:f
+        {:  
+            Variables variables = Variables.getInstance();
+            Var var = new Var(id, f, "boolean");
+            variables.addVariable(var); 
+        :};
 
-variable_initializer ::=
-    /* Esto maneja epsilon */  {:  :}; |
-    EQUAL assignment_expression  {:  :};;
 
-
-/* Parsing de Arrays */
+/* Parsing de Arrays 
 
 array_literal ::=
     LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS |
@@ -130,3 +161,5 @@ element_list ::=
     ;
 
 literal_element	::= NULL;
+
+*/

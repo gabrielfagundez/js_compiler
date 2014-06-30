@@ -24,6 +24,7 @@ public class Variables {
     }
 
     public void addVariable(Var variable){
+    	System.out.println(variable.toString());
     	this.variables.add(variable);
     }
     
