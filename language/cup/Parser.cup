@@ -78,14 +78,41 @@ terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
 
-non terminal Expression simple_expression;
+non terminal Object main;
 
 non terminal Object variable_definition;
 non terminal Object variable_declaration_list;
 non terminal Object variable_declaration;
 non terminal Object variable_initializer;
 
+non terminal Object expression;
+non terminal Object primary_expression;
+non terminal Expression simple_expression;
+non terminal Object function_expression;
+non terminal Object object_literal; 
+non terminal Object assignment_expression; 
+non terminal Object conditional_expression; 
+non terminal Object parenthesized_expression; 
+non terminal Object left_side_expression;
+non terminal Object compound_assignment;
+
+non terminal Object statement;
 non terminal Object empty_statement;
+non terminal Object expression_statement;
+non terminal Object optional_semicolon;
+non terminal Object block;
+non terminal Object labeled_statement;
+non terminal Object if_statement;
+non terminal Object switch_statemente;
+non terminal Object do_statement;
+non terminal Object while_statement;
+non terminal Object for_statement;
+non terminal Object with_statement;
+non terminal Object continue_statement;
+non terminal Object break_statement;
+non terminal Object return_statement;
+non terminal Object throw_statement;
+non terminal Object try_statement;
 
 non terminal ArrayLiteral array_literal;
 non terminal ElementList element_list;
@@ -94,7 +121,38 @@ non terminal LiteralElement literal_element;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 
-/* Parsing de Definiciones de Variables */
+main ::= 
+    statement main |
+    statement;
+
+/* Statements */
+statement ::=
+    empty_statement {: System.out.println("Detecte un empty_statement"); :} |
+    expression_statement optional_semicolon {: System.out.println("Detecte un expression_statement"); :} |
+    variable_definition optional_semicolon {: System.out.println("Detecte un variable_definition"); :} |
+    block {: System.out.println("Detecte un block"); :} |
+    labeled_statement {: System.out.println("Detecte un labeled_statement"); :} |
+    if_statement {: System.out.println("Detecte un if_statement"); :} |
+    switch_statemente {: System.out.println("Detecte un switch_statemente"); :} |
+    do_statement optional_semicolon {: System.out.println("Detecte un do_statement"); :} |
+    while_statement {: System.out.println("Detecte un while_statement"); :} |
+    for_statement {: System.out.println("Detecte un for_statement"); :} |
+    with_statement {: System.out.println("Detecte un with_statement"); :} |
+    continue_statement optional_semicolon {: System.out.println("Detecte un continue_statement"); :} |
+    break_statement optional_semicolon {: System.out.println("Detecte un break_statement"); :} |
+    return_statement optional_semicolon {: System.out.println("Detecte un return_statement"); :} |
+    throw_statement optional_semicolon {: System.out.println("Detecte un throw_statement"); :} |
+    try_statement {: System.out.println("Detecte un try_statement"); :} ;
+
+optional_semicolon ::= SEMICOLON;
+
+expression_statement ::= expression {: System.out.println("Detecte un expression"); :} ;
+
+expression ::=
+    assignment_expression {: System.out.println("Detecte un assignment_expression"); :} |
+    expression COMMA assignment_expression {: System.out.println("Detecte un expression COMMA assignment_expression"); :} ;
+
+/* Definiciones de Variables */
 
 variable_definition ::= 
     VAR variable_declaration_list;
