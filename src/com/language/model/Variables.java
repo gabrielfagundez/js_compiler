@@ -24,7 +24,7 @@ public class Variables {
     }
 
     public void addVariable(Var variable){
-    	System.out.println(variable.toString());
+    	//System.out.println(variable.toString());
     	this.variables.add(variable);
     }
     
@@ -37,6 +37,21 @@ public class Variables {
         if(!lastVariable.getScope()){
         	this.removeScope();
         }
+    }
+    
+    public Var getVariableByName(String name){
+    	if(variables.size() == 0){
+    		return null;
+    	} else {
+    		Var curr_var = null;
+    		for(int i = variables.size() - 1; i >= 0; i--){
+                Var actual_var = variables.get(i);
+                if(actual_var.getName().equals(name)){
+                	curr_var = actual_var;
+                }
+    		}
+    		return curr_var;
+    	}
     }
     
     public String toString(){
