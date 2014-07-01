@@ -7,12 +7,8 @@ public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "/* a continuaci—n se muestra un mensaje */ var a = 1 + 20 + 13 + (2 + 2 + 8)";
-
+		String exptext = "var a = true, b, c; var d = 4;";
 		Expression expobj = ExpressionParser.parse(exptext);
-
-		System.out.println("Expresion obtenida: ");
-		System.out.println(expobj.toString());
 
 	}
 
