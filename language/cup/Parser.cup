@@ -63,6 +63,7 @@ terminal String SUBSTRING_FUNCT;
 terminal String SPLIT_FUNCT;
 
 terminal String JOIN_FUNCT;
+terminal String CONSOLE_LOG;
 terminal String POP_FUNCT;
 terminal String PUSH_FUNCT;
 terminal String SHIFT_FUNCT;
@@ -78,7 +79,11 @@ terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
 
+/* Esta clase se considera inicial */
 non terminal Object main;
+
+/* Funciones especificas */
+non terminal Object console_log;
 
 non terminal Object variable_definition;
 non terminal Object variable_declaration_list;
@@ -98,6 +103,7 @@ non terminal Object compound_assignment;
 
 non terminal Object statement;
 non terminal Object empty_statement;
+non terminal Object known_function;
 non terminal Object expression_statement;
 non terminal Object optional_semicolon;
 non terminal Object block;
@@ -124,12 +130,28 @@ precedence left TIMES, DIV;
 main ::= 
     statement main |
     statement;
+    
+/* Funciones especificas */
+console_log ::= 
+    CONSOLE_LOG LEFT_ROUND_BRACKET ID:var_name RIGHT_ROUND_BRACKET 
+        {: 
+            Variables variables = Variables.getInstance();
+            Var var = variables.getVariableByName(var_name);
+            ConsoleLog cl = new ConsoleLog((String)var.getValue());
+            cl.execute();
+            
+        :};
+    
+known_function ::= 
+    console_log;
+
 
 /* Statements */
 statement ::=
     empty_statement {: System.out.println("Detecte un empty_statement"); :} |
+    known_function optional_semicolon {: /* System.out.println("Detecte un known_function"); */ :} |
     expression_statement optional_semicolon {: System.out.println("Detecte un expression_statement"); :} |
-    variable_definition optional_semicolon {: System.out.println("Detecte un variable_definition"); :} |
+    variable_definition optional_semicolon {: /* System.out.println("Detecte un variable_definition"); */ :} |
     block {: System.out.println("Detecte un block"); :} |
     labeled_statement {: System.out.println("Detecte un labeled_statement"); :} |
     if_statement {: System.out.println("Detecte un if_statement"); :} |
