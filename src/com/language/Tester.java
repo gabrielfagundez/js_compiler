@@ -1,13 +1,13 @@
 package com.language;
 
-import com.language.model.expression.Expression;
+import com.language.model.*;
 import com.language.parser.ExpressionParser;
 
 public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "var esteEsElNombreLPM = 1, esteEsElOtro = 'asdasda', yEsteEsForlan = 1.3";
+		String exptext = "/* a continuaci—n se muestra un mensaje */ var a = 1 + 20 + 13 + (2 + 2 + 8)";
 
 		Expression expobj = ExpressionParser.parse(exptext);
 

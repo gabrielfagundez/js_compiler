@@ -2,7 +2,6 @@ package com.language.parser;
 
 import java.util.*;
 import java_cup.runtime.*;
-import com.language.model.expression.*;
 import com.language.model.*;
 import com.language.exceptions.*;
 
@@ -11,22 +10,22 @@ terminal String NULL;
 terminal String POINT;
 terminal String SEMICOLON;
 terminal String COMMA;
-terminal String LEFT_ROUND_BRACKETS;
-terminal String RIGHT_ROUND_BRACKETS;
+terminal String LEFT_ROUND_BRACKET;
+terminal String RIGHT_ROUND_BRACKET;
 terminal String DOUBLE_QUOTE;
 terminal String SINGLE_QUOTE;
-terminal String LEFT_SQUARE_BRACKETS;
-terminal String RIGHT_SQUARE_BRACKETS;
+terminal String LEFT_SQUARE_BRACKET;
+terminal String RIGHT_SQUARE_BRACKET;
 terminal String VAR;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
 terminal String ESCAPE;
 
-terminal String ADDITION;
-terminal String SUBTRACTION;
-terminal String MULTIPLICATION;
-terminal String DIVISION;
+terminal String PLUS;
+terminal String MINUS;
+terminal String TIMES;
+terminal String DIV;
 terminal String EQUAL;
 
 terminal String INCREMENT;
@@ -79,26 +78,21 @@ terminal String ID;
 terminal String INTEGRAL;
 terminal String DECIMAL;
 
-non terminal Expression expression;
-non terminal Expression primary_expression;
 non terminal Expression simple_expression;
-non terminal Expression function_expression;
-non terminal Expression object_literal; 
-non terminal Expression assignment_expression; 
-non terminal Expression conditional_expression; 
-non terminal Expression parenthesized_expression; 
-non terminal Expression left_side_expression;
-non terminal Expression compound_assignment;
 
 non terminal Object variable_definition;
 non terminal Object variable_declaration_list;
 non terminal Object variable_declaration;
 non terminal Object variable_initializer;
 
+non terminal Object empty_statement;
+
 non terminal ArrayLiteral array_literal;
 non terminal ElementList element_list;
 non terminal LiteralElement literal_element;
 
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
 
 /* Parsing de Definiciones de Variables */
 
@@ -113,40 +107,69 @@ variable_declaration ::=
     ID:id 
         {:  
             Variables variables = Variables.getInstance();
-            Var var = new Var(id, null, null);
-            variables.addVariable(var); 
-        :} |
-    ID:id EQUAL STRING:s 
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(id, s, "string");
-            variables.addVariable(var); 
-        :} |
-    ID:id EQUAL INTEGRAL:i 
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(id, i, "int");
-            variables.addVariable(var); 
-        :} |
-    ID:id EQUAL DECIMAL:d 
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(id, d, "float");
+            Var var = new Var(null, id, null);
             variables.addVariable(var); 
         :} |
     ID:id EQUAL TRUE:t 
         {:  
             Variables variables = Variables.getInstance();
-            Var var = new Var(id, t, "boolean");
+            Var var = new Var(t, id, "boolean");
             variables.addVariable(var); 
         :} |
     ID:id EQUAL FALSE:f
         {:  
             Variables variables = Variables.getInstance();
-            Var var = new Var(id, f, "boolean");
+            Var var = new Var(f, id, "boolean");
+            variables.addVariable(var); 
+        :} | 
+    ID:id EQUAL simple_expression:s
+        {:  
+            Variables variables = Variables.getInstance();
+            String type = s.evaluateType();
+            Object value = s.evaluate();
+            Var var = new Var(value, id, type);
             variables.addVariable(var); 
         :};
 
+
+/* Expresiones */
+simple_expression ::=
+    INTEGRAL:i
+        {:
+            RESULT = new Expression(i);
+        :} |
+    DECIMAL:d
+        {:
+            RESULT = new Expression(d);
+        :} |
+    STRING:s
+        {:
+            RESULT = new Expression(s);
+        :} |
+    simple_expression:l PLUS simple_expression:r
+        {:
+            RESULT = new Expression("+", l, r);
+        :} |
+    simple_expression:l MINUS simple_expression:r
+        {:
+            RESULT = new Expression("-", l, r);
+        :} |
+    simple_expression:l TIMES simple_expression:r
+        {:
+            RESULT = new Expression("*", l, r);
+        :} |
+    simple_expression:l DIV simple_expression:r
+        {:
+            RESULT = new Expression("/", l, r);
+        :} |
+    ID:i
+        {:
+            RESULT = new Expression(i);
+        :} |
+    LEFT_ROUND_BRACKET simple_expression:e RIGHT_ROUND_BRACKET
+        {:
+            RESULT = e;
+        :};
 
 /* Parsing de Arrays 
 

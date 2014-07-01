@@ -3,7 +3,7 @@ package com.language.parser;
 import java.util.*;
 import java_cup.runtime.*;
 import com.language.exceptions.*;
-import com.language.model.expression.*;
+import com.language.model.*;
 
 %%
 

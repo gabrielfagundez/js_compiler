@@ -1,9 +1,5 @@
 package com.language.model;
 
-import java.util.ArrayList;
-
-import com.language.model.expression.Expression;
-
 public class Var {
 	private Object value;
 	private String name;
