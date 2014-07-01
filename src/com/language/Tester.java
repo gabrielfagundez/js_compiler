@@ -7,7 +7,7 @@ public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "var a = true, b, c; var d = 4;";
+		String exptext = "var a = true, b, c; var d = 4; var x = false; console.log(a);";
 		Expression expobj = ExpressionParser.parse(exptext);
 
 	}
