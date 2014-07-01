@@ -38,5 +38,9 @@ public class Variables {
         	this.removeScope();
         }
     }
+    
+    public String toString(){
+    	return variables.get(variables.size() - 1).toString();
+    }
 
 }
