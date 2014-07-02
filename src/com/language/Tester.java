@@ -7,8 +7,10 @@ public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "NaN - NaN;";
+		String exptext = "var a = true; var b = 4;";
 		Expression expobj = ExpressionParser.parse(exptext);
+		
+		System.out.println("Parsing exitoso");
 
 	}
 
