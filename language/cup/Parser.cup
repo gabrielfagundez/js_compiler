@@ -168,6 +168,8 @@ statement ::=
 
 optional_semicolon ::= SEMICOLON;
 
+empty_statement ::= SEMICOLON;
+
 expression_statement ::= expression {: System.out.println("Detecte un expression"); :} ;
 
 expression ::=
