@@ -17,6 +17,7 @@ terminal String SINGLE_QUOTE;
 terminal String LEFT_SQUARE_BRACKET;
 terminal String RIGHT_SQUARE_BRACKET;
 terminal String VAR;
+terminal String NEW;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
@@ -27,6 +28,8 @@ terminal String MINUS;
 terminal String TIMES;
 terminal String DIV;
 terminal String EQUAL;
+terminal String QUEST;
+terminal String COLON;
 
 terminal String INCREMENT;
 terminal String DECREMENT;
@@ -54,6 +57,7 @@ terminal String CONTINUE;
 
 terminal String LENGTH_FUNCT;
 terminal String CONCAT_FUNCT;
+terminal String TYPEOF_FUNCT;
 terminal String TO_UPPER_CASE_FUNCT;
 terminal String TO_LOWER_CASE_FUNCT;
 terminal String CHAR_AT_FUNCT;
@@ -90,6 +94,15 @@ non terminal Object variable_declaration_list;
 non terminal Object variable_declaration;
 non terminal Object variable_initializer;
 
+non terminal Object logical_or_expression;
+non terminal Object logical_and_expression;
+non terminal Object equality_expression;
+non terminal Object relational_expression;
+non terminal Object additive_expression;
+non terminal Object multiplicative_expression;
+non terminal Object unary_expression;
+non terminal Object postfix_expression;
+
 non terminal Object expression;
 non terminal Object primary_expression;
 non terminal Expression simple_expression;
@@ -99,6 +112,13 @@ non terminal Object assignment_expression;
 non terminal Object conditional_expression; 
 non terminal Object parenthesized_expression; 
 non terminal Object left_side_expression;
+non terminal Object call_expression;
+non terminal Object short_new_expression;
+non terminal Object full_new_expression;
+non terminal Object member_operator;
+non terminal Object arguments;
+non terminal Object full_new_subexpression;
+non terminal Object short_new_subexpression;
 non terminal Object compound_assignment;
 
 non terminal Object statement;
@@ -145,6 +165,81 @@ console_log ::=
 known_function ::= 
     console_log;
 
+optional_semicolon ::= SEMICOLON;
+
+left_side_expression ::= NAN {: System.out.println("Estoy en la POSTAAA"); :};
+
+
+left_side_expression ::= 
+    call_expression |
+    short_new_expression;
+
+call_expression ::=
+    primary_expression |
+    full_new_expression |
+    call_expression member_operator |
+    call_expression arguments;
+    
+full_new_expression ::=
+    NEW full_new_subexpression arguments;
+    
+short_new_expression ::=
+    NEW short_new_subexpression;
+
+postfix_expression ::=
+    left_side_expression |
+    left_side_expression INCREMENT |
+    left_side_expression DECREMENT;
+
+unary_expression ::=
+    postfix_expression |
+    TYPEOF_FUNCT unary_expression |
+    INCREMENT unary_expression|
+    DECREMENT unary_expression;
+
+multiplicative_expression ::= 
+    unary_expression |
+    multiplicative_expression TIMES unary_expression |
+    multiplicative_expression DIV unary_expression;
+
+additive_expression ::=
+    multiplicative_expression |
+    additive_expression PLUS multiplicative_expression |
+    additive_expression MINUS multiplicative_expression;
+
+relational_expression ::=
+    additive_expression |
+    relational_expression GREATER additive_expression |
+    relational_expression LESS additive_expression |
+    relational_expression GREATER_EQUAL additive_expression |
+    relational_expression LESS_EQUAL additive_expression;
+
+equality_expression ::=
+    relational_expression |
+    equality_expression EQUAL_EQUAL relational_expression |
+    equality_expression NOT_EQUAL relational_expression;
+
+logical_and_expression ::=
+    equality_expression |
+    logical_and_expression AND equality_expression;
+
+logical_or_expression ::=
+    logical_and_expression |
+    logical_or_expression OR logical_and_expression;
+
+conditional_expression ::=
+    logical_or_expression |
+    logical_or_expression QUEST assignment_expression COLON assignment_expression;
+
+assignment_expression ::=
+    conditional_expression |
+    left_side_expression EQUAL assignment_expression |
+    left_side_expression compound_assignment assignment_expression;
+
+expression ::=
+    assignment_expression {: System.out.println("Detecte un assignment_expression"); :} |
+    expression COMMA assignment_expression {: System.out.println("Detecte un expression COMMA assignment_expression"); :} ;
+
 
 /* Statements */
 statement ::=
@@ -166,15 +261,9 @@ statement ::=
     throw_statement optional_semicolon {: System.out.println("Detecte un throw_statement"); :} |
     try_statement {: System.out.println("Detecte un try_statement"); :} ;
 
-optional_semicolon ::= SEMICOLON;
-
 empty_statement ::= SEMICOLON;
 
 expression_statement ::= expression {: System.out.println("Detecte un expression"); :} ;
-
-expression ::=
-    assignment_expression {: System.out.println("Detecte un assignment_expression"); :} |
-    expression COMMA assignment_expression {: System.out.println("Detecte un expression COMMA assignment_expression"); :} ;
 
 /* Definiciones de Variables */
 

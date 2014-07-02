@@ -70,6 +70,9 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "*" 				{ return symbol(sym.TIMES, "*"); }
 "/" 				{ return symbol(sym.DIV, "/"); }
 "=" 				{ return symbol(sym.EQUAL, "="); }
+"?"                 { return symbol(sym.QUEST, "?"); }
+":"                 { return symbol(sym.COLON, ":"); }
+"new"                 { return symbol(sym.NEW, "new"); }
 
 "++" 				{ return symbol(sym.INCREMENT, "++"); }
 "--" 				{ return symbol(sym.DECREMENT, "--"); }
@@ -105,6 +108,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "continue" 			{ return symbol(sym.CONTINUE, "continue"); }
 
 "length" 			{return symbol(sym.LENGTH_FUNCT, "length"); }
+"typeof"            {return symbol(sym.TYPEOF_FUNCT, "typeof"); }
 "concat" 			{return symbol(sym.CONCAT_FUNCT, "concat"); }
 "toUpperCase" 		{return symbol(sym.TO_UPPER_CASE_FUNCT, "toUpperCase"); }
 "toLowerCase" 		{return symbol(sym.TO_LOWER_CASE_FUNCT, "toLowerCase"); }
