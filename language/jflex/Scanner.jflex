@@ -100,7 +100,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 <COMMENT_BLOCK> \*\/ 		{ yybegin(YYINITIAL); }
 
 "{" 				{ return symbol(sym.BLOCK_BEGIN, "{"); }
-"}" 				{ return symbol(sym.BLOCK_BEGIN, "}"); }
+"}" 				{ return symbol(sym.BLOCK_END, "}"); }
 "if" 				{ return symbol(sym.IF, "if"); }
 "else" 				{ return symbol(sym.ELSE, "else"); }
 "for" 				{ return symbol(sym.FOR, "for"); }

@@ -49,6 +49,7 @@ terminal String EQUAL_EQUAL;
 terminal String NOT_EQUAL;
 
 terminal String BLOCK_BEGIN;
+terminal String BLOCK_END;
 terminal String IF;
 terminal String ELSE;
 terminal String FOR;
@@ -120,6 +121,12 @@ non terminal Object arguments;
 non terminal Object full_new_subexpression;
 non terminal Object short_new_subexpression;
 non terminal Object compound_assignment;
+non terminal Object argument_list;
+
+non terminal Object field_list;
+non terminal Object literal_field;
+
+non terminal Object named_function;
 
 non terminal Object statement;
 non terminal Object empty_statement;
@@ -140,9 +147,9 @@ non terminal Object return_statement;
 non terminal Object throw_statement;
 non terminal Object try_statement;
 
-non terminal ArrayLiteral array_literal;
-non terminal ElementList element_list;
-non terminal LiteralElement literal_element;
+non terminal Object array_literal;
+non terminal Object element_list;
+non terminal Object literal_element;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
@@ -167,8 +174,50 @@ known_function ::=
 
 optional_semicolon ::= SEMICOLON;
 
-left_side_expression ::= NAN {: System.out.println("Estoy en la POSTAAA"); :};
+/* Expresiones */
 
+primary_expression ::=
+    simple_expression |
+    function_expression |
+    object_literal;
+
+simple_expression ::=
+    NULL:n |
+    TRUE:t |
+    FALSE:f |
+    INTEGRAL:i |
+    DECIMAL:d |
+    STRING:s |
+    ID:i |
+    parenthesized_expression:p |
+    array_literal;
+    
+parenthesized_expression ::=
+    LEFT_ROUND_BRACKET expression RIGHT_ROUND_BRACKET;
+
+function_expression ::=
+    named_function;
+
+object_literal ::=
+    BLOCK_BEGIN BLOCK_END |
+    BLOCK_BEGIN field_list BLOCK_END;
+    
+field_list ::=
+    literal_field |
+    field_list COMMA literal_field;
+    
+literal_field ::= 
+    ID COLON assignment_expression;
+
+array_literal ::=
+    LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET |
+    LEFT_SQUARE_BRACKET element_list RIGHT_SQUARE_BRACKET;
+
+element_list ::=
+    literal_element |
+    element_list COMMA literal_element;
+
+literal_element ::= assignment_expression;
 
 left_side_expression ::= 
     call_expression |
@@ -185,6 +234,27 @@ full_new_expression ::=
     
 short_new_expression ::=
     NEW short_new_subexpression;
+    
+full_new_subexpression ::=
+    primary_expression |
+    full_new_expression |
+    full_new_subexpression member_operator;
+    
+short_new_subexpression ::=
+    full_new_subexpression |
+    short_new_expression;
+    
+member_operator ::=
+    LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET |
+    POINT ID;
+    
+arguments ::=
+    LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET |
+    LEFT_ROUND_BRACKET argument_list RIGHT_ROUND_BRACKET;
+    
+argument_list ::=
+    assignment_expression |
+    argument_list COMMA assignment_expression; 
 
 postfix_expression ::=
     left_side_expression |
@@ -275,35 +345,14 @@ variable_declaration_list ::=
     variable_declaration_list COMMA variable_declaration;
 
 variable_declaration ::= 
-    ID:id 
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(null, id, null);
-            variables.addVariable(var); 
-        :} |
-    ID:id EQUAL TRUE:t 
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(t, id, "boolean");
-            variables.addVariable(var); 
-        :} |
-    ID:id EQUAL FALSE:f
-        {:  
-            Variables variables = Variables.getInstance();
-            Var var = new Var(f, id, "boolean");
-            variables.addVariable(var); 
-        :} | 
-    ID:id EQUAL simple_expression:s
-        {:  
-            Variables variables = Variables.getInstance();
-            String type = s.evaluateType();
-            Object value = s.evaluate();
-            Var var = new Var(value, id, type);
-            variables.addVariable(var); 
-        :};
+    ID:id variable_initializer;
+    
+variable_initializer ::=
+    |
+    EQUAL assignment_expression;    
 
 
-/* Expresiones */
+/* Expresiones 
 simple_expression ::=
     INTEGRAL:i
         {:
@@ -341,19 +390,5 @@ simple_expression ::=
         {:
             RESULT = e;
         :};
-
-/* Parsing de Arrays 
-
-array_literal ::=
-    LEFT_SQUARE_BRACKETS RIGHT_SQUARE_BRACKETS |
-    LEFT_SQUARE_BRACKETS element_list RIGHT_SQUARE_BRACKETS
-    ;
-
-element_list ::=
-    literal_element |
-    element_list COMMA literal_element
-    ;
-
-literal_element	::= NULL;
-
+        
 */
