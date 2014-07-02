@@ -7,7 +7,7 @@ public class Tester {
 
 	public static void main(String[] args) {
 
-		String exptext = "var a = false, b, c; var d = 4; var x = false; console.log(d); console.log(a);";
+		String exptext = "NaN - NaN;";
 		Expression expobj = ExpressionParser.parse(exptext);
 
 	}
