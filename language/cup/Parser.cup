@@ -51,6 +51,7 @@ terminal String NOT_EQUAL;
 terminal String BLOCK_BEGIN;
 terminal String BLOCK_END;
 terminal String IF;
+terminal String WHILE;
 terminal String ELSE;
 terminal String FOR;
 terminal String BREAK;
@@ -114,6 +115,7 @@ non terminal Object conditional_expression;
 non terminal Object parenthesized_expression; 
 non terminal Object left_side_expression;
 non terminal Object call_expression;
+non terminal Object optional_expression;
 non terminal Object short_new_expression;
 non terminal Object full_new_expression;
 non terminal Object member_operator;
@@ -125,8 +127,10 @@ non terminal Object argument_list;
 
 non terminal Object field_list;
 non terminal Object literal_field;
+non terminal Object in_binding;
 
 non terminal Object named_function;
+non terminal Object for_initializer;
 
 non terminal Object statement;
 non terminal Object empty_statement;
@@ -150,6 +154,9 @@ non terminal Object try_statement;
 non terminal Object array_literal;
 non terminal Object element_list;
 non terminal Object literal_element;
+
+non terminal Object block_statements;
+non terminal Object block_statements_prefix;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
@@ -189,7 +196,7 @@ simple_expression ::=
     DECIMAL:d |
     STRING:s |
     ID:i |
-    parenthesized_expression:p |
+    parenthesized_expression:p {: System.out.println("Detecte un parenthesized.."); :} |
     array_literal;
     
 parenthesized_expression ::=
@@ -310,13 +317,16 @@ expression ::=
     assignment_expression {: System.out.println("Detecte un assignment_expression"); :} |
     expression COMMA assignment_expression {: System.out.println("Detecte un expression COMMA assignment_expression"); :} ;
 
+optional_expression ::=
+    expression |
+    ;
 
 /* Statements */
 statement ::=
     empty_statement {: System.out.println("Detecte un empty_statement"); :} |
-    known_function optional_semicolon {: /* System.out.println("Detecte un known_function"); */ :} |
+    known_function optional_semicolon {: System.out.println("Detecte un known_function"); :} |
     expression_statement optional_semicolon {: System.out.println("Detecte un expression_statement"); :} |
-    variable_definition optional_semicolon {: /* System.out.println("Detecte un variable_definition"); */ :} |
+    variable_definition optional_semicolon {: System.out.println("Detecte un variable_definition"); :} |
     block {: System.out.println("Detecte un block"); :} |
     labeled_statement {: System.out.println("Detecte un labeled_statement"); :} |
     if_statement {: System.out.println("Detecte un if_statement"); :} |
@@ -335,6 +345,7 @@ empty_statement ::= SEMICOLON;
 
 expression_statement ::= expression {: System.out.println("Detecte un expression"); :} ;
 
+
 /* Definiciones de Variables */
 
 variable_definition ::= 
@@ -351,44 +362,36 @@ variable_initializer ::=
     |
     EQUAL assignment_expression;    
 
+/* Definiciones de Bloques */
 
-/* Expresiones 
-simple_expression ::=
-    INTEGRAL:i
-        {:
-            RESULT = new Expression(i);
-        :} |
-    DECIMAL:d
-        {:
-            RESULT = new Expression(d);
-        :} |
-    STRING:s
-        {:
-            RESULT = new Expression(s);
-        :} |
-    simple_expression:l PLUS simple_expression:r
-        {:
-            RESULT = new Expression("+", l, r);
-        :} |
-    simple_expression:l MINUS simple_expression:r
-        {:
-            RESULT = new Expression("-", l, r);
-        :} |
-    simple_expression:l TIMES simple_expression:r
-        {:
-            RESULT = new Expression("*", l, r);
-        :} |
-    simple_expression:l DIV simple_expression:r
-        {:
-            RESULT = new Expression("/", l, r);
-        :} |
-    ID:i
-        {:
-            RESULT = new Expression(i);
-        :} |
-    LEFT_ROUND_BRACKET simple_expression:e RIGHT_ROUND_BRACKET
-        {:
-            RESULT = e;
-        :};
-        
-*/
+block ::=
+    BLOCK_BEGIN block_statements BLOCK_END;
+    
+block_statements ::=
+    block_statements_prefix;
+    
+block_statements_prefix ::=
+    statement |
+    block_statements_prefix statement;
+    
+if_statement ::= 
+    IF parenthesized_expression statement;
+    
+while_statement ::= 
+    WHILE parenthesized_expression statement;
+    
+for_statement ::=
+    FOR LEFT_ROUND_BRACKET for_initializer SEMICOLON optional_expression SEMICOLON optional_expression RIGHT_ROUND_BRACKET statement;
+    
+for_initializer ::=
+    |
+    expression |
+    VAR variable_declaration_list;
+    
+in_binding ::=
+    left_side_expression |
+    VAR variable_declaration_list;
+    
+    
+    
+    

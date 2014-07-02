@@ -102,6 +102,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "{" 				{ return symbol(sym.BLOCK_BEGIN, "{"); }
 "}" 				{ return symbol(sym.BLOCK_END, "}"); }
 "if" 				{ return symbol(sym.IF, "if"); }
+"while"             { return symbol(sym.WHILE, "while"); }
 "else" 				{ return symbol(sym.ELSE, "else"); }
 "for" 				{ return symbol(sym.FOR, "for"); }
 "break" 			{ return symbol(sym.BREAK, "break"); }
