@@ -89,7 +89,6 @@ terminal String DECIMAL;
 
 /* Esta clase se considera inicial */
 non terminal Object program;
-non terminal Object main;
 non terminal Object top_statement;
 
 /* Funciones especificas */
@@ -188,7 +187,8 @@ top_statements_prefix ::=
     top_statements_prefix top_statement;
     
 top_statement ::= 
-    statement;
+    statement |
+    function_definition;
 
 /* Funciones especificas */
 console_log ::= 
@@ -420,25 +420,18 @@ in_binding ::=
 return_statement ::=
     RETURN optional_expression;
     
-/* Function Definition */
+/* Funciones */
+
 function_definition ::=
-    named_function;
-    
-named_function ::=
-    FUNCTION ID formal_parameters_and_body;
-    
+    FUNCTION ID formal_parameters_and_body {:  :};
+
 formal_parameters_and_body ::=
-    LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN top_statements BLOCK_END;
-    
+    LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN top_statements BLOCK_END {:  :};
+
 formal_parameters ::=
     |
-    formal_parameters_prefix;
-    
+    formal_parameters_prefix {:  :};
+
 formal_parameters_prefix ::=
-    formal_parameter |
-    formal_parameters_prefix COMMA formal_parameter;
-    
-formal_parameter ::=
-    ID;
-    
-    
+    ID {:  :} |
+    formal_parameters_prefix COMMA ID {:  :};
