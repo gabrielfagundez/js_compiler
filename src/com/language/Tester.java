@@ -12,6 +12,8 @@ public class Tester {
 		String fileName = "tests/unit/syntax/test1.js";
 		String exptext = null;
 		BufferedReader br = null;
+		Boolean showEntry = true;
+		Boolean showPrevData = true;
 
 		try {
 			br = new BufferedReader(new FileReader(fileName));
@@ -42,14 +44,23 @@ public class Tester {
 			}
 	    };
 
-	    System.out.println("Parsing started..");
-	    System.out.println(exptext);
-	    System.out.println("");
-	    System.out.println("");
-		Expression expobj = ExpressionParser.parse(exptext);
+	    if(showPrevData){
+	    	System.out.println("Parsing started..");	
+	    }
+	    if(showEntry) {
+	    	System.out.println(exptext);	
+	    }
+	    if(showPrevData){
+	    	System.out.println("After the next line you can see the output of the compiled JS.");
+		    System.out.println("*** *** ***");	
+	    }
 
-		//System.out.println("Parsing exitoso");
+	    Expression expobj = ExpressionParser.parse(exptext);
 
+	    if(showPrevData){
+	    	System.out.println("*** *** ***");
+		    System.out.println("Success!");
+	    }
 	}
 
 }
