@@ -18,6 +18,8 @@ terminal String LEFT_SQUARE_BRACKET;
 terminal String RIGHT_SQUARE_BRACKET;
 terminal String VAR;
 terminal String NEW;
+terminal String RETURN;
+terminal String FUNCTION;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
@@ -86,7 +88,9 @@ terminal String INTEGRAL;
 terminal String DECIMAL;
 
 /* Esta clase se considera inicial */
+non terminal Object program;
 non terminal Object main;
+non terminal Object top_statement;
 
 /* Funciones especificas */
 non terminal Object console_log;
@@ -118,6 +122,7 @@ non terminal Object call_expression;
 non terminal Object optional_expression;
 non terminal Object short_new_expression;
 non terminal Object full_new_expression;
+
 non terminal Object member_operator;
 non terminal Object arguments;
 non terminal Object full_new_subexpression;
@@ -158,13 +163,33 @@ non terminal Object literal_element;
 non terminal Object block_statements;
 non terminal Object block_statements_prefix;
 
+non terminal Object function_definition;
+non terminal Object formal_parameters_and_body;
+non terminal Object formal_parameters;
+non terminal Object formal_parameter;
+non terminal Object formal_parameters_prefix;
+non terminal Object top_statements;
+non terminal Object top_statements_prefix;
+
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 
-main ::= 
-    statement main |
-    statement;
+/* Program */
+ 
+program ::= 
+    top_statements;
     
+top_statements ::=
+    |
+    top_statements_prefix;
+    
+top_statements_prefix ::=
+    top_statement |
+    top_statements_prefix top_statement;
+    
+top_statement ::= 
+    statement;
+
 /* Funciones especificas */
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET ID:var_name RIGHT_ROUND_BRACKET 
@@ -196,7 +221,7 @@ simple_expression ::=
     DECIMAL:d |
     STRING:s |
     ID:i |
-    parenthesized_expression:p {: System.out.println("Detecte un parenthesized.."); :} |
+    parenthesized_expression |
     array_literal;
     
 parenthesized_expression ::=
@@ -314,8 +339,8 @@ assignment_expression ::=
     left_side_expression compound_assignment assignment_expression;
 
 expression ::=
-    assignment_expression {: System.out.println("Detecte un assignment_expression"); :} |
-    expression COMMA assignment_expression {: System.out.println("Detecte un expression COMMA assignment_expression"); :} ;
+    assignment_expression {:  :} |
+    expression COMMA assignment_expression {:  :} ;
 
 optional_expression ::=
     expression |
@@ -323,23 +348,23 @@ optional_expression ::=
 
 /* Statements */
 statement ::=
-    empty_statement {: System.out.println("Detecte un empty_statement"); :} |
-    known_function optional_semicolon {: System.out.println("Detecte un known_function"); :} |
-    expression_statement optional_semicolon {: System.out.println("Detecte un expression_statement"); :} |
-    variable_definition optional_semicolon {: System.out.println("Detecte un variable_definition"); :} |
-    block {: System.out.println("Detecte un block"); :} |
-    labeled_statement {: System.out.println("Detecte un labeled_statement"); :} |
-    if_statement {: System.out.println("Detecte un if_statement"); :} |
-    switch_statemente {: System.out.println("Detecte un switch_statemente"); :} |
-    do_statement optional_semicolon {: System.out.println("Detecte un do_statement"); :} |
-    while_statement {: System.out.println("Detecte un while_statement"); :} |
-    for_statement {: System.out.println("Detecte un for_statement"); :} |
-    with_statement {: System.out.println("Detecte un with_statement"); :} |
-    continue_statement optional_semicolon {: System.out.println("Detecte un continue_statement"); :} |
-    break_statement optional_semicolon {: System.out.println("Detecte un break_statement"); :} |
-    return_statement optional_semicolon {: System.out.println("Detecte un return_statement"); :} |
-    throw_statement optional_semicolon {: System.out.println("Detecte un throw_statement"); :} |
-    try_statement {: System.out.println("Detecte un try_statement"); :} ;
+    empty_statement {:  :} |
+    known_function optional_semicolon {:  :} |
+    expression_statement optional_semicolon {:  :} |
+    variable_definition optional_semicolon {:  :} |
+    block {:  :} |
+    labeled_statement {:  :} |
+    if_statement {:  :} |
+    switch_statemente {:  :} |
+    do_statement optional_semicolon {:  :} |
+    while_statement {:  :} |
+    for_statement {:  :} |
+    with_statement {:  :} |
+    continue_statement optional_semicolon {:  :} |
+    break_statement optional_semicolon {:  :} |
+    return_statement optional_semicolon {:  :} |
+    throw_statement optional_semicolon {:  :} |
+    try_statement {:  :} ;
 
 empty_statement ::= SEMICOLON;
 
@@ -392,6 +417,28 @@ in_binding ::=
     left_side_expression |
     VAR variable_declaration_list;
     
+return_statement ::=
+    RETURN optional_expression;
     
+/* Function Definition */
+function_definition ::=
+    named_function;
+    
+named_function ::=
+    FUNCTION ID formal_parameters_and_body;
+    
+formal_parameters_and_body ::=
+    LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN top_statements BLOCK_END;
+    
+formal_parameters ::=
+    |
+    formal_parameters_prefix;
+    
+formal_parameters_prefix ::=
+    formal_parameter |
+    formal_parameters_prefix COMMA formal_parameter;
+    
+formal_parameter ::=
+    ID;
     
     

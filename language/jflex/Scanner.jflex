@@ -48,6 +48,8 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 %%
 
 "null"              { return symbol(sym.NULL, "null"); }
+"return"            { return symbol(sym.RETURN, "return"); }
+"function"          { return symbol(sym.FUNCTION, "function"); }
 "console.log"       {return symbol(sym.CONSOLE_LOG, "console.log"); }
 
 "." 				{ return symbol(sym.POINT, "."); }
