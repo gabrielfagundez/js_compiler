@@ -4,6 +4,7 @@
 target/
 
 *.class
+.idea
 
 ######################
 # Linux
