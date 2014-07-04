@@ -99,29 +99,29 @@ non terminal Object variable_declaration_list;
 non terminal Object variable_declaration;
 non terminal Object variable_initializer;
 
-non terminal Object logical_or_expression;
-non terminal Object logical_and_expression;
-non terminal Object equality_expression;
-non terminal Object relational_expression;
-non terminal Object additive_expression;
-non terminal Object multiplicative_expression;
-non terminal Object unary_expression;
-non terminal Object postfix_expression;
+non terminal Expression logical_or_expression;
+non terminal Expression logical_and_expression;
+non terminal Expression equality_expression;
+non terminal Expression relational_expression;
+non terminal Expression additive_expression;
+non terminal Expression multiplicative_expression;
+non terminal Expression unary_expression;
+non terminal Expression postfix_expression;
 
-non terminal Object expression;
-non terminal Object primary_expression;
+non terminal Expression expression;
+non terminal Expression primary_expression;
 non terminal Expression simple_expression;
-non terminal Object function_expression;
-non terminal Object object_literal; 
-non terminal Object assignment_expression; 
-non terminal Object conditional_expression; 
-non terminal Object parenthesized_expression; 
-non terminal Object left_side_expression;
-non terminal Object call_expression;
-non terminal Object optional_expression;
-non terminal Object short_new_expression;
-non terminal Object full_new_expression;
 
+non terminal Expression function_expression;
+non terminal Expression object_literal; 
+non terminal Expression assignment_expression; 
+non terminal Expression conditional_expression; 
+non terminal Expression parenthesized_expression; 
+non terminal Expression left_side_expression;
+non terminal Expression call_expression;
+non terminal Expression optional_expression;
+non terminal Expression short_new_expression;
+non terminal Expression full_new_expression;
 non terminal Object member_operator;
 non terminal Object arguments;
 non terminal Object full_new_subexpression;
@@ -209,19 +209,19 @@ optional_semicolon ::= SEMICOLON;
 /* Expresiones */
 
 primary_expression ::=
-    simple_expression |
+    simple_expression:se {: RESULT = se; :} |
     function_expression |
     object_literal;
 
 simple_expression ::=
-    NULL:n |
-    TRUE:t |
-    FALSE:f |
-    INTEGRAL:i |
-    DECIMAL:d |
-    STRING:s |
-    ID:i |
-    parenthesized_expression |
+    NULL:n {: RESULT = new Expression(n); :} |
+    TRUE:t {: RESULT = new Expression(t); :} |
+    FALSE:f {: RESULT = new Expression(f); :} |
+    INTEGRAL:i {: RESULT = new Expression(i); :} |
+    DECIMAL:d {: RESULT = new Expression(d); :} |
+    STRING:s {: RESULT = new Expression(s); :} |
+    ID:i {: RESULT = new Expression(i); :} |
+    parenthesized_expression:p |
     array_literal;
     
 parenthesized_expression ::=
@@ -252,11 +252,11 @@ element_list ::=
 literal_element ::= assignment_expression;
 
 left_side_expression ::= 
-    call_expression |
+    call_expression:ce {: RESULT = ce ; :} |
     short_new_expression;
 
 call_expression ::=
-    primary_expression |
+    primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
     call_expression member_operator |
     call_expression arguments;
@@ -289,52 +289,52 @@ argument_list ::=
     argument_list COMMA assignment_expression; 
 
 postfix_expression ::=
-    left_side_expression |
+    left_side_expression:lse {: RESULT = lse ; :} |
     left_side_expression INCREMENT |
     left_side_expression DECREMENT;
 
 unary_expression ::=
-    postfix_expression |
+    postfix_expression:pe {: RESULT = pe ; :} |
     TYPEOF_FUNCT unary_expression |
     INCREMENT unary_expression|
     DECREMENT unary_expression;
 
 multiplicative_expression ::= 
-    unary_expression |
-    multiplicative_expression TIMES unary_expression |
-    multiplicative_expression DIV unary_expression;
+    unary_expression:ue {: RESULT = ue ; :} |
+    multiplicative_expression:l TIMES unary_expression:r {: RESULT = new Expression("*",l,r); :} |
+    multiplicative_expression:l DIV unary_expression:r {: RESULT = new Expression("/",l,r); :} ;
 
 additive_expression ::=
-    multiplicative_expression |
-    additive_expression PLUS multiplicative_expression |
-    additive_expression MINUS multiplicative_expression;
+    multiplicative_expression:me {: RESULT = me ; :} |
+    additive_expression:l PLUS multiplicative_expression:r {: RESULT = new Expression("+",l,r); :} |
+    additive_expression:l MINUS multiplicative_expression:r {: RESULT = new Expression("-",l,r); :};
 
 relational_expression ::=
-    additive_expression |
-    relational_expression GREATER additive_expression |
-    relational_expression LESS additive_expression |
-    relational_expression GREATER_EQUAL additive_expression |
-    relational_expression LESS_EQUAL additive_expression;
+    additive_expression:ae {: RESULT = ae ; :} |
+    relational_expression:l GREATER additive_expression:r {: RESULT = new Expression(">",l,r) ; :} |
+    relational_expression:l LESS additive_expression:r {: RESULT = new Expression("<",l,r) ; :} |
+    relational_expression:l GREATER_EQUAL additive_expression:r {: RESULT = new Expression(">=",l,r) ; :} |
+    relational_expression:l LESS_EQUAL additive_expression:r {: RESULT = new Expression("<=",l,r) ; :};
 
 equality_expression ::=
-    relational_expression |
-    equality_expression EQUAL_EQUAL relational_expression |
-    equality_expression NOT_EQUAL relational_expression;
+    relational_expression:re {: RESULT = re ; :} |
+    equality_expression:l EQUAL_EQUAL relational_expression:r {: RESULT = new Expression("==",l,r) ; :} |
+    equality_expression:l NOT_EQUAL relational_expression:r {: RESULT = new Expression("!=&",l,r) ; :};
 
 logical_and_expression ::=
-    equality_expression |
-    logical_and_expression AND equality_expression;
+    equality_expression:ee {: RESULT = ee ; :} |
+    logical_and_expression:l AND equality_expression:r {: RESULT = new Expression("&&",l,r) ; :};
 
 logical_or_expression ::=
-    logical_and_expression |
-    logical_or_expression OR logical_and_expression;
+    logical_and_expression:lae {: RESULT = lae ; :} |
+    logical_or_expression:l OR logical_and_expression:r {: RESULT = new Expression("||",l,r) ; :};
 
 conditional_expression ::=
-    logical_or_expression |
+    logical_or_expression:lor {: RESULT = lor ; :} |
     logical_or_expression QUEST assignment_expression COLON assignment_expression;
 
 assignment_expression ::=
-    conditional_expression |
+    conditional_expression:ce {: RESULT = ce ; :} |
     left_side_expression EQUAL assignment_expression |
     left_side_expression compound_assignment assignment_expression;
 
@@ -385,7 +385,11 @@ variable_declaration ::=
     
 variable_initializer ::=
     |
-    EQUAL assignment_expression;    
+    EQUAL assignment_expression:a
+    	{:
+         	Object value = a.evaluate();
+         	System.out.println(value);
+    	:};    
 
 /* Definiciones de Bloques */
 
