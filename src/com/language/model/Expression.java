@@ -1,13 +1,11 @@
 package com.language.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Expression {
 
 	private Object value;
 	private Expression left;
 	private Expression right;
+	private String type;
 	
 	public Expression(Object value) {
 		this.value = value;
@@ -49,10 +47,41 @@ public class Expression {
 		return "string";
 	}
 
+	public Boolean isTruable(){
+		return true;
+	}
+	
+	public Boolean isFalsable(){
+		return true;
+	}
+	
 	public String evaluate(){
-		if(this.value == "+"){
-			Integer int_value = new Integer(left.evaluate()) + new Integer(right.evaluate());
-			return int_value.toString();
+		
+		if(this.value == "&&"){
+			if(this.left.isTruable()){
+				return this.right.evaluate();
+			}else {
+				return this.right.evaluate();
+			}
+		}
+		else if(this.value == "||"){
+			if(this.left.isFalsable()){
+				return this.right.evaluate();
+			}else{
+				return this.right.evaluate();
+			}			
+		}
+		
+		else if(this.value == "+"){
+			if (this.left.type == "String" || this.left.type == "String"){
+				return "Concatenate";
+			} else {
+				return "numerize";
+			}
+//			Integer int_value = new Integer(left.evaluate()) + new Integer(right.evaluate());
+//			return int_value.toString();
+		} else if (this.value == "+"){
+			return "gola";
 		} else {
 			return (String)this.value;
 		}
