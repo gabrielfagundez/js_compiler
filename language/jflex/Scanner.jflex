@@ -63,8 +63,8 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 "]"					{ return symbol(sym.RIGHT_SQUARE_BRACKET, "]"); }
 "var"				{ return symbol(sym.VAR, "var"); }
 
-"\n" 				{ return symbol(sym.LINE_BREAK, "\n"); }
-"\t" 				{ return symbol(sym.TABULATION, "\t"); }
+"\n" 				{ /* Ignore */ }
+"\t" 				{ /* Ignore */ }
 "\\" 				{ return symbol(sym.ESCAPE, "\\"); }
 
 "+" 				{ return symbol(sym.PLUS, "+"); }
@@ -138,4 +138,4 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 {IntegerLiteral}	{ return symbol(sym.INTEGRAL, yytext()); }
 {FloatLiteral} 		{ return symbol(sym.DECIMAL, yytext()); }
 
-{WhiteSpace}        { /* ignore */ }
+{WhiteSpace}        { /* Ignore */ }
