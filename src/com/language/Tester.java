@@ -76,7 +76,7 @@ public class Tester {
         opciones[1] = "src/com/language/parser";
         opciones[2] = path;
         try {
-//            jflex.Main.generate(opciones);
+            jflex.Main.generate(opciones);
         } catch (Exception e ){
             System.out.println(e);
         }
