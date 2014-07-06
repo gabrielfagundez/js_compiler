@@ -214,18 +214,18 @@ primary_expression ::=
     object_literal;
 
 simple_expression ::=
-    NULL:n {: RESULT = new Expression(n); :} |
-    TRUE:t {: RESULT = new Expression(t); :} |
-    FALSE:f {: RESULT = new Expression(f); :} |
-    INTEGRAL:i {: RESULT = new Expression(i); :} |
-    DECIMAL:d {: RESULT = new Expression(d); :} |
-    STRING:s {: RESULT = new Expression(s); :} |
-    ID:i {: RESULT = new Expression(i); :} |
-    parenthesized_expression:p |
+    NULL:n {: RESULT = new Expression(n,"NULL"); :} |
+    TRUE:t {: RESULT = new Expression(t, "Boolean"); :} |
+    FALSE:f {: RESULT = new Expression(f, "Boolean"); :} |
+    INTEGRAL:i {: RESULT = new Expression(i, "Integer"); :} |
+    DECIMAL:d {: RESULT = new Expression(d, "Float"); :} |
+    STRING:s {: RESULT = new Expression(s, "String"); :} |
+    ID:i {: RESULT = new Expression(i, "Var"); :} |
+    parenthesized_expression:p {: RESULT = p; :} |
     array_literal;
     
 parenthesized_expression ::=
-    LEFT_ROUND_BRACKET expression RIGHT_ROUND_BRACKET;
+    LEFT_ROUND_BRACKET conditional_expression:ce RIGHT_ROUND_BRACKET {: RESULT = ce; :} ;
 
 function_expression ::=
     named_function;
@@ -319,7 +319,7 @@ relational_expression ::=
 equality_expression ::=
     relational_expression:re {: RESULT = re ; :} |
     equality_expression:l EQUAL_EQUAL relational_expression:r {: RESULT = new Expression("==",l,r) ; :} |
-    equality_expression:l NOT_EQUAL relational_expression:r {: RESULT = new Expression("!=&",l,r) ; :};
+    equality_expression:l NOT_EQUAL relational_expression:r {: RESULT = new Expression("!=",l,r) ; :};
 
 logical_and_expression ::=
     equality_expression:ee {: RESULT = ee ; :} |
@@ -388,7 +388,9 @@ variable_initializer ::=
     EQUAL assignment_expression:a
     	{:
          	Object value = a.evaluate();
+         	String type = a.getType();
          	System.out.println(value);
+         	System.out.println(type);
     	:};    
 
 /* Definiciones de Bloques */
