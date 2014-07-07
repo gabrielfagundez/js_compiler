@@ -192,13 +192,10 @@ top_statement ::=
 
 /* Funciones especificas */
 console_log ::= 
-    CONSOLE_LOG LEFT_ROUND_BRACKET ID:var_name RIGHT_ROUND_BRACKET 
+    CONSOLE_LOG LEFT_ROUND_BRACKET assignment_expression:ae RIGHT_ROUND_BRACKET 
         {: 
-            Variables variables = Variables.getInstance();
-            Var var = variables.getVariableByName(var_name);
-            ConsoleLog cl = new ConsoleLog((String)var.getValue());
+            ConsoleLog cl = new ConsoleLog(ae.getValue());
             cl.execute();
-            
         :};
     
 known_function ::= 
