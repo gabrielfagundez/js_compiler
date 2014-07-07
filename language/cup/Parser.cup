@@ -368,7 +368,7 @@ statement ::=
 
 empty_statement ::= SEMICOLON;
 
-expression_statement ::= expression {: System.out.println("Detecte un expression"); :} ;
+expression_statement ::= expression {:  :} ;
 
 
 /* Definiciones de Variables */
@@ -389,8 +389,6 @@ variable_initializer ::=
     	{:
          	Object value = a.evaluate();
          	String type = a.getType();
-         	System.out.println(value);
-         	System.out.println(type);
     	:};    
 
 /* Definiciones de Bloques */

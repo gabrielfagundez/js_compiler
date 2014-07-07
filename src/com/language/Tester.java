@@ -18,7 +18,7 @@ public class Tester {
 	  	String fileName = "tests/unit/evaluation/test1.js";
 		String exptext = null;
 		BufferedReader br = null;
-		Boolean showEntry = true;
+		Boolean showEntry = false;
 		Boolean showPrevData = true;
 
 		try {
