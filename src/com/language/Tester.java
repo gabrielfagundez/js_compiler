@@ -19,7 +19,7 @@ public class Tester {
 		String exptext = null;
 		BufferedReader br = null;
 		Boolean showEntry = false;
-		Boolean showPrevData = true;
+		Boolean showPrevData = false;
 
 		try {
 			br = new BufferedReader(new FileReader(fileName));
