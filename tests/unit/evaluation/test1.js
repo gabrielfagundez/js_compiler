@@ -20,3 +20,5 @@ var c5 =false + false; // 0
 var c4 =5 + "foo" ;// "5foo"
 var c3 ="foo" + false; // "foofalse"
 var c2 ="foo" + "bar" ;// "foobar"
+
+var problem = "hola\'n and hola\\n";

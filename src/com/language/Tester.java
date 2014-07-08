@@ -8,12 +8,12 @@ import com.language.parser.ExpressionParser;
 public class Tester {
 
 	public static void main(String[] args) {
-//	    /* Generacion del Scanner */
-//	    String path = "language/jflex/Scanner.jflex";
-//	    generarLexer(path);
-//	  
-//	    /* Generacion del Parser */
-//	    generarParser();            
+	    /* Generacion del Scanner */
+	    String path = "language/jflex/Scanner.jflex";
+	    generarLexer(path);
+	  
+	    /* Generacion del Parser */
+	    generarParser();            
 		
 	  	String fileName = "tests/unit/evaluation/test1.js";
 		String exptext = null;
@@ -73,10 +73,10 @@ public class Tester {
         //File file=new File(path);
         String opciones[] = new String[3];
         opciones[0] = "-d";
-        opciones[1] = "src/com/language/parser";
+        opciones[1] = "language/java/com/language/parser";
         opciones[2] = path;
         try {
-            jflex.Main.generate(opciones);
+            JFlex.Main.generate(opciones);
         } catch (Exception e ){
             System.out.println(e);
         }
@@ -87,7 +87,7 @@ public class Tester {
         //Se selecciona la opcion de direccion de destino
         opciones[0]= "-destdir";
         //Se pasa la direccion
-        opciones[1] = "src/com/language/parser";
+        opciones[1] = "language/java/com/language/parser";
         //Se selecciona la opcion de nombre de archivo
         opciones[2] = "-parser";
         //Se pasa el nombre que tendra el archivo del parser
@@ -96,7 +96,7 @@ public class Tester {
         opciones[4] = "language/cup/Parser.cup";
         
         try{
-//            java_cup.Main.main(opciones);
+            java_cup.Main.main(opciones);
         }   catch (Exception e){
                 System.out.println(e);
         }
