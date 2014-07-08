@@ -99,29 +99,29 @@ non terminal Object variable_declaration_list;
 non terminal Object variable_declaration;
 non terminal Object variable_initializer;
 
-non terminal Expression logical_or_expression;
-non terminal Expression logical_and_expression;
-non terminal Expression equality_expression;
-non terminal Expression relational_expression;
-non terminal Expression additive_expression;
-non terminal Expression multiplicative_expression;
-non terminal Expression unary_expression;
-non terminal Expression postfix_expression;
+non terminal Ast logical_or_expression;
+non terminal Ast logical_and_expression;
+non terminal Ast equality_expression;
+non terminal Ast relational_expression;
+non terminal Ast additive_expression;
+non terminal Ast multiplicative_expression;
+non terminal Ast unary_expression;
+non terminal Ast postfix_expression;
 
-non terminal Expression expression;
-non terminal Expression primary_expression;
-non terminal Expression simple_expression;
+non terminal Ast expression;
+non terminal Ast primary_expression;
+non terminal Ast simple_expression;
 
-non terminal Expression function_expression;
-non terminal Expression object_literal; 
-non terminal Expression assignment_expression; 
-non terminal Expression conditional_expression; 
-non terminal Expression parenthesized_expression; 
-non terminal Expression left_side_expression;
-non terminal Expression call_expression;
-non terminal Expression optional_expression;
-non terminal Expression short_new_expression;
-non terminal Expression full_new_expression;
+non terminal Ast function_expression;
+non terminal Ast object_literal; 
+non terminal Ast assignment_expression; 
+non terminal Ast conditional_expression; 
+non terminal Ast parenthesized_expression; 
+non terminal Ast left_side_expression;
+non terminal Ast call_expression;
+non terminal Ast optional_expression;
+non terminal Ast short_new_expression;
+non terminal Ast full_new_expression;
 non terminal Object member_operator;
 non terminal Object arguments;
 non terminal Object full_new_subexpression;
@@ -174,18 +174,18 @@ precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 
 /* Program */
- 
+
 program ::= 
     top_statements;
-    
+
 top_statements ::=
     |
     top_statements_prefix;
-    
+
 top_statements_prefix ::=
     top_statement |
     top_statements_prefix top_statement;
-    
+
 top_statement ::= 
     statement |
     function_definition;
@@ -194,10 +194,10 @@ top_statement ::=
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET assignment_expression:ae RIGHT_ROUND_BRACKET 
         {: 
-            ConsoleLog cl = new ConsoleLog(ae.getValue());
+            ConsoleLog cl = new ConsoleLog(ae.evaluateArithmetic());
             cl.execute();
         :};
-    
+
 known_function ::= 
     console_log;
 
@@ -211,16 +211,16 @@ primary_expression ::=
     object_literal;
 
 simple_expression ::=
-    NULL:n {: RESULT = new Expression(n,"NULL"); :} |
-    TRUE:t {: RESULT = new Expression(t, "Boolean"); :} |
-    FALSE:f {: RESULT = new Expression(f, "Boolean"); :} |
-    INTEGRAL:i {: RESULT = new Expression(i, "Integer"); :} |
-    DECIMAL:d {: RESULT = new Expression(d, "Float"); :} |
-    STRING:s {: RESULT = new Expression(s, "String"); :} |
-    ID:i {: RESULT = new Expression(i, "Var"); :} |
+    NULL:n {: RESULT = Ast.createNullNode(); :} |
+    TRUE:t {: RESULT = Ast.createBooleanNode(t); :} |
+    FALSE:f {: RESULT = Ast.createBooleanNode(f); :} |
+    INTEGRAL:i {: RESULT = Ast.createIntegerNode(i); :} |
+    DECIMAL:d {: RESULT = Ast.createFloatNode(d); :} |
+    STRING:s {: RESULT = Ast.createStringNode(s); :} |
+    ID:i {: RESULT = Ast.createVarNode(i); :} |
     parenthesized_expression:p {: RESULT = p; :} |
     array_literal;
-    
+
 parenthesized_expression ::=
     LEFT_ROUND_BRACKET conditional_expression:ce RIGHT_ROUND_BRACKET {: RESULT = ce; :} ;
 
@@ -230,11 +230,11 @@ function_expression ::=
 object_literal ::=
     BLOCK_BEGIN BLOCK_END |
     BLOCK_BEGIN field_list BLOCK_END;
-    
+
 field_list ::=
     literal_field |
     field_list COMMA literal_field;
-    
+
 literal_field ::= 
     ID COLON assignment_expression;
 
@@ -276,11 +276,11 @@ short_new_subexpression ::=
 member_operator ::=
     LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET |
     POINT ID;
-    
+
 arguments ::=
     LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET |
     LEFT_ROUND_BRACKET argument_list RIGHT_ROUND_BRACKET;
-    
+
 argument_list ::=
     assignment_expression |
     argument_list COMMA assignment_expression; 
@@ -298,33 +298,33 @@ unary_expression ::=
 
 multiplicative_expression ::= 
     unary_expression:ue {: RESULT = ue ; :} |
-    multiplicative_expression:l TIMES unary_expression:r {: RESULT = new Expression("*",l,r); :} |
-    multiplicative_expression:l DIV unary_expression:r {: RESULT = new Expression("/",l,r); :} ;
+    multiplicative_expression:l TIMES unary_expression:r {: RESULT = new Ast(Ast.TIMES, l, r); :} |
+    multiplicative_expression:l DIV unary_expression:r {: RESULT = new Ast(Ast.DIV, l, r); :} ;
 
 additive_expression ::=
     multiplicative_expression:me {: RESULT = me ; :} |
-    additive_expression:l PLUS multiplicative_expression:r {: RESULT = new Expression("+",l,r); :} |
-    additive_expression:l MINUS multiplicative_expression:r {: RESULT = new Expression("-",l,r); :};
+    additive_expression:l PLUS multiplicative_expression:r {: RESULT = new Ast(Ast.PLUS, l, r); :} |
+    additive_expression:l MINUS multiplicative_expression:r {: RESULT = new Ast(Ast.MINUS, l, r); :};
 
 relational_expression ::=
     additive_expression:ae {: RESULT = ae ; :} |
-    relational_expression:l GREATER additive_expression:r {: RESULT = new Expression(">",l,r) ; :} |
-    relational_expression:l LESS additive_expression:r {: RESULT = new Expression("<",l,r) ; :} |
-    relational_expression:l GREATER_EQUAL additive_expression:r {: RESULT = new Expression(">=",l,r) ; :} |
-    relational_expression:l LESS_EQUAL additive_expression:r {: RESULT = new Expression("<=",l,r) ; :};
+    relational_expression:l GREATER additive_expression:r {: RESULT = new Ast(Ast.GREATER, l, r) ; :} |
+    relational_expression:l LESS additive_expression:r {: RESULT = new Ast(Ast.LESS, l, r) ; :} |
+    relational_expression:l GREATER_EQUAL additive_expression:r {: RESULT = new Ast(Ast.GREATER_EQ, l, r) ; :} |
+    relational_expression:l LESS_EQUAL additive_expression:r {: RESULT = new Ast(Ast.LESS_EQ, l, r) ; :};
 
 equality_expression ::=
     relational_expression:re {: RESULT = re ; :} |
-    equality_expression:l EQUAL_EQUAL relational_expression:r {: RESULT = new Expression("==",l,r) ; :} |
-    equality_expression:l NOT_EQUAL relational_expression:r {: RESULT = new Expression("!=",l,r) ; :};
+    equality_expression:l EQUAL_EQUAL relational_expression:r {: RESULT = new Ast(Ast.EQ_EQ, l, r) ; :} |
+    equality_expression:l NOT_EQUAL relational_expression:r {: RESULT = new Ast(Ast.NOT_EQ, l, r) ; :};
 
 logical_and_expression ::=
     equality_expression:ee {: RESULT = ee ; :} |
-    logical_and_expression:l AND equality_expression:r {: RESULT = new Expression("&&",l,r) ; :};
+    logical_and_expression:l AND equality_expression:r {: RESULT = new Ast(Ast.AND, l, r) ; :};
 
 logical_or_expression ::=
     logical_and_expression:lae {: RESULT = lae ; :} |
-    logical_or_expression:l OR logical_and_expression:r {: RESULT = new Expression("||",l,r) ; :};
+    logical_or_expression:l OR logical_and_expression:r {: RESULT = new Ast(Ast.OR, l, r) ; :};
 
 conditional_expression ::=
     logical_or_expression:lor {: RESULT = lor ; :} |
@@ -382,11 +382,7 @@ variable_declaration ::=
     
 variable_initializer ::=
     |
-    EQUAL assignment_expression:a
-    	{:
-         	Object value = a.evaluate();
-         	String type = a.getType();
-    	:};    
+    EQUAL assignment_expression:a {:	:};
 
 /* Definiciones de Bloques */
 

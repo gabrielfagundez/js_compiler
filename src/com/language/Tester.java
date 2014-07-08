@@ -61,7 +61,7 @@ public class Tester {
 		    System.out.println("*** *** ***");	
 	    }
 
-	    Expression expobj = ExpressionParser.parse(exptext);
+	    Ast expobj = ExpressionParser.parse(exptext);
 
 	    if(showPrevData){
 	    	System.out.println("*** *** ***");

@@ -7,7 +7,7 @@ import com.language.model.*;
 
 public class ExpressionParser {
 
-	public static Expression parse(String expText) {
+	public static Ast parse(String expText) {
 
 		byte[] expbytes = expText.getBytes();
 		ByteArrayInputStream bais = new ByteArrayInputStream(expbytes);
@@ -16,7 +16,7 @@ public class ExpressionParser {
 		try {
 			Symbol topsym = parser.parse();
 
-			Expression exp = (Expression) topsym.value;
+			Ast exp = (Ast) topsym.value;
 			return exp;
 
 		} catch (Throwable ex) {
