@@ -22,3 +22,5 @@ var c3 ="foo" + false; // "foofalse"
 var c2 ="foo" + "bar" ;// "foobar"
 
 var problem = "hola\'n and hola\\n";
+
+console.log(4);
