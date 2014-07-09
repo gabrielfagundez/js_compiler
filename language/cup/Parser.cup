@@ -3,6 +3,7 @@ package com.language.parser;
 import java.util.*;
 import java_cup.runtime.*;
 import com.language.model.*;
+import com.language.controller.*;
 import com.language.exceptions.*;
 
 terminal String NULL;
@@ -156,8 +157,8 @@ non terminal Object throw_statement;
 non terminal Object try_statement;
 
 non terminal Object array_literal;
-non terminal Object element_list;
-non terminal Object literal_element;
+non terminal Expression element_list;
+non terminal Expression literal_element;
 
 non terminal Object block_statements;
 non terminal Object block_statements_prefix;
@@ -194,8 +195,8 @@ top_statement ::=
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET ID:var_name RIGHT_ROUND_BRACKET 
         {: 
-            Variables variables = Variables.getInstance();
-            Var var = variables.getVariableByName(var_name);
+            VariablesController variables = VariablesController.getInstance();
+            Variable var = variables.getVariable(var_name);
             ConsoleLog cl = new ConsoleLog((String)var.getValue());
             cl.execute();
             
@@ -222,7 +223,7 @@ simple_expression ::=
     STRING:s {: RESULT = new Expression(s, "String"); :} |
     ID:i {: RESULT = new Expression(i, "Var"); :} |
     parenthesized_expression:p {: RESULT = p; :} |
-    array_literal;
+    array_literal:a {: RESULT = new Expression(a, "Array"); :} ;
     
 parenthesized_expression ::=
     LEFT_ROUND_BRACKET conditional_expression:ce RIGHT_ROUND_BRACKET {: RESULT = ce; :} ;
@@ -242,14 +243,14 @@ literal_field ::=
     ID COLON assignment_expression;
 
 array_literal ::=
-    LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET |
-    LEFT_SQUARE_BRACKET element_list RIGHT_SQUARE_BRACKET;
+    LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET {: RESULT = new Expression("[]", null, null); :} |
+    LEFT_SQUARE_BRACKET element_list:el RIGHT_SQUARE_BRACKET {: RESULT = new Expression(el, null, null); :} ;
 
 element_list ::=
-    literal_element |
-    element_list COMMA literal_element;
+    literal_element:le {: RESULT = le; :} |
+    element_list:el COMMA literal_element:le {: RESULT = new Expression(",", el, le); :} ;
 
-literal_element ::= assignment_expression;
+literal_element ::= assignment_expression:ae {: RESULT = ae; :};
 
 left_side_expression ::= 
     call_expression:ce {: RESULT = ce ; :} |
