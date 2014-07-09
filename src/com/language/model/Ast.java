@@ -1,5 +1,6 @@
 package com.language.model;
 
+import com.language.controller.VariablesController;
 import java.lang.Math;
 
 public class Ast {
@@ -97,8 +98,8 @@ public class Ast {
 			case NULL:
 				return null;
 			case VAR:
-				Variables variables = Variables.getInstance();
-				return variables.getVariableByName((String)this.value);
+				VariablesController variables = VariablesController.getInstance();
+				return variables.getVariable((String)this.value);
 			case AND:
 				if (this.left.isFalse()) {
 					return this.left.evaluate();
