@@ -1,7 +1,10 @@
 package com.language.model;
 
 import com.language.controller.VariablesController;
+
 import java.lang.Math;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Ast {
 
@@ -29,6 +32,7 @@ public class Ast {
 	public static final int NOT_EQ 		= 21;
 	public static final int FUNCTION	= 22;
 	public static final int NAN			= 23;
+	public static final int ARRAY		= 24;
 
 	// Definicion del nodo AST
 	private Integer type;
@@ -75,6 +79,11 @@ public class Ast {
 	public static Ast createStringNode(Object value) {
 		String casted_value = new String(((String)value).substring(1, ((String)value).length() - 1));
 		return new Ast(STRING, casted_value, null, null);
+	}
+
+	public static Ast createArrayNode(Object value) {
+		List<Object> casted_value = createArray((Ast)value);
+		return new Ast(ARRAY, casted_value, null, null);
 	}
 	
 	public static Ast createNullNode() {
@@ -268,6 +277,32 @@ public class Ast {
 		return returnValue;
 	}
 	
+	private static List<Object> createArray(Ast ast_array) {
+		List<Object> array = new ArrayList<Object>();
+
+		if ((ast_array.type == ARRAY) && (ast_array.left != null)) {
+			// El array tiene mas de un elemento
+
+			Ast element_list = ast_array;
+			Object element;
+			do {
+				element = element_list.right.value;
+				array.add(0, element);
+				element_list = element_list.left;
+			} while (element_list.left != null);
+
+			element = element_list.value;
+			array.add(0, element);
+
+		} else if (ast_array.type != ARRAY) {
+			// El array tiene un elemento
+
+			array.add(ast_array.value);
+		}
+
+		// System.out.println(array);
+		return array;
+	}
 // Comentado mientras no se use para evitar confusiones.
 //
 //	public Integer evaluateType(){
