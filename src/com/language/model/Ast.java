@@ -84,43 +84,52 @@ public class Ast {
 		return new Ast(VAR, value, null, null);
 	}
 
-	public Integer evaluateType(){
-		if(this.type == PLUS){
-			if(this.left.type == STRING || this.right.type == STRING){
-				return STRING;
-			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
-				return FLOAT;
-			} else {
-				return INTEGER;
-			}
-		} else if ((this.type == MINUS) || (this.type == TIMES) || (this.type == DIV)){
-			if(this.left.type == STRING || this.right.type == STRING){
-				return NAN;
-			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
-				return FLOAT;
-			}else{
-				return INTEGER;
-			}
-		} else if (this.type == AND){
-			if (this.left.isFalse()){
-				return this.left.type;
-			}else{
-				return this.right.type;
-			}
-		} else if ((this.type == OR)){
-			if (this.left.isTrue()){
-				return this.left.type;
-			}else{
-				return this.right.type;
-			}
-		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
-				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
-			return BOOLEAN;
+	// Metodo recursivo que retorna el valor de la expresion. 
+	// Defino metodos para evaluar cada uno de los casos.
+	// Los nodos que son hojas retornan el valor.
+	public Object evaluate(){
+		switch(this.type){
+			case BOOLEAN:
+			case INTEGER:
+			case FLOAT:
+			case STRING:
+				return this.value;
+			case NULL:
+				return null;
+			case VAR:
+				Variables variables = Variables.getInstance();
+				return variables.getVariableByName((String)this.value);
+			case AND:
+				if (this.left.isFalse()) {
+					return this.left.evaluate();
+				} else {
+					return this.right.evaluate();
+				}
+			case OR:
+				if (this.left.isTrue()) {
+					return this.left.evaluate();
+				}else{
+					return this.right.evaluate();
+				}
+			case EQ_EQ:
+			case LESS_EQ:
+			case GREATER_EQ:
+			case LESS:
+			case GREATER:
+			case NOT_EQ:
+				return evaluateComparison();
+			case PLUS:
+			case MINUS:
+			case TIMES:
+			case DIV:
+				return evaluateArithmetic();
+			default:
+				return "Error";
 		}
-		return 0;
 	}
-
-	public boolean isTrue(){
+	
+	// Funcion auxiliar que verifica que sea true
+	private boolean isTrue(){
 		if (this.type == INTEGER || this.type == FLOAT){
 			return (Integer)this.evaluate() > 0;
 		} else if (this.type == BOOLEAN){
@@ -132,34 +141,36 @@ public class Ast {
 		}
 	}
 
-	public boolean isFalse(){
+	// Funcion auxiliar que verifica que sea false
+	private boolean isFalse(){
 		return !isTrue();
 	}
+	
+	// Funcion auxiliar que evalua comparaciones
+	private Object evaluateComparison(){
 
-	public double getArithmeticEvaluationForRamification(Ast ast){
-		double returnValue = 0;
-
-		switch(ast.type){
-			case BOOLEAN:
-				if ((Boolean)ast.evaluate()){
-					returnValue+=1;
-				}
-				break;
-			case INTEGER:
-				returnValue = (Integer)ast.evaluate();
-				break;
-			case FLOAT:
-				returnValue = (Float)ast.evaluate();
-				break;
+		double left = getComparisonEvaluationForRamification(this.left);
+		double right = getComparisonEvaluationForRamification(this.right);
+			
+		switch(this.type){
+			case EQ_EQ:
+				return left == right;
+			case NOT_EQ:
+				return left != right;
+			case LESS_EQ:
+				return left <= right;
+			case GREATER_EQ:
+				return left >= right;
+			case LESS:
+				return left > right;
 			default:
-				returnValue = (Integer)ast.evaluate();
-				break;
+				// case "<":
+				return left < right;
 		}
-
-		return returnValue;
 	}
-
-	public Object evaluateArithmetic(){
+	
+	// Funcion auxiliar que evalua aritmeticamente
+	private Object evaluateArithmetic(){
 		if(this.left.type == STRING || this.right.type == STRING){
 			if (this.type == PLUS){
 				return this.left.evaluate().toString() + this.right.evaluate().toString();
@@ -200,97 +211,98 @@ public class Ast {
 				return new Float(result);
 		}
 	}
+	
+	// Funciones auxiliares para comparaciones
+		private double getComparisonEvaluationForRamification(Ast e){
+			double returnValue = 0;
+			switch(e.type){
+				case BOOLEAN:
+					if ((Boolean)e.evaluate()){
+						returnValue+=1;
+					}
+					break;
+				case INTEGER:
+					returnValue = (Integer)e.evaluate();
+					break;
+				case FLOAT:
+					returnValue = (Float)e.evaluate();
+					break;
+				case STRING:
+					try{
+						returnValue = new Integer((String)e.evaluate());
+					}catch (NumberFormatException exc){	
+						//habria que manejar mas este caso borde y devolver NaN
+						returnValue = 0;
+					}
+				default:
+					returnValue = (Integer)e.evaluate();
+					break;
+			}
 
-	public double getComparisonEvaluationForRamification(Ast e){
+			return returnValue;
+		}
+
+	
+	// Funciones auxiliares para aritmetica
+	private double getArithmeticEvaluationForRamification(Ast ast){
 		double returnValue = 0;
-		switch(e.type){
+
+		switch(ast.type){
 			case BOOLEAN:
-				if ((Boolean)e.evaluate()){
+				if ((Boolean)ast.evaluate()){
 					returnValue+=1;
 				}
 				break;
 			case INTEGER:
-				returnValue = (Integer)e.evaluate();
+				returnValue = (Integer)ast.evaluate();
 				break;
 			case FLOAT:
-				returnValue = (Float)e.evaluate();
+				returnValue = (Float)ast.evaluate();
 				break;
-			case STRING:
-				try{
-					returnValue = new Integer((String)e.evaluate());
-				}catch (NumberFormatException exc){	
-					//habria que manejar mas este caso borde y devolver NaN
-					returnValue = 0;
-				}
 			default:
-				returnValue = (Integer)e.evaluate();
+				returnValue = (Integer)ast.evaluate();
 				break;
 		}
 
 		return returnValue;
 	}
+	
+// Comentado mientras no se use para evitar confusiones.
+//
+//	public Integer evaluateType(){
+//		if(this.type == PLUS){
+//			if(this.left.type == STRING || this.right.type == STRING){
+//				return STRING;
+//			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
+//				return FLOAT;
+//			} else {
+//				return INTEGER;
+//			}
+//		} else if ((this.type == MINUS) || (this.type == TIMES) || (this.type == DIV)){
+//			if(this.left.type == STRING || this.right.type == STRING){
+//				return NAN;
+//			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
+//				return FLOAT;
+//			}else{
+//				return INTEGER;
+//			}
+//		} else if (this.type == AND){
+//			if (this.left.isFalse()){
+//				return this.left.type;
+//			}else{
+//				return this.right.type;
+//			}
+//		} else if ((this.type == OR)){
+//			if (this.left.isTrue()){
+//				return this.left.type;
+//			}else{
+//				return this.right.type;
+//			}
+//		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
+//				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
+//			return BOOLEAN;
+//		}
+//		return 0;
+//	}
 
-	public Object evaluateComparison(){
-
-		double left = getComparisonEvaluationForRamification(this.left);
-		double right = getComparisonEvaluationForRamification(this.right);
-			
-		switch(this.type){
-			case EQ_EQ:
-				return left == right;
-			case NOT_EQ:
-				return left != right;
-			case LESS_EQ:
-				return left <= right;
-			case GREATER_EQ:
-				return left >= right;
-			case LESS:
-				return left > right;
-			default:
-				// case "<":
-				return left < right;
-		}
-
-	}
-
-	public Object evaluate(){
-
-		switch(this.type){
-			case AND:
-				if(this.left.isFalse()){
-					return this.left.evaluate();
-				}else {
-					return this.right.evaluate();
-				}
-			case OR:
-				if(this.left.isTrue()){
-					return this.left.evaluate();
-				}else{
-					return this.right.evaluate();
-				}	
-			case EQ_EQ:
-				return evaluateComparison();
-			case LESS_EQ:
-				return evaluateComparison();
-			case GREATER_EQ:
-				return evaluateComparison();
-			case LESS:
-				return evaluateComparison();
-			case GREATER:
-				return evaluateComparison();
-			case NOT_EQ:
-				return evaluateComparison();
-			case PLUS:
-				return evaluateArithmetic();
-			case MINUS:
-				return evaluateArithmetic();
-			case TIMES:
-				return evaluateArithmetic();
-			case DIV:
-				return evaluateArithmetic();
-			default:
-				//es un valor, no un simbolo
-				return this.value;
-		}
-	}
 }

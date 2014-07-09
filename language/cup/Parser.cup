@@ -194,7 +194,7 @@ top_statement ::=
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET assignment_expression:ae RIGHT_ROUND_BRACKET 
         {: 
-            ConsoleLog cl = new ConsoleLog(ae.evaluateArithmetic());
+            ConsoleLog cl = new ConsoleLog(ae.evaluate());
             cl.execute();
         :};
 
