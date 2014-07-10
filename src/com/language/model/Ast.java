@@ -171,7 +171,7 @@ public class Ast {
 				return left <= right;
 			case GREATER_EQ:
 				return left >= right;
-			case LESS:
+			case GREATER:
 				return left > right;
 			default:
 				// case "<":
