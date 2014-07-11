@@ -89,11 +89,11 @@ terminal String INTEGRAL;
 terminal String DECIMAL;
 
 /* Esta clase se considera inicial */
-non terminal Object program;
-non terminal Object top_statement;
+non terminal Ast program;
+non terminal Ast top_statement;
 
 /* Funciones especificas */
-non terminal Object console_log;
+non terminal Ast console_log;
 
 non terminal Object variable_definition;
 non terminal Ast variable_declaration_list;
@@ -177,7 +177,11 @@ precedence left TIMES, DIV;
 /* Program */
 
 program ::= 
-    top_statements;
+    top_statements 
+        {:  
+            AstController asts = AstController.getInstance();
+            asts.execute();
+        :};
 
 top_statements ::=
     |
@@ -188,19 +192,20 @@ top_statements_prefix ::=
     top_statements_prefix top_statement;
 
 top_statement ::= 
-    statement |
+    statement:stmt 
+        {:  
+            AstController asts = AstController.getInstance();
+            asts.addStatement(stmt);
+        :} |
     function_definition;
 
 /* Funciones especificas */
 console_log ::= 
-    CONSOLE_LOG LEFT_ROUND_BRACKET assignment_expression:ae RIGHT_ROUND_BRACKET 
-        {:
-            ConsoleLog cl = new ConsoleLog(ae.evaluate());
-            cl.execute();
-        :};
-
+    CONSOLE_LOG LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
+        {: RESULT = Ast.createConsoleLogNode(ae); :};
+    
 known_function ::= 
-    console_log;
+    console_log:cl {: RESULT = cl; :};
 
 optional_semicolon ::= SEMICOLON;
 
@@ -283,7 +288,7 @@ arguments ::=
     LEFT_ROUND_BRACKET argument_list RIGHT_ROUND_BRACKET;
 
 argument_list ::=
-    assignment_expression |
+    assignment_expression {:  :} |
     argument_list COMMA assignment_expression; 
 
 postfix_expression ::=
@@ -332,27 +337,27 @@ conditional_expression ::=
     logical_or_expression QUEST assignment_expression COLON assignment_expression;
 
 assignment_expression ::=
-    conditional_expression:ce {: RESULT = ce ; :} |
+    conditional_expression:ce {: RESULT = ce; :} |
     left_side_expression EQUAL assignment_expression |
     left_side_expression compound_assignment assignment_expression;
 
 expression ::=
     assignment_expression:a {: RESULT = a; :} |
-    expression COMMA assignment_expression {:  :} ;
+    expression COMMA assignment_expression:a {: RESULT = a; :} ;
 
 optional_expression ::=
-    expression |
+    expression:e {: RESULT = e; :} |
     ;
 
 /* Statements */
 statement ::=
     empty_statement:stmts {: RESULT = stmts; :} |
-    known_function optional_semicolon:stmts {: RESULT = stmts; :} |
-    expression_statement optional_semicolon:stmts {: RESULT = stmts; :} |
+    known_function:stmts optional_semicolon {: RESULT = stmts; :} |
+    expression_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
     block:stmts {: RESULT = stmts; :} |
     labeled_statement:stmts {: RESULT = stmts; :} |
-    if_statement:stmts {: RESULT = stmts; :} |
+    if_statement:stmts {: System.out.println(stmts.evaluate()); RESULT = stmts; :} |
     switch_statemente:stmts {: RESULT = stmts; :} |
     do_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     while_statement:stmts {: RESULT = stmts; :} |
@@ -366,7 +371,7 @@ statement ::=
 
 empty_statement ::= SEMICOLON;
 
-expression_statement ::= expression {:  :} ;
+expression_statement ::= expression:e {: RESULT = e; :} ;
 
 
 /* Definiciones de Variables */
@@ -398,7 +403,7 @@ block_statements_prefix ::=
     block_statements_prefix statement;
     
 if_statement ::= 
-    IF parenthesized_expression statement;
+    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, null, s, e); :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;
