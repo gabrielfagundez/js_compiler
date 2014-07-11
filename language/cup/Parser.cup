@@ -137,24 +137,24 @@ non terminal Object in_binding;
 non terminal Object named_function;
 non terminal Object for_initializer;
 
-non terminal Object statement;
-non terminal Object empty_statement;
-non terminal Object known_function;
-non terminal Object expression_statement;
-non terminal Object optional_semicolon;
-non terminal Object block;
-non terminal Object labeled_statement;
-non terminal Object if_statement;
-non terminal Object switch_statemente;
-non terminal Object do_statement;
-non terminal Object while_statement;
-non terminal Object for_statement;
-non terminal Object with_statement;
-non terminal Object continue_statement;
-non terminal Object break_statement;
-non terminal Object return_statement;
-non terminal Object throw_statement;
-non terminal Object try_statement;
+non terminal Ast statement;
+non terminal Ast empty_statement;
+non terminal Ast known_function;
+non terminal Ast expression_statement;
+non terminal Ast optional_semicolon;
+non terminal Ast block;
+non terminal Ast labeled_statement;
+non terminal Ast if_statement;
+non terminal Ast switch_statemente;
+non terminal Ast do_statement;
+non terminal Ast while_statement;
+non terminal Ast for_statement;
+non terminal Ast with_statement;
+non terminal Ast continue_statement;
+non terminal Ast break_statement;
+non terminal Ast return_statement;
+non terminal Ast throw_statement;
+non terminal Ast try_statement;
 
 non terminal Object array_literal;
 non terminal Ast element_list;
@@ -346,23 +346,23 @@ optional_expression ::=
 
 /* Statements */
 statement ::=
-    empty_statement {:  :} |
-    known_function optional_semicolon {:  :} |
-    expression_statement optional_semicolon {:  :} |
-    variable_definition optional_semicolon {:  :} |
-    block {:  :} |
-    labeled_statement {:  :} |
-    if_statement {:  :} |
-    switch_statemente {:  :} |
-    do_statement optional_semicolon {:  :} |
-    while_statement {:  :} |
-    for_statement {:  :} |
-    with_statement {:  :} |
-    continue_statement optional_semicolon {:  :} |
-    break_statement optional_semicolon {:  :} |
-    return_statement optional_semicolon {:  :} |
-    throw_statement optional_semicolon {:  :} |
-    try_statement {:  :} ;
+    empty_statement:stmts {: RESULT = stmts; :} |
+    known_function optional_semicolon:stmts {: RESULT = stmts; :} |
+    expression_statement optional_semicolon:stmts {: RESULT = stmts; :} |
+    variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
+    block:stmts {: RESULT = stmts; :} |
+    labeled_statement:stmts {: RESULT = stmts; :} |
+    if_statement:stmts {: RESULT = stmts; :} |
+    switch_statemente:stmts {: RESULT = stmts; :} |
+    do_statement:stmts optional_semicolon {: RESULT = stmts; :} |
+    while_statement:stmts {: RESULT = stmts; :} |
+    for_statement:stmts {: RESULT = stmts; :} |
+    with_statement:stmts {: RESULT = stmts; :} |
+    continue_statement:stmts optional_semicolon {: RESULT = stmts; :} |
+    break_statement:stmts optional_semicolon {: RESULT = stmts; :} |
+    return_statement:stmts optional_semicolon {: RESULT = stmts; :} |
+    throw_statement:stmts optional_semicolon {: RESULT = stmts; :} |
+    try_statement:stmts {: RESULT = stmts; :} ;
 
 empty_statement ::= SEMICOLON;
 
@@ -421,10 +421,11 @@ return_statement ::=
 /* Funciones */
 
 function_definition ::=
-    FUNCTION ID formal_parameters_and_body {:  :};
-
-formal_parameters_and_body ::=
-    LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN top_statements BLOCK_END {:  :};
+    FUNCTION ID:funct_name LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN statement:stmts BLOCK_END 
+        {: 
+            FunctionsController f = FunctionsController.getInstance(); 
+            f.addFunction(funct_name, stmts);
+        :};
 
 formal_parameters ::=
     |
