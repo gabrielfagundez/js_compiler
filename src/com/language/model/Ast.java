@@ -35,8 +35,8 @@ public class Ast {
 	public static final int ARRAY		= 24;
 
 	// Definicion del nodo AST
-	private Integer type;
-	private Object value;
+	public Integer type;
+	public Object value;
 	private Ast left;
 	private Ast right;
 
@@ -303,6 +303,26 @@ public class Ast {
 		// System.out.println(array);
 		return array;
 	}
+	
+	public Object evaluateArray(Ast index_ast) {
+		Variable var = VariablesController.getInstance().getVariable(this.value.toString());
+
+		List<Object> array = (List<Object>) ((Ast) var.getValue()).value;
+
+		Integer index = (Integer) index_ast.value;
+
+		String result = var.getName() + "[" + index + "]";
+		if ((array.size() - 1) >= index) {
+			result += " = " + array.get(index);
+		} else {
+			result += " Error: El índice excede el largo del array.";
+		}
+
+		System.out.println(result);
+
+		return result;
+	}
+
 // Comentado mientras no se use para evitar confusiones.
 //
 //	public Integer evaluateType(){

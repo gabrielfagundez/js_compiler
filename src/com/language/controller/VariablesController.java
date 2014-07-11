@@ -3,6 +3,7 @@ package com.language.controller;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.language.model.Ast;
 import com.language.model.Variable;
 
 public class VariablesController {
@@ -21,7 +22,8 @@ public class VariablesController {
         return instance;
     }
 
-    public void addVariable(Variable variable){
+    public void addVariable(String var_name, Ast var_ast){
+    	Variable variable = new Variable(var_name, var_ast.type.toString(), var_ast);
     	this.variables.put(variable.getName(), variable);
     }
 

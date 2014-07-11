@@ -96,9 +96,9 @@ non terminal Object top_statement;
 non terminal Object console_log;
 
 non terminal Object variable_definition;
-non terminal Object variable_declaration_list;
-non terminal Object variable_declaration;
-non terminal Object variable_initializer;
+non terminal Ast variable_declaration_list;
+non terminal Ast variable_declaration;
+non terminal Ast variable_initializer;
 
 non terminal Ast logical_or_expression;
 non terminal Ast logical_and_expression;
@@ -123,7 +123,7 @@ non terminal Ast call_expression;
 non terminal Ast optional_expression;
 non terminal Ast short_new_expression;
 non terminal Ast full_new_expression;
-non terminal Object member_operator;
+non terminal Ast member_operator;
 non terminal Object arguments;
 non terminal Object full_new_subexpression;
 non terminal Object short_new_subexpression;
@@ -256,7 +256,7 @@ left_side_expression ::=
 call_expression ::=
     primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
-    call_expression member_operator |
+    call_expression:ce member_operator:mo {: ce.evaluateArray(mo); :} |
     call_expression arguments;
     
 full_new_expression ::=
@@ -275,7 +275,7 @@ short_new_subexpression ::=
     short_new_expression;
     
 member_operator ::=
-    LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET |
+    LEFT_SQUARE_BRACKET expression:e RIGHT_SQUARE_BRACKET {: RESULT = e; :} |
     POINT ID;
 
 arguments ::=
@@ -337,7 +337,7 @@ assignment_expression ::=
     left_side_expression compound_assignment assignment_expression;
 
 expression ::=
-    assignment_expression {:  :} |
+    assignment_expression:a {: RESULT = a; :} |
     expression COMMA assignment_expression {:  :} ;
 
 optional_expression ::=
@@ -379,11 +379,11 @@ variable_declaration_list ::=
     variable_declaration_list COMMA variable_declaration;
 
 variable_declaration ::= 
-    ID:id variable_initializer;
+    ID:id variable_initializer:vi {: VariablesController.getInstance().addVariable(id, vi); :};
     
 variable_initializer ::=
     |
-    EQUAL assignment_expression:a {:	:};
+    EQUAL assignment_expression:a {: RESULT = a; :};
 
 /* Definiciones de Bloques */
 
