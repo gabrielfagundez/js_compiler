@@ -33,7 +33,7 @@ public class Ast {
 	public static final int FUNCTION	= 22;
 	public static final int NAN			= 23;
 	public static final int ARRAY		= 24;
-	
+	public static final int IF  		= 25;
 	public static final int CONSOLE		= 26;
 	public static final int ALERT		= 27;
 
@@ -42,6 +42,8 @@ public class Ast {
 	public Object value;
 	private Ast left;
 	private Ast right;
+	private Ast condition;
+	private Integer current_type;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right) {
@@ -49,6 +51,7 @@ public class Ast {
 		this.value 	= value;
 		this.left 	= left;
 		this.right 	= right;
+		this.current_type = type;
 	}
 
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
@@ -58,6 +61,19 @@ public class Ast {
 		this.left 	= left;
 		this.right 	= right;
 
+		// No debemos llamar a evaluate porque si tenemos variables 
+		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
+		// this.type 	= evaluateType(); 
+	}
+	
+	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
+	// el tipo de la expresion.
+	public Ast(Integer type, Ast right, Ast left,Ast condition) {
+		this.type 	= type;
+		this.right 	= right;
+		this.left 	= left;
+		this.condition = condition;
+		
 		// No debemos llamar a evaluate porque si tenemos variables 
 		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
 		// this.type 	= evaluateType(); 
@@ -117,12 +133,16 @@ public class Ast {
 				VariablesController variables = VariablesController.getInstance();
 				return variables.getVariable((String)this.value);
 			case AND:
+				this.current_type = this.evaluateType();
+				
 				if (this.left.isFalse()) {
 					return this.left.evaluate();
 				} else {
 					return this.right.evaluate();
 				}
 			case OR:
+				this.current_type = this.evaluateType();
+				
 				if (this.left.isTrue()) {
 					return this.left.evaluate();
 				}else{
@@ -134,16 +154,27 @@ public class Ast {
 			case LESS:
 			case GREATER:
 			case NOT_EQ:
+				this.current_type = this.evaluateType();
 				return evaluateComparison();
 			case PLUS:
 			case MINUS:
 			case TIMES:
 			case DIV:
+				this.current_type = this.evaluateType();
 				return evaluateArithmetic();
 			case CONSOLE:
-			case ALERT:
 				System.out.println(this.left.evaluate());
 				return null;
+			case IF: 
+				this.current_type = this.evaluateType();
+				this.condition.current_type = this.condition.evaluateType();	
+				
+				boolean condition = this.condition.isTrue();
+				if (condition){
+					return this.right.evaluate();
+				}else{
+					return null;
+				}
 			default:
 				return "Error";
 		}
@@ -151,11 +182,11 @@ public class Ast {
 	
 	// Funcion auxiliar que verifica que sea true
 	private boolean isTrue(){
-		if (this.type == INTEGER || this.type == FLOAT){
+		if (this.current_type == INTEGER || this.current_type == FLOAT){
 			return (Integer)this.evaluate() > 0;
-		} else if (this.type == BOOLEAN){
+		} else if (this.current_type == BOOLEAN){
 			return (Boolean)this.evaluate();
-		} else if (this.type == STRING){
+		} else if (this.current_type == STRING){
 			return ((String)this.evaluate()).length() > 0;
 		} else {
 			return false;
@@ -192,7 +223,8 @@ public class Ast {
 	
 	// Funcion auxiliar que evalua aritmeticamente
 	private Object evaluateArithmetic(){
-		if(this.left.type == STRING || this.right.type == STRING){
+		
+		if(this.left.current_type == STRING || this.right.current_type == STRING){
 			if (this.type == PLUS){
 				return this.left.evaluate().toString() + this.right.evaluate().toString();
 			} else {
@@ -236,7 +268,7 @@ public class Ast {
 	// Funciones auxiliares para comparaciones
 		private double getComparisonEvaluationForRamification(Ast e){
 			double returnValue = 0;
-			switch(e.type){
+			switch(e.current_type){
 				case BOOLEAN:
 					if ((Boolean)e.evaluate()){
 						returnValue+=1;
@@ -263,12 +295,10 @@ public class Ast {
 			return returnValue;
 		}
 
-	
 	// Funciones auxiliares para aritmetica
 	private double getArithmeticEvaluationForRamification(Ast ast){
 		double returnValue = 0;
-
-		switch(ast.type){
+		switch(ast.current_type){
 			case BOOLEAN:
 				if ((Boolean)ast.evaluate()){
 					returnValue+=1;
@@ -328,10 +358,24 @@ public class Ast {
 		} else {
 			result += " Error: El índice excede el largo del array.";
 		}
-
-		System.out.println(result);
-
+		
 		return result;
+	}
+
+	public Ast getCondition() {
+		return condition;
+	}
+
+	public void setCondition(Ast condition) {
+		this.condition = condition;
+	}
+
+	public Integer getCurrent_type() {
+		return current_type;
+	}
+
+	public void setCurrent_type(Integer current_type) {
+		this.current_type = current_type;
 	}
 	
 	public Integer getMainNodeType(){
@@ -340,40 +384,50 @@ public class Ast {
 
 // Comentado mientras no se use para evitar confusiones.
 //
-//	public Integer evaluateType(){
-//		if(this.type == PLUS){
-//			if(this.left.type == STRING || this.right.type == STRING){
-//				return STRING;
-//			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
-//				return FLOAT;
-//			} else {
-//				return INTEGER;
-//			}
-//		} else if ((this.type == MINUS) || (this.type == TIMES) || (this.type == DIV)){
-//			if(this.left.type == STRING || this.right.type == STRING){
-//				return NAN;
-//			} else if (this.left.type == FLOAT || this.right.type == FLOAT){
-//				return FLOAT;
-//			}else{
-//				return INTEGER;
-//			}
-//		} else if (this.type == AND){
-//			if (this.left.isFalse()){
-//				return this.left.type;
-//			}else{
-//				return this.right.type;
-//			}
-//		} else if ((this.type == OR)){
-//			if (this.left.isTrue()){
-//				return this.left.type;
-//			}else{
-//				return this.right.type;
-//			}
-//		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
-//				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
-//			return BOOLEAN;
-//		}
-//		return 0;
-//	}
+	public Integer evaluateType(){
+		if (this.left != null){
+			// si left es null entonces el right tambien lo va a ser
+			this.left.current_type = this.left.evaluateType();
+			this.right.current_type = this.right.evaluateType();
+		}else{
+			// es una hoja entonces retorno el tipo de la variable
+			return this.type;
+		}
+		
+		if(this.type == PLUS){
+			if(this.left.current_type == STRING || this.right.current_type == STRING){
+				return STRING;
+			} else if (this.left.current_type == FLOAT || this.right.current_type == FLOAT){
+				return FLOAT;
+			} else {
+				return INTEGER;
+			}
+		} else if ((this.type == MINUS) || (this.type == TIMES) || (this.type == DIV)){
+			if(this.left.current_type == STRING || this.right.current_type == STRING){
+				return NAN;
+			} else if (this.left.current_type == FLOAT || this.right.current_type == FLOAT){
+				return FLOAT;
+			}else{
+				return INTEGER;
+			}
+		} else if (this.type == AND){
+			if (this.left.isFalse()){
+				return this.left.current_type;
+			}else{
+				return this.right.current_type;
+			}
+		} else if ((this.type == OR)){
+			if (this.left.isTrue()){
+				return this.left.current_type;
+			}else{
+				return this.right.current_type;
+			}
+		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
+				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
+			return BOOLEAN;
+		}
+		
+		return 0;
+	}
 
 }

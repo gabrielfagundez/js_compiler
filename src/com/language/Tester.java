@@ -7,15 +7,15 @@ import com.language.parser.ExpressionParser;
 
 public class Tester {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 	    /* Generacion del Scanner */
 	    String path = "language/jflex/Scanner.jflex";
-	    generarLexer(path);
+//	    generarLexer(path);
 	  
 	    /* Generacion del Parser */
-	    generarParser();            
+//	    generarParser();            
 		
-	  	String fileName = "tests/unit/evaluation/test3.js";
+	  	String fileName = "tests/unit/control_structures/if/test1.js";
 		String exptext = null;
 		BufferedReader br = null;
 		Boolean showEntry = false;
