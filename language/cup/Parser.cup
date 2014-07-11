@@ -21,6 +21,7 @@ terminal String VAR;
 terminal String NEW;
 terminal String RETURN;
 terminal String FUNCTION;
+terminal String ALERT;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
@@ -94,6 +95,7 @@ non terminal Ast top_statement;
 
 /* Funciones especificas */
 non terminal Ast console_log;
+non terminal Ast alert;
 
 non terminal Object variable_definition;
 non terminal Ast variable_declaration_list;
@@ -203,9 +205,14 @@ top_statement ::=
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
         {: RESULT = Ast.createConsoleLogNode(ae); :};
+        
+alert ::= 
+    ALERT LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
+        {: RESULT = Ast.createAlertNode(ae); :};
     
 known_function ::= 
-    console_log:cl {: RESULT = cl; :};
+    console_log:cl {: RESULT = cl; :} |
+    alert:a {: RESULT = a; :};
 
 optional_semicolon ::= SEMICOLON;
 

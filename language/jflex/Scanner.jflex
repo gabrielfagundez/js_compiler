@@ -52,6 +52,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 <YYINITIAL> "return"            { return symbol(sym.RETURN, "return"); }
 <YYINITIAL> "function"          { return symbol(sym.FUNCTION, "function"); }
 <YYINITIAL> "console.log"       { return symbol(sym.CONSOLE_LOG, "console.log"); }
+<YYINITIAL> "alert"             { return symbol(sym.ALERT, "alert"); }
 
 <YYINITIAL> "." 				{ return symbol(sym.POINT, "."); }
 <YYINITIAL> ";"					{ return symbol(sym.SEMICOLON, ";"); }

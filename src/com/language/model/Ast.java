@@ -117,6 +117,10 @@ public class Ast {
 		return new Ast(CONSOLE, null, expression, null); 
 	}
 
+	public static Ast createAlertNode(Ast expression){
+		return new Ast(ALERT, null, expression, null); 
+	}
+
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
@@ -163,6 +167,7 @@ public class Ast {
 				this.current_type = this.evaluateType();
 				return evaluateArithmetic();
 			case CONSOLE:
+			case ALERT:
 				System.out.println(this.left.evaluate());
 				return null;
 			case IF: 
