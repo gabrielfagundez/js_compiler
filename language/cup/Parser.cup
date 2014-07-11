@@ -352,7 +352,7 @@ statement ::=
     variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
     block:stmts {: RESULT = stmts; :} |
     labeled_statement:stmts {: RESULT = stmts; :} |
-    if_statement:stmts {: RESULT = stmts; :} |
+    if_statement:stmts {: System.out.println(stmts.evaluate()); RESULT = stmts; :} |
     switch_statemente:stmts {: RESULT = stmts; :} |
     do_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     while_statement:stmts {: RESULT = stmts; :} |
@@ -398,7 +398,7 @@ block_statements_prefix ::=
     block_statements_prefix statement;
     
 if_statement ::= 
-    IF parenthesized_expression statement;
+    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, null, s, e); :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;
