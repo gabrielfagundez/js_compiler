@@ -307,7 +307,8 @@ public class Ast {
 	public Object evaluateArray(Ast index_ast) {
 		Variable var = VariablesController.getInstance().getVariable(this.value.toString());
 
-		List<Object> array = (List<Object>) ((Ast) var.getValue()).value;
+		//List<Object> array = (List<Object>) ((Ast) var.getValue()).value;
+		List<Object> array = (List<Object>) var.getValue();
 
 		Integer index = (Integer) index_ast.value;
 
