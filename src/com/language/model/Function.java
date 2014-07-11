@@ -6,9 +6,11 @@ public class Function {
 	private Ast ast = null;
 	
 	public Function(Ast ast) {
-		System.out.println("Creando una funcion con....");
-		System.out.println(ast);
 		this.ast = ast;
+	}
+	
+	public void execute() {
+		this.ast.evaluate();
 	}
 	
 }

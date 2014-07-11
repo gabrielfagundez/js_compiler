@@ -33,6 +33,9 @@ public class Ast {
 	public static final int FUNCTION	= 22;
 	public static final int NAN			= 23;
 	public static final int ARRAY		= 24;
+	
+	public static final int CONSOLE		= 26;
+	public static final int ALERT		= 27;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -93,6 +96,10 @@ public class Ast {
 	public static Ast createVarNode(Object value) {
 		return new Ast(VAR, value, null, null);
 	}
+	
+	public static Ast createConsoleLogNode(Ast expression){
+		return new Ast(CONSOLE, null, expression, null); 
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -133,6 +140,10 @@ public class Ast {
 			case TIMES:
 			case DIV:
 				return evaluateArithmetic();
+			case CONSOLE:
+			case ALERT:
+				System.out.println(this.left.evaluate());
+				return null;
 			default:
 				return "Error";
 		}
@@ -321,6 +332,10 @@ public class Ast {
 		System.out.println(result);
 
 		return result;
+	}
+	
+	public Integer getMainNodeType(){
+		return this.type;
 	}
 
 // Comentado mientras no se use para evitar confusiones.
