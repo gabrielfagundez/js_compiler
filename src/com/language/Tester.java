@@ -8,7 +8,7 @@ import com.language.parser.ExpressionParser;
 public class Tester {
 
 	public static void main(String[] args) throws Exception {
-	  	String fileName = "tests/unit/control_structures/if/test1.js";
+	  	String fileName = "tests/unit/known_functions/test2.js";
 		String exptext = null;
 		BufferedReader br = null;
 		Boolean showEntry = false;
