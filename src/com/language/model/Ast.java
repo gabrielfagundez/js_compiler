@@ -49,6 +49,7 @@ public class Ast {
 	private Ast condition;
 	private Integer current_type;
 	public Boolean inFunction = false;
+	public ArrayList<Ast> argsForFunction = null;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
@@ -123,8 +124,10 @@ public class Ast {
 		return new Ast(FUNCTION, null, null, null, null); 
 	}
 	
-	public static Ast createCallFunctionNode(Ast ast){
-		return new Ast(CALL_FUNCTION, ast.value, null, null, null); 
+	public static Ast createCallFunctionNode(Ast ast, ArrayList<Ast> args){
+		Ast newAst = new Ast(CALL_FUNCTION, ast.value, null, null, null);
+		newAst.argsForFunction = args;
+		return newAst; 
 	}
 	
 	public static Ast createNotNode(Ast ast){
@@ -191,7 +194,7 @@ public class Ast {
 			case CALL_FUNCTION:
 				FunctionsController fc = FunctionsController.getInstance();
 				Function f = fc.getFunction((String)this.value);
-				return f.execute();
+				return f.execute(this.argsForFunction);
 			case RETURN:
 				if(this.left != null){
 					return this.left.evaluate();
