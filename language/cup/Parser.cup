@@ -260,7 +260,10 @@ js_function ::=
         {:
             RESULT = Ast.createCharAtNode(se);
         :} |
-    INDEX_OF_FUNCT |
+    INDEX_OF_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createIndexOfNode(se);
+        :} |
     LAST_INDEX_OF_FUNCT |
     SUBSTRING_FUNCT |
     SPLIT_FUNCT;

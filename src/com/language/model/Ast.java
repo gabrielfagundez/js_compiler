@@ -45,6 +45,7 @@ public class Ast {
 	public static final int TUC			= 33;
 	public static final int TLC			= 34;
 	public static final int CHAR_AT		= 35;
+	public static final int INDEX_OF	= 36;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -162,6 +163,10 @@ public class Ast {
 	public static Ast createCharAtNode(Ast right){
 		return new Ast(CHAR_AT, null, null, right, null);
 	}
+	
+	public static Ast createIndexOfNode(Ast right){
+		return new Ast(INDEX_OF, null, null, right, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -246,7 +251,13 @@ public class Ast {
 					return this.left.evaluate().toString().length();	
 				}
 			case CONCAT:
-				return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();
+				if(this.left.type == ARRAY){
+					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
+				}else{
+					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+				}
+			case INDEX_OF:
+				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
