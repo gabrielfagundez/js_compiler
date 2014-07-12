@@ -1,5 +1,6 @@
 package com.language.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,9 +12,13 @@ public class FunctionsController {
 	private Map<String, Function> functions;
 	public String actual_function_name = null;
 	
+	public ArrayList<Ast> currentArgumentsOnCall = null;
+
+	
 	// Se trata de un singleton por lo que el inicializador es privado
 	private FunctionsController() {
     	this.functions = new HashMap<String, Function>();
+    	this.currentArgumentsOnCall = new ArrayList<Ast>();
     }
 
 	// Obtiene la instancia
@@ -23,9 +28,19 @@ public class FunctionsController {
         }
         return instance;
     }
+    
+    public void addArgument(Ast arg){
+    	this.currentArgumentsOnCall.add(arg);
+    }
+    
+    public ArrayList<Ast> getAndResetArguments(){
+    	ArrayList<Ast> current = this.currentArgumentsOnCall;
+    	this.currentArgumentsOnCall = new ArrayList<Ast>();
+    	return current;
+    }
 
     // Agrega una nueva funcion a la tabla de funciones que se almacena
-    public void addFunction(String function_name, Ast ast){
+    public void addFunction(String function_name){
     	Function function = new Function();
     	this.functions.put(function_name, function);
     }

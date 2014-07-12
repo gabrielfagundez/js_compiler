@@ -6,6 +6,7 @@ import com.language.model.*;
 
 public class Function {
 	public ArrayList<Ast> statementsList = null;
+	private Integer cantParameters = 0;
 	
 	public Function() {
 		this.statementsList = new ArrayList<Ast>();
@@ -17,9 +18,8 @@ public class Function {
         	this.statementsList.add(stmt);
     	}
     }
-
 	
-	public Object execute() {
+	public Object execute(ArrayList<Ast> argumentsOnCall) {
 		Boolean returnDetected = false;
 		
 		for(int i = 0; i < this.statementsList.size(); i++){
@@ -35,6 +35,14 @@ public class Function {
     	}
 		
 		return null;
+	}
+
+	public Integer getCantParameters() {
+		return cantParameters;
+	}
+
+	public void setCantParameters(Integer cantParameters) {
+		this.cantParameters = cantParameters;
 	}
 	
 }

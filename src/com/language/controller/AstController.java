@@ -37,7 +37,7 @@ public class AstController {
     	for(int i = 0; i < this.statementsList.size(); i++){
     		//System.out.println(((Ast)this.statementsList.get(i)).getMainNodeType());
     		if(this.statementsList.get(i) != null){
-                ((Ast) this.statementsList.get(i)).evaluate();	
+                ((Ast) this.statementsList.get(i)).evaluate();
     		}
     	}
     }

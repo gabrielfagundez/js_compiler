@@ -278,8 +278,10 @@ call_expression ::=
     full_new_expression |
     call_expression:ce member_operator:mo {: ce.evaluateArray(mo); :} |
     call_expression:ce arguments
-        {: 
-            RESULT = Ast.createCallFunctionNode(ce);
+        {:
+            FunctionsController fc = FunctionsController.getInstance();
+            ArrayList<Ast> arguments = fc.getAndResetArguments();
+            RESULT = Ast.createCallFunctionNode(ce, arguments);
         :};
     
 full_new_expression ::=
@@ -306,8 +308,16 @@ arguments ::=
     LEFT_ROUND_BRACKET argument_list RIGHT_ROUND_BRACKET;
 
 argument_list ::=
-    assignment_expression {:  :} |
-    argument_list COMMA assignment_expression; 
+    assignment_expression:ae 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance();
+            fc.addArgument(ae);
+        :} |
+    argument_list COMMA assignment_expression:ae 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance();
+            fc.addArgument(ae);
+        :}; 
 
 postfix_expression ::=
     left_side_expression:lse {: RESULT = lse ; :} |
@@ -450,23 +460,39 @@ return_statement ::=
 
 function_definition ::=
     FUNCTION ID:funct_name 
+            {: 
+                AstController asts = AstController.getInstance(); 
+                asts.inFunction = true; 
+                FunctionsController fc = FunctionsController.getInstance(); 
+                fc.actual_function_name = funct_name; 
+                fc.addFunction(funct_name); 
+            :}
         LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET 
-        BLOCK_BEGIN {: AstController asts = AstController.getInstance(); asts.inFunction = true; 
-                       FunctionsController fc = FunctionsController.getInstance(); 
-                       fc.actual_function_name = funct_name; 
-                       fc.addFunction(funct_name, null); :} 
+        BLOCK_BEGIN 
             top_statements:stmts {:  :} 
-        BLOCK_END {: AstController asts = AstController.getInstance(); asts.inFunction = false; 
-                     FunctionsController fc = FunctionsController.getInstance(); fc.actual_function_name = null; :} 
-        {:
- 
-            RESULT = Ast.createFunctionNode();
-        :};
+        BLOCK_END 
+            {:  
+                AstController asts = AstController.getInstance(); 
+                asts.inFunction = false; 
+                FunctionsController fc = FunctionsController.getInstance(); 
+                fc.actual_function_name = null; 
+                RESULT = Ast.createFunctionNode();
+            :};
 
 formal_parameters ::=
     |
     formal_parameters_prefix {:  :};
 
 formal_parameters_prefix ::=
-    ID {:  :} |
-    formal_parameters_prefix COMMA ID {:  :};
+    ID:id 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance(); 
+            Function actual = fc.getFunction(fc.actual_function_name);
+            actual.setCantParameters(actual.getCantParameters() + 1);
+        :} |
+    formal_parameters_prefix COMMA ID:id 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance(); 
+            Function actual = fc.getFunction(fc.actual_function_name);
+            actual.setCantParameters(actual.getCantParameters() + 1);
+        :};
