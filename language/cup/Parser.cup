@@ -308,7 +308,7 @@ unary_expression ::=
     TYPEOF_FUNCT unary_expression |
     INCREMENT unary_expression|
     DECREMENT unary_expression |
-    NOT unary_expression:not {: RESULT = new Ast(Ast.NOT,not,null) ; :};
+    NOT unary_expression:exp {: RESULT = new Ast(Ast.NOT,null,exp,null,null) ; :};
 
 multiplicative_expression ::= 
     unary_expression:ue {: RESULT = ue ; :} |

@@ -15,7 +15,7 @@ public class Tester {
 	    /* Generacion del Parser */
 //	    generarParser();            
 		
-	  	String fileName = "tests/unit/functions/test1.js";
+	  	String fileName = "tests/unit/evaluation/test1.js";
 		String exptext = null;
 		BufferedReader br = null;
 		Boolean showEntry = false;
