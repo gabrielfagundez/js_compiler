@@ -264,7 +264,10 @@ js_function ::=
         {:
             RESULT = Ast.createIndexOfNode(se);
         :} |
-    LAST_INDEX_OF_FUNCT |
+    LAST_INDEX_OF_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createLastIndexOfNode(se);
+        :} |
     SUBSTRING_FUNCT |
     SPLIT_FUNCT;
 
