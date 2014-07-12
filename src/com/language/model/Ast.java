@@ -46,9 +46,8 @@ public class Ast {
 	public Ast right;
 	private Ast condition;
 	private Integer current_type;
-	
+
 	public Boolean inFunction = false;
-	public Integer id = null;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
