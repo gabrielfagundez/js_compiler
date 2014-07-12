@@ -131,6 +131,7 @@ non terminal Object full_new_subexpression;
 non terminal Object short_new_subexpression;
 non terminal Object compound_assignment;
 non terminal Object argument_list;
+non terminal Ast js_function;
 
 non terminal Object field_list;
 non terminal Object literal_field;
@@ -176,6 +177,7 @@ non terminal Ast top_statements_prefix;
 non terminal Ast top_statements_prefix_function;
 
 precedence left ELSE;
+precedence left POINT;
 
 /* Program */
 
@@ -229,7 +231,19 @@ optional_semicolon ::= SEMICOLON;
 primary_expression ::=
     simple_expression:se {: RESULT = se; :} |
     function_expression |
-    object_literal;
+    object_literal |
+    simple_expression POINT js_function;
+
+js_function ::=
+    LENGTH_FUNCT |
+    CONCAT_FUNCT |
+    TO_UPPER_CASE_FUNCT |
+    TO_LOWER_CASE_FUNCT |
+    CHAR_AT_FUNCT |
+    INDEX_OF_FUNCT |
+    LAST_INDEX_OF_FUNCT |
+    SUBSTRING_FUNCT |
+    SPLIT_FUNCT;
 
 simple_expression ::=
     NULL:n {: RESULT = Ast.createNullNode(); :} |
