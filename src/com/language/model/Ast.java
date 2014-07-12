@@ -207,7 +207,7 @@ public class Ast {
 					return null;
 				}
 			case CONCAT:
-				return (String)this.left.evaluate() + (String)this.right.evaluate();
+				return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
