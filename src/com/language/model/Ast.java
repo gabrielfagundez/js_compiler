@@ -216,6 +216,8 @@ public class Ast {
 			case ALERT:
 				System.out.println(this.left.evaluate());
 				return null;
+			case ARRAY:
+				return this.value;
 			case CALL_FUNCTION:
 				FunctionsController fc = FunctionsController.getInstance();
 				Function f = fc.getFunction((String)this.value);
