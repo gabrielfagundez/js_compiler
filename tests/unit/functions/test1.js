@@ -1,5 +1,7 @@
+// Pruebo una llamada a una funcion
+
 function testFunction1(){
-	console.log("NO PUEDO CREER");
+	console.log("Estoy dentro de la funcion");
 };
 
 testFunction1();
