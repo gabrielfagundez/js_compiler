@@ -175,9 +175,6 @@ non terminal Ast top_statements_function;
 non terminal Ast top_statements_prefix;
 non terminal Ast top_statements_prefix_function;
 
-precedence left PLUS, MINUS;
-precedence left TIMES, DIV;
-
 /* Program */
 
 program ::= 
