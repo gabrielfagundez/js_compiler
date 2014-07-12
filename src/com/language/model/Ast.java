@@ -50,6 +50,7 @@ public class Ast {
 	public static final int LAST_INDEX_OF = 37;
 	public static final int INCREMENT_P	= 38;
 	public static final int DECREMENT_P	= 39;
+	public static final int FOR 		= 40;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -356,9 +357,26 @@ public class Ast {
 					}
 				}
 				return "NaN";
+			case FOR: 
+				this.current_type = FOR;
+				this.condition.current_type = this.condition.evaluateType();	
+
+				boolean condition_true = this.condition.isTrue();
+				if (condition_true){
+					return this.left.evaluate();
+				}else{
+					if (this.right !=null){
+						return this.right.evaluate(); 
+					}
+					return null;
+				}
 			case BLOCK:
-				this.left.evaluate();
-				this.right.evaluate();
+				if(this.left != null){
+					this.left.evaluate();
+				}
+				if(this.right != null){
+					this.right.evaluate();
+				}
 				return null;
 			default:
 				return "Error";
@@ -619,7 +637,7 @@ public class Ast {
 		if ((array.size() - 1) >= index) {
 			result += " = " + array.get(index);
 		} else {
-			result += " Error: El ������ndice excede el largo del array.";
+			result += " Error: El ������������������ndice excede el largo del array.";
 		}
 		
 		return result;
