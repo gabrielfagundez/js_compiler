@@ -44,6 +44,7 @@ public class Ast {
 	public static final int LENGTH		= 32;
 	public static final int TUC			= 33;
 	public static final int TLC			= 34;
+	public static final int CHAR_AT		= 35;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -157,6 +158,10 @@ public class Ast {
 	public static Ast createTLCNode(){
 		return new Ast(TLC, null, null, null, null);
 	}
+	
+	public static Ast createCharAtNode(Ast right){
+		return new Ast(CHAR_AT, null, null, right, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -220,6 +225,13 @@ public class Ast {
 					return this.left.evaluate();
 				} else {
 					return null;
+				}
+			case CHAR_AT:
+				Integer position = (Integer)this.right.evaluate();
+				if(position > ((String)this.left.evaluate()).length() - 1 || position < 0){
+					return "";
+				} else {
+					return ((String)this.left.evaluate().toString()).charAt(position);	
 				}
 			case TLC:
 				return this.left.evaluate().toString().toLowerCase();

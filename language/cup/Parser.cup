@@ -256,7 +256,10 @@ js_function ::=
         {:
             RESULT = Ast.createTLCNode();
         :} |
-    CHAR_AT_FUNCT |
+    CHAR_AT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createCharAtNode(se);
+        :} |
     INDEX_OF_FUNCT |
     LAST_INDEX_OF_FUNCT |
     SUBSTRING_FUNCT |
