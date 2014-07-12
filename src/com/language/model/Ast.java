@@ -40,6 +40,7 @@ public class Ast {
 	public static final int CALL_FUNCTION = 28;
 	public static final int RETURN		= 29;
 	public static final int BLOCK		= 30;
+	public static final int CONCAT		= 31;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -137,6 +138,10 @@ public class Ast {
 	public static Ast createReturnNode(Ast ast){
 		return new Ast(RETURN, null, ast, null, null);
 	};
+	
+	public static Ast createConcatNode(Ast right){
+		return new Ast(CONCAT, null, null, right, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -201,6 +206,8 @@ public class Ast {
 				} else {
 					return null;
 				}
+			case CONCAT:
+				return (String)this.left.evaluate() + (String)this.right.evaluate();
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	

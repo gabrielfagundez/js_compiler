@@ -232,11 +232,21 @@ primary_expression ::=
     simple_expression:se {: RESULT = se; :} |
     function_expression |
     object_literal |
-    simple_expression POINT js_function;
+    simple_expression:se POINT js_function:js
+        {:
+            if(js.getMainNodeType() == Ast.CONCAT){
+                Ast ast = js;
+                ast.left = se;
+                RESULT = ast;
+            }   
+        :};
 
 js_function ::=
     LENGTH_FUNCT |
-    CONCAT_FUNCT |
+    CONCAT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createConcatNode(se);
+        :} |
     TO_UPPER_CASE_FUNCT |
     TO_LOWER_CASE_FUNCT |
     CHAR_AT_FUNCT |

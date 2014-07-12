@@ -1,1 +1,1 @@
-("a" + "b").concat("aa");
+console.log("Hola ".concat("Mundo"));
