@@ -39,6 +39,7 @@ public class Ast {
 	public static final int ALERT		= 27;
 	public static final int CALL_FUNCTION = 28;
 	public static final int RETURN		= 29;
+	public static final int BLOCK		= 30;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -47,7 +48,6 @@ public class Ast {
 	public Ast right;
 	private Ast condition;
 	private Integer current_type;
-
 	public Boolean inFunction = false;
 
 	// Metodo privado para crear instancias con todos los parametros
@@ -75,10 +75,6 @@ public class Ast {
 		this.right 	= right;
 		this.left 	= left;
 		this.condition = condition;
-		
-		// No debemos llamar a evaluate porque si tenemos variables 
-		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
-		// this.type 	= evaluateType(); 
 	}
 
 	// Metodos para crear hojas
@@ -212,6 +208,10 @@ public class Ast {
 				}else{
 					return null;
 				}
+			case BLOCK:
+				this.left.evaluate();
+				this.right.evaluate();
+				return null;
 			default:
 				return "Error";
 		}

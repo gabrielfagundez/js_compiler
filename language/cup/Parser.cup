@@ -417,7 +417,7 @@ block_statements ::=
     
 block_statements_prefix ::=
     statement:bs {: RESULT = bs; :} |
-    block_statements_prefix statement;
+    block_statements_prefix:stmts statement:s {: RESULT = new Ast(Ast.BLOCK,stmts,s,null); :};
     
 if_statement ::= 
     IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :};
