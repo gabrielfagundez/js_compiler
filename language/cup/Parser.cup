@@ -160,8 +160,8 @@ non terminal Object array_literal;
 non terminal Ast element_list;
 non terminal Ast literal_element;
 
-non terminal Object block_statements;
-non terminal Object block_statements_prefix;
+non terminal Ast block_statements;
+non terminal Ast block_statements_prefix;
 
 non terminal Object function_definition;
 non terminal Object formal_parameters_and_body;
@@ -300,7 +300,8 @@ unary_expression ::=
     postfix_expression:pe {: RESULT = pe ; :} |
     TYPEOF_FUNCT unary_expression |
     INCREMENT unary_expression|
-    DECREMENT unary_expression;
+    DECREMENT unary_expression |
+    NOT unary_expression:not {: RESULT = new Ast(Ast.NOT,not,null) ; :};
 
 multiplicative_expression ::= 
     unary_expression:ue {: RESULT = ue ; :} |
@@ -352,12 +353,12 @@ optional_expression ::=
 /* Statements */
 statement ::=
     empty_statement:stmts {: RESULT = stmts; :} |
-    known_function:stmts optional_semicolon {: RESULT = stmts; :} |
+    known_function:stmts optional_semicolon {:RESULT = stmts; :} |
     expression_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
     block:stmts {: RESULT = stmts; :} |
     labeled_statement:stmts {: RESULT = stmts; :} |
-    if_statement:stmts {: System.out.println(stmts.evaluate()); RESULT = stmts; :} |
+    if_statement:stmts {: RESULT = stmts; :} |
     switch_statemente:stmts {: RESULT = stmts; :} |
     do_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     while_statement:stmts {: RESULT = stmts; :} |
@@ -393,17 +394,17 @@ variable_initializer ::=
 /* Definiciones de Bloques */
 
 block ::=
-    BLOCK_BEGIN block_statements BLOCK_END;
+    BLOCK_BEGIN block_statements:bs BLOCK_END {: RESULT = bs; :};
     
 block_statements ::=
-    block_statements_prefix;
+    block_statements_prefix:bs {: RESULT = bs; :};
     
 block_statements_prefix ::=
-    statement |
+    statement:bs {: RESULT = bs; :} |
     block_statements_prefix statement;
     
 if_statement ::= 
-    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, null, s, e); :};
+    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;

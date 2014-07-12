@@ -46,11 +46,12 @@ public class Ast {
 	private Integer current_type;
 
 	// Metodo privado para crear instancias con todos los parametros
-	private Ast(Integer type, Object value, Ast left, Ast right) {
+	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.value 	= value;
 		this.left 	= left;
 		this.right 	= right;
+		this.condition = condition;
 		this.current_type = type;
 	}
 
@@ -68,7 +69,7 @@ public class Ast {
 	
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
 	// el tipo de la expresion.
-	public Ast(Integer type, Ast right, Ast left,Ast condition) {
+	public Ast	(Integer type, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.right 	= right;
 		this.left 	= left;
@@ -82,27 +83,27 @@ public class Ast {
 	// Metodos para crear hojas
 	public static Ast createBooleanNode(Object value) {
 		Boolean casted_value = new Boolean((String)value);
-		return new Ast(BOOLEAN, casted_value, null, null);
+		return new Ast(BOOLEAN, casted_value, null, null, null);
 	}
 
 	public static Ast createIntegerNode(Object value) {
 		Integer casted_value = new Integer((String)value);
-		return new Ast(INTEGER, casted_value, null, null);
+		return new Ast(INTEGER, casted_value, null, null, null);
 	}
 
 	public static Ast createFloatNode(Object value) {
 		Float casted_value = new Float((String)value);
-		return new Ast(FLOAT, casted_value, null, null);
+		return new Ast(FLOAT, casted_value, null, null, null);
 	}
 
 	public static Ast createStringNode(Object value) {
 		String casted_value = new String(((String)value).substring(1, ((String)value).length() - 1));
-		return new Ast(STRING, casted_value, null, null);
+		return new Ast(STRING, casted_value, null, null, null);
 	}
 
 	public static Ast createArrayNode(Object value) {
 		List<Object> casted_value = createArray((Ast)value);
-		return new Ast(ARRAY, casted_value, null, null);
+		return new Ast(ARRAY, casted_value, null, null, null);
 	}
 	
 	public static Ast createNullNode() {
@@ -110,11 +111,11 @@ public class Ast {
 	}
 
 	public static Ast createVarNode(Object value) {
-		return new Ast(VAR, value, null, null);
+		return new Ast(VAR, value, null, null, null);
 	}
 	
 	public static Ast createConsoleLogNode(Ast expression){
-		return new Ast(CONSOLE, null, expression, null); 
+		return new Ast(CONSOLE, null, expression, null, null); 
 	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
@@ -148,6 +149,9 @@ public class Ast {
 				}else{
 					return this.right.evaluate();
 				}
+			case NOT:
+				this.current_type = this.evaluateType();
+				
 			case EQ_EQ:
 			case LESS_EQ:
 			case GREATER_EQ:
@@ -164,14 +168,14 @@ public class Ast {
 				return evaluateArithmetic();
 			case CONSOLE:
 				System.out.println(this.left.evaluate());
-				return null;
+				return "null";
 			case IF: 
-				this.current_type = this.evaluateType();
+				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
-				
+
 				boolean condition = this.condition.isTrue();
 				if (condition){
-					return this.right.evaluate();
+					return this.left.evaluate();
 				}else{
 					return null;
 				}
@@ -388,6 +392,13 @@ public class Ast {
 		if (this.left != null){
 			// si left es null entonces el right tambien lo va a ser
 			this.left.current_type = this.left.evaluateType();
+		}else{
+			// es una hoja entonces retorno el tipo de la variable
+			return this.type;
+		}
+		
+		if (this.right != null){
+			// si left es null entonces el right tambien lo va a ser
 			this.right.current_type = this.right.evaluateType();
 		}else{
 			// es una hoja entonces retorno el tipo de la variable
