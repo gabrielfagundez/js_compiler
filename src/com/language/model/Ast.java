@@ -238,7 +238,11 @@ public class Ast {
 			case TUC:
 				return this.left.evaluate().toString().toUpperCase();
 			case LENGTH:
-				return this.left.evaluate().toString().length();
+				if(this.left.type == ARRAY){
+					return ((ArrayList)this.left.value).size();
+				}else{
+					return this.left.evaluate().toString().length();	
+				}
 			case CONCAT:
 				return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();
 			case IF: 
