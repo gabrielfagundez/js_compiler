@@ -54,9 +54,9 @@ terminal String NOT_EQUAL;
 
 terminal String BLOCK_BEGIN;
 terminal String BLOCK_END;
+terminal String ELSE;
 terminal String IF;
 terminal String WHILE;
-terminal String ELSE;
 terminal String FOR;
 terminal String BREAK;
 terminal String CONTINUE;
@@ -174,6 +174,8 @@ non terminal Ast top_statements;
 non terminal Ast top_statements_function;
 non terminal Ast top_statements_prefix;
 non terminal Ast top_statements_prefix_function;
+
+precedence left ELSE;
 
 /* Program */
 
@@ -420,7 +422,8 @@ block_statements_prefix ::=
     block_statements_prefix:stmts statement:s {: RESULT = new Ast(Ast.BLOCK,stmts,s,null); :};
     
 if_statement ::= 
-    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :};
+    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :} |
+    IF parenthesized_expression:e statement:s ELSE statement:u {: RESULT = new Ast(Ast.IF, s, u, e); :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;

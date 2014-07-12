@@ -206,6 +206,9 @@ public class Ast {
 				if (condition){
 					return this.left.evaluate();
 				}else{
+					if (this.right !=null){
+						return this.right.evaluate(); 
+					}
 					return null;
 				}
 			case BLOCK:
@@ -405,7 +408,7 @@ public class Ast {
 		if ((array.size() - 1) >= index) {
 			result += " = " + array.get(index);
 		} else {
-			result += " Error: El ��ndice excede el largo del array.";
+			result += " Error: El ������ndice excede el largo del array.";
 		}
 		
 		return result;

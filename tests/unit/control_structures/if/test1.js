@@ -11,6 +11,8 @@ if(((1+4)*5)+4){
 	}
 	if (false){
 		console.log("NOT");
+	}else{
+		console.log("YESSS!!!!");
 	}
 }
 
@@ -21,4 +23,6 @@ if(true){
 
 if(false){
 	console.log("esto esta mal");
+}else{
+	console.log("esto esta bien!!!");
 }
