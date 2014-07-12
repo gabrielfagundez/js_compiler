@@ -38,6 +38,7 @@ public class Ast {
 	public static final int CONSOLE		= 26;
 	public static final int ALERT		= 27;
 	public static final int CALL_FUNCTION = 28;
+	public static final int RETURN		= 29;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -64,11 +65,7 @@ public class Ast {
 	public Ast(Integer type, Ast left, Ast right) {
 		this.type 	= type;
 		this.left 	= left;
-		this.right 	= right;
-
-		// No debemos llamar a evaluate porque si tenemos variables 
-		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
-		// this.type 	= evaluateType(); 
+		this.right 	= right; 
 	}
 	
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
@@ -133,6 +130,14 @@ public class Ast {
 	public static Ast createCallFunctionNode(Ast ast){
 		return new Ast(CALL_FUNCTION, ast.value, null, null, null); 
 	}
+	
+	public static Ast createNotNode(Ast ast){
+		return new Ast(NOT, null, ast, null, null); 
+	}
+	
+	public static Ast createReturnNode(Ast ast){
+		return new Ast(RETURN, null, ast, null, null);
+	};
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -190,8 +195,14 @@ public class Ast {
 			case CALL_FUNCTION:
 				FunctionsController fc = FunctionsController.getInstance();
 				Function f = fc.getFunction((String)this.value);
-				f.execute();
-				return null;
+				return f.execute();
+			case RETURN:
+				if(this.left != null){
+					return this.left.evaluate();
+				} else {
+					return null;
+				}
+				
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	

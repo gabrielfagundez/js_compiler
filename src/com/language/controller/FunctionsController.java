@@ -38,11 +38,6 @@ public class FunctionsController {
     	}
     }
 
-    // Ejecuta el AST asociado a la funcion
-    public void execute(String function_name){
-    	
-    }
-
     // Funcion de prueba para ver las funciones que tenemos guardadas
     public String toString(){
     	return this.functions.toString();

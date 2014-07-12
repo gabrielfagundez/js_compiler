@@ -320,7 +320,7 @@ unary_expression ::=
     TYPEOF_FUNCT unary_expression |
     INCREMENT unary_expression|
     DECREMENT unary_expression |
-    NOT unary_expression:exp {: RESULT = new Ast(Ast.NOT,null,exp,null,null) ; :};
+    NOT unary_expression:exp {: RESULT = Ast.createNotNode(exp); :};
 
 multiplicative_expression ::= 
     unary_expression:ue {: RESULT = ue ; :} |
@@ -441,7 +441,10 @@ in_binding ::=
     VAR variable_declaration_list;
     
 return_statement ::=
-    RETURN optional_expression;
+    RETURN optional_expression:oe 
+        {: 
+            RESULT = Ast.createReturnNode(oe);
+        :};
     
 /* Funciones */
 
