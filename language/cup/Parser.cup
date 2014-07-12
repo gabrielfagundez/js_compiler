@@ -234,17 +234,9 @@ primary_expression ::=
     object_literal |
     simple_expression:se POINT js_function:js
         {:
-            if(js.getMainNodeType() == Ast.CONCAT){
-                Ast ast = js;
-                ast.left = se;
-                RESULT = ast;
-            } 
-            
-            if(js.getMainNodeType() == Ast.LENGTH){
-                Ast ast = js;
-                ast.left = se;
-                RESULT = ast;
-            }   
+            Ast ast = js;
+            ast.left = se;
+            RESULT = ast;
         :};
 
 js_function ::=
@@ -256,8 +248,14 @@ js_function ::=
         {:
             RESULT = Ast.createConcatNode(se);
         :} |
-    TO_UPPER_CASE_FUNCT |
-    TO_LOWER_CASE_FUNCT |
+    TO_UPPER_CASE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createTUCNode();
+        :} |
+    TO_LOWER_CASE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createTLCNode();
+        :} |
     CHAR_AT_FUNCT |
     INDEX_OF_FUNCT |
     LAST_INDEX_OF_FUNCT |

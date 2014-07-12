@@ -42,6 +42,8 @@ public class Ast {
 	public static final int BLOCK		= 30;
 	public static final int CONCAT		= 31;
 	public static final int LENGTH		= 32;
+	public static final int TUC			= 33;
+	public static final int TLC			= 34;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -147,6 +149,14 @@ public class Ast {
 	public static Ast createLengthNode(){
 		return new Ast(LENGTH, null, null, null, null);
 	}
+	
+	public static Ast createTUCNode(){
+		return new Ast(TUC, null, null, null, null);
+	}
+	
+	public static Ast createTLCNode(){
+		return new Ast(TLC, null, null, null, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -211,6 +221,10 @@ public class Ast {
 				} else {
 					return null;
 				}
+			case TLC:
+				return this.left.evaluate().toString().toLowerCase();
+			case TUC:
+				return this.left.evaluate().toString().toUpperCase();
 			case LENGTH:
 				return this.left.evaluate().toString().length();
 			case CONCAT:
