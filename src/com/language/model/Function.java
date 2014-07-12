@@ -1,16 +1,30 @@
 package com.language.model;
 
+import java.util.ArrayList;
+
 import com.language.model.*;
 
 public class Function {
-	private Ast ast = null;
+	public ArrayList<Ast> statementsList = null;
 	
-	public Function(Ast ast) {
-		this.ast = ast;
+	public Function() {
+		this.statementsList = new ArrayList<Ast>();
 	}
 	
+    // Agrega un nuevo statement
+    public void addStatement(Ast stmt){
+    	if(stmt != null){
+        	this.statementsList.add(stmt);
+    	}
+    }
+
+	
 	public void execute() {
-		this.ast.evaluate();
+		for(int i = 0; i < this.statementsList.size(); i++){
+    		if(this.statementsList.get(i) != null){
+                ((Ast) this.statementsList.get(i)).evaluate();	
+    		}
+    	}
 	}
 	
 }

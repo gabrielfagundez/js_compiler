@@ -9,6 +9,7 @@ public class FunctionsController {
 
 	private static FunctionsController instance = null;
 	private Map<String, Function> functions;
+	public String actual_function_name = null;
 	
 	// Se trata de un singleton por lo que el inicializador es privado
 	private FunctionsController() {
@@ -25,8 +26,16 @@ public class FunctionsController {
 
     // Agrega una nueva funcion a la tabla de funciones que se almacena
     public void addFunction(String function_name, Ast ast){
-    	Function function = new Function(ast);
+    	Function function = new Function();
     	this.functions.put(function_name, function);
+    }
+    
+    public Function getFunction(String function_name){
+    	if(functions.size() == 0){
+    		return null;
+    	} else {
+    		return functions.get(function_name);
+    	}
     }
 
     // Ejecuta el AST asociado a la funcion

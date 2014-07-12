@@ -1,5 +1,6 @@
 package com.language.model;
 
+import com.language.controller.FunctionsController;
 import com.language.controller.VariablesController;
 
 import java.lang.Math;
@@ -36,14 +37,18 @@ public class Ast {
 	public static final int IF  		= 25;
 	public static final int CONSOLE		= 26;
 	public static final int ALERT		= 27;
+	public static final int CALL_FUNCTION = 28;
 
 	// Definicion del nodo AST
 	public Integer type;
 	public Object value;
-	private Ast left;
-	private Ast right;
+	public Ast left;
+	public Ast right;
 	private Ast condition;
 	private Integer current_type;
+	
+	public Boolean inFunction = false;
+	public Integer id = null;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
@@ -119,7 +124,15 @@ public class Ast {
 	}
 
 	public static Ast createAlertNode(Ast expression){
-		return new Ast(ALERT, null, expression, null); 
+		return new Ast(ALERT, null, expression, null, null); 
+	}
+	
+	public static Ast createFunctionNode(){
+		return new Ast(FUNCTION, null, null, null, null); 
+	}
+	
+	public static Ast createCallFunctionNode(Ast ast){
+		return new Ast(CALL_FUNCTION, ast.value, null, null, null); 
 	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
@@ -173,7 +186,12 @@ public class Ast {
 			case CONSOLE:
 			case ALERT:
 				System.out.println(this.left.evaluate());
-				return "null";
+				return null;
+			case CALL_FUNCTION:
+				FunctionsController fc = FunctionsController.getInstance();
+				Function f = fc.getFunction((String)this.value);
+				f.execute();
+				return null;
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	

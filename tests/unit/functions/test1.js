@@ -1,14 +1,19 @@
-alert(1 + 5 - 4 - 4);
-alert(1 + 'asd');
+console.log("af1");
+console.log("af2");
+console.log("af3");
+console.log("af4");
 
-// function testFunction1(){
-// 	var a = 5;
-// };
+function testFunction1(){
+	console.log("NO PUEDO CREER");
+	console.log(" - ");
+};
 
-// function testFunction2(){
-// 	var b = 5;	
-// };
+console.log("af1");
+console.log("af2");
+console.log("af3");
+console.log("af4");
 
-// function testFunction3(){
-// 	var c = 5;
-// };
+testFunction1();
+testFunction1();
+testFunction1();
+testFunction1();

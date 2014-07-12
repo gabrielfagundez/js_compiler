@@ -165,13 +165,15 @@ non terminal Ast literal_element;
 non terminal Ast block_statements;
 non terminal Ast block_statements_prefix;
 
-non terminal Object function_definition;
+non terminal Ast function_definition;
 non terminal Object formal_parameters_and_body;
 non terminal Object formal_parameters;
 non terminal Object formal_parameter;
 non terminal Object formal_parameters_prefix;
-non terminal Object top_statements;
-non terminal Object top_statements_prefix;
+non terminal Ast top_statements;
+non terminal Ast top_statements_function;
+non terminal Ast top_statements_prefix;
+non terminal Ast top_statements_prefix_function;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
@@ -187,19 +189,26 @@ program ::=
 
 top_statements ::=
     |
-    top_statements_prefix;
+    top_statements_prefix:ts {: RESULT = ts; :};
 
 top_statements_prefix ::=
-    top_statement |
-    top_statements_prefix top_statement;
+    top_statement:ts {: RESULT = ts; :} |
+    top_statements_prefix top_statement:ts {: RESULT = ts; :};
 
 top_statement ::= 
     statement:stmt 
         {:  
             AstController asts = AstController.getInstance();
-            asts.addStatement(stmt);
+            if(!asts.inFunction){
+                asts.addStatement(stmt);
+            } else {
+                FunctionsController fc = FunctionsController.getInstance();
+                Function actual = fc.getFunction(fc.actual_function_name);
+                actual.addStatement(stmt);
+            }; 
+            RESULT = stmt;
         :} |
-    function_definition;
+    function_definition:fd;
 
 /* Funciones especificas */
 console_log ::= 
@@ -269,7 +278,10 @@ call_expression ::=
     primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
     call_expression:ce member_operator:mo {: ce.evaluateArray(mo); :} |
-    call_expression arguments;
+    call_expression:ce arguments
+        {: 
+            RESULT = Ast.createCallFunctionNode(ce);
+        :};
     
 full_new_expression ::=
     NEW full_new_subexpression arguments;
@@ -434,10 +446,18 @@ return_statement ::=
 /* Funciones */
 
 function_definition ::=
-    FUNCTION ID:funct_name LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN statement:stmts BLOCK_END 
-        {: 
-            FunctionsController f = FunctionsController.getInstance(); 
-            f.addFunction(funct_name, stmts);
+    FUNCTION ID:funct_name 
+        LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET 
+        BLOCK_BEGIN {: AstController asts = AstController.getInstance(); asts.inFunction = true; 
+                       FunctionsController fc = FunctionsController.getInstance(); 
+                       fc.actual_function_name = funct_name; 
+                       fc.addFunction(funct_name, null); :} 
+            top_statements:stmts {:  :} 
+        BLOCK_END {: AstController asts = AstController.getInstance(); asts.inFunction = false; 
+                     FunctionsController fc = FunctionsController.getInstance(); fc.actual_function_name = null; :} 
+        {:
+ 
+            RESULT = Ast.createFunctionNode();
         :};
 
 formal_parameters ::=
