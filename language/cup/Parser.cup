@@ -238,11 +238,20 @@ primary_expression ::=
                 Ast ast = js;
                 ast.left = se;
                 RESULT = ast;
+            } 
+            
+            if(js.getMainNodeType() == Ast.LENGTH){
+                Ast ast = js;
+                ast.left = se;
+                RESULT = ast;
             }   
         :};
 
 js_function ::=
-    LENGTH_FUNCT |
+    LENGTH_FUNCT
+        {:
+            RESULT = Ast.createLengthNode();
+        :} |
     CONCAT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
         {:
             RESULT = Ast.createConcatNode(se);

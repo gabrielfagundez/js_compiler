@@ -1,4 +1,4 @@
-// Probando el concat
+// Probando el concat para strings
 
 console.log("Hola ".concat("Mundo"));
 console.log(("Esta es la primera parte ").concat("y esta es la segunda"));

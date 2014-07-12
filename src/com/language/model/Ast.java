@@ -41,6 +41,7 @@ public class Ast {
 	public static final int RETURN		= 29;
 	public static final int BLOCK		= 30;
 	public static final int CONCAT		= 31;
+	public static final int LENGTH		= 32;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -142,6 +143,10 @@ public class Ast {
 	public static Ast createConcatNode(Ast right){
 		return new Ast(CONCAT, null, null, right, null);
 	}
+	
+	public static Ast createLengthNode(){
+		return new Ast(LENGTH, null, null, null, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -206,6 +211,8 @@ public class Ast {
 				} else {
 					return null;
 				}
+			case LENGTH:
+				return this.left.evaluate().toString().length();
 			case CONCAT:
 				return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();
 			case IF: 
