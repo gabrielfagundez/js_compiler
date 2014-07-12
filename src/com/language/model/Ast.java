@@ -168,6 +168,7 @@ public class Ast {
 				}
 			case NOT:
 				this.current_type = this.evaluateType();
+				return evaluateNot();
 				
 			case EQ_EQ:
 			case LESS_EQ:
@@ -248,6 +249,14 @@ public class Ast {
 		}
 	}
 	
+	// Funcion auxiliar que evalua comparaciones
+		private Object evaluateNot(){
+
+			double left = getComparisonEvaluationForRamification(this.left);
+				
+			return !(left>0);
+		}
+	
 	// Funcion auxiliar que evalua aritmeticamente
 	private Object evaluateArithmetic(){
 		
@@ -295,6 +304,7 @@ public class Ast {
 	// Funciones auxiliares para comparaciones
 		private double getComparisonEvaluationForRamification(Ast e){
 			double returnValue = 0;
+
 			switch(e.current_type){
 				case BOOLEAN:
 					if ((Boolean)e.evaluate()){
@@ -314,6 +324,7 @@ public class Ast {
 						//habria que manejar mas este caso borde y devolver NaN
 						returnValue = 0;
 					}
+					break;
 				default:
 					returnValue = (Integer)e.evaluate();
 					break;
@@ -325,6 +336,7 @@ public class Ast {
 	// Funciones auxiliares para aritmetica
 	private double getArithmeticEvaluationForRamification(Ast ast){
 		double returnValue = 0;
+
 		switch(ast.current_type){
 			case BOOLEAN:
 				if ((Boolean)ast.evaluate()){
@@ -384,7 +396,7 @@ public class Ast {
 		if ((array.size() - 1) >= index) {
 			result += " = " + array.get(index);
 		} else {
-			result += " Error: El índice excede el largo del array.";
+			result += " Error: El ��ndice excede el largo del array.";
 		}
 		
 		return result;
@@ -424,11 +436,8 @@ public class Ast {
 		if (this.right != null){
 			// si left es null entonces el right tambien lo va a ser
 			this.right.current_type = this.right.evaluateType();
-		}else{
-			// es una hoja entonces retorno el tipo de la variable
-			return this.type;
 		}
-		
+				
 		if(this.type == PLUS){
 			if(this.left.current_type == STRING || this.right.current_type == STRING){
 				return STRING;
@@ -458,7 +467,7 @@ public class Ast {
 				return this.right.current_type;
 			}
 		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
-				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
+				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER) || (this.type == NOT)) {
 			return BOOLEAN;
 		}
 		
