@@ -25,22 +25,13 @@ public class VariablesController {
     }
 
     public void addVariable(String var_name, Ast var_ast){
-    	//System.out.println("Agregar variable: " + var_name);
-    	//System.out.println(var_ast.evaluate());
-
-    	//Object value = var_ast.evaluate();
-    	Object value = var_ast.value;
-
-    	Variable variable = new Variable(var_name, var_ast.type.toString(), value);
+    	Object value = var_ast.evaluate();
+    	Variable variable = new Variable(var_name, var_ast.evaluateType(), value);
     	this.variables.put(variable.getName(), variable);
     }
 
     public Variable getVariable(String variable_name){
-    	if(variables.size() == 0){
-    		return null;
-    	} else {
-    		return variables.get(variable_name);
-    	}
+    	return variables.get(variable_name);
     }
 
     public void showVariables() {

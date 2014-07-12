@@ -3,6 +3,7 @@ package com.language.model;
 import com.language.controller.VariablesController;
 
 import java.lang.Math;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -131,7 +132,7 @@ public class Ast {
 				return null;
 			case VAR:
 				VariablesController variables = VariablesController.getInstance();
-				return variables.getVariable((String)this.value);
+				return variables.getVariable((String)this.value).getValue();
 			case AND:
 				this.current_type = this.evaluateType();
 				
@@ -175,6 +176,8 @@ public class Ast {
 				}else{
 					return null;
 				}
+			case ARRAY:
+				return this.value;
 			default:
 				return "Error";
 		}
@@ -223,15 +226,53 @@ public class Ast {
 	
 	// Funcion auxiliar que evalua aritmeticamente
 	private Object evaluateArithmetic(){
-		
-		if(this.left.current_type == STRING || this.right.current_type == STRING){
+		if(this.left.current_type == STRING || this.right.current_type == STRING || this.left.current_type == ARRAY || this.right.current_type == ARRAY){
 			if (this.type == PLUS){
 				return this.left.evaluate().toString() + this.right.evaluate().toString();
 			} else {
 				return "NaN";
 			}
-		}
-		else {
+		} else if (this.left.current_type == VAR || this.right.current_type == VAR) {
+			Integer left_type;
+			Integer right_type;
+			Object left_value;
+			Object right_value;
+
+			if (this.left.current_type == VAR && this.right.current_type == VAR) {
+				// Los dos nodos son VAR
+
+				Variable var_left = VariablesController.getInstance().getVariable(this.left.value.toString());
+				Variable var_right = VariablesController.getInstance().getVariable(this.right.value.toString());
+
+				left_type = var_left.getType();
+				right_type = var_right.getType();
+
+				left_value = var_left.getValue();
+				right_value = var_right.getValue();
+			} else if (this.left.current_type == VAR) {
+				// El nodo izquierdo es VAR
+
+				Variable var = VariablesController.getInstance().getVariable(this.left.value.toString());
+
+				left_type = var.getType();
+				right_type = this.right.evaluateType();
+
+				left_value = var.getValue();
+				right_value = this.right.evaluate();
+			} else {
+				// El nodo derecho
+
+				Variable var = VariablesController.getInstance().getVariable(this.right.value.toString());
+
+				left_type = this.left.evaluateType();
+				right_type = var.getType();
+
+				left_value = this.left.evaluate();
+				right_value = var.getValue();
+			}
+
+			return evaluateArithmeticWithVars(this.type, left_type, left_value, right_type, right_value);
+		} else {
 			double left = getArithmeticEvaluationForRamification(this.left);
 			double right = getArithmeticEvaluationForRamification(this.right);
 
@@ -396,21 +437,49 @@ public class Ast {
 		}
 		
 		if(this.type == PLUS){
-			if(this.left.current_type == STRING || this.right.current_type == STRING){
-				return STRING;
-			} else if (this.left.current_type == FLOAT || this.right.current_type == FLOAT){
-				return FLOAT;
+			Integer left_type;
+			Integer right_type;
+
+			if(this.left.current_type == VAR || this.right.current_type == VAR) {
+				if (this.left.current_type == VAR && this.right.current_type == VAR) {
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+				} else if (this.left.current_type == VAR) {
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					right_type = this.right.current_type;
+				} else {
+					left_type = this.left.current_type;
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+				}
 			} else {
-				return INTEGER;
+				left_type = this.left.current_type;
+				right_type = this.right.current_type;
 			}
+
+			return evaluateTypeForPlus(left_type, right_type);
+
 		} else if ((this.type == MINUS) || (this.type == TIMES) || (this.type == DIV)){
-			if(this.left.current_type == STRING || this.right.current_type == STRING){
-				return NAN;
-			} else if (this.left.current_type == FLOAT || this.right.current_type == FLOAT){
-				return FLOAT;
-			}else{
-				return INTEGER;
+			Integer left_type;
+			Integer right_type;
+
+			if(this.left.current_type == VAR || this.right.current_type == VAR) {
+				if (this.left.current_type == VAR && this.right.current_type == VAR) {
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+				} else if (this.left.current_type == VAR) {
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					right_type = this.right.current_type;
+				} else {
+					left_type = this.left.current_type;
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+				}
+			} else {
+				left_type = this.left.current_type;
+				right_type = this.right.current_type;
 			}
+
+			return evaluateTypeForOtherOperators(left_type, right_type);
+
 		} else if (this.type == AND){
 			if (this.left.isFalse()){
 				return this.left.current_type;
@@ -431,4 +500,64 @@ public class Ast {
 		return 0;
 	}
 
+	private Object evaluateArithmeticWithVars(Integer op_type, Integer left_type, Object left_value, Integer right_type, Object right_value){
+		if(left_type == STRING || right_type == STRING || left_type == ARRAY || right_type == ARRAY){
+			if (op_type == PLUS){
+				return left_value.toString() + right_value.toString();
+			}
+
+			return "NaN";
+		} else {
+			double left_value_double = (left_value instanceof Boolean) ? ((Boolean) left_value).compareTo(false) : Double.parseDouble(left_value.toString()) ;
+			double right_value_double = (right_value instanceof Boolean) ? ((Boolean) right_value).compareTo(false) : Double.parseDouble(right_value.toString()) ;
+
+			double result = 0;
+			switch(op_type){
+				case PLUS:
+					result = left_value_double + right_value_double;
+					break;
+				case MINUS:
+					result = left_value_double - right_value_double;
+					break;
+				case TIMES:
+					result = left_value_double * right_value_double;
+					break;
+				default:
+					try{
+						result = left_value_double / right_value_double;
+					}catch(ArithmeticException e){
+						//habria que hacer un mejor control de estos casos borde
+						result = 0;
+					}
+					break;
+			}
+
+			if (Math.floor(result) == (result)){
+				//la suma de doubles es .0, retorno un integer
+				return new Integer((int) (result));
+			}else
+				//la suma de doubles es .x con x>0 entonces retorno un float
+				return new Float(result);
+		}
+	}
+
+	private Integer evaluateTypeForPlus(Integer left_type, Integer right_type) {
+		if(left_type == STRING || right_type == STRING){
+			return STRING;
+		} else if (left_type == FLOAT || right_type == FLOAT){
+			return FLOAT;
+		} else {
+			return INTEGER;
+		}
+	}
+
+	private Integer evaluateTypeForOtherOperators(Integer left_type, Integer right_type) {
+		if(left_type == STRING || right_type == STRING){
+			return NAN;
+		} else if (left_type == FLOAT || right_type == FLOAT){
+			return FLOAT;
+		}else{
+			return INTEGER;
+		}
+	}
 }

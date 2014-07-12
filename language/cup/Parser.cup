@@ -338,7 +338,7 @@ conditional_expression ::=
 
 assignment_expression ::=
     conditional_expression:ce {: RESULT = ce; :} |
-    left_side_expression EQUAL assignment_expression |
+    left_side_expression:lse EQUAL assignment_expression:ae {: if (lse.type == Ast.VAR) { VariablesController.getInstance().addVariable(lse.value.toString(), ae); }; :} |
     left_side_expression compound_assignment assignment_expression;
 
 expression ::=

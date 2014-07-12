@@ -2,12 +2,12 @@ package com.language.model;
 
 public class Variable {
 	private String name = null;
-	private String type = null;
+	private Integer type = null;
 	private Object value = null;
 
 	public Variable() {}
 
-	public Variable(String name, String type, Object value) {
+	public Variable(String name, Integer type, Object value) {
 		this.name 	= name;
 		this.type 	= type;
 		this.value 	= value;
@@ -21,11 +21,11 @@ public class Variable {
 		this.name = name;
 	}
 
-	public String getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
