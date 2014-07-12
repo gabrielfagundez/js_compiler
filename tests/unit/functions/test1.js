@@ -1,5 +1,5 @@
-console.log(1 + 5 - 4 - 4);
-console.log(1 + 'asd');
+alert(1 + 5 - 4 - 4);
+alert(1 + 'asd');
 
 // function testFunction1(){
 // 	var a = 5;

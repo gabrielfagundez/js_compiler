@@ -1,7 +1,9 @@
 package com.language.controller;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.language.model.Ast;
 import com.language.model.Variable;
@@ -23,7 +25,13 @@ public class VariablesController {
     }
 
     public void addVariable(String var_name, Ast var_ast){
-    	Variable variable = new Variable(var_name, var_ast.type.toString(), var_ast);
+    	//System.out.println("Agregar variable: " + var_name);
+    	//System.out.println(var_ast.evaluate());
+
+    	//Object value = var_ast.evaluate();
+    	Object value = var_ast.value;
+
+    	Variable variable = new Variable(var_name, var_ast.type.toString(), value);
     	this.variables.put(variable.getName(), variable);
     }
 
@@ -32,6 +40,21 @@ public class VariablesController {
     		return null;
     	} else {
     		return variables.get(variable_name);
+    	}
+    }
+
+    public void showVariables() {
+    	Iterator<Map.Entry<String, Variable>> it = this.variables.entrySet().iterator();
+
+    	while (it.hasNext()) {
+    		Map.Entry<String, Variable> entry = (Entry<String, Variable>) it.next();
+    		Variable entry_value = (Variable) entry.getValue();
+
+    		System.out.println("Datos:");
+    		System.out.println("\tKey: " + entry.getKey());
+    		System.out.println("\tName: " + entry_value.getName());
+    		System.out.println("\tType: " + entry_value.getType());
+    		System.out.println("\tValue: " + entry_value.getValue());
     	}
     }
 }
