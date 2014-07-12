@@ -10,6 +10,7 @@ public class AstController {
 	
 	private static AstController instance = null;
 	public ArrayList<Ast> statementsList = null;
+	public Boolean inFunction = false;
 	
 	// Se trata de un singleton por lo que el inicializador es privado
 	private AstController() {
@@ -26,7 +27,9 @@ public class AstController {
 
     // Agrega un nuevo statement
     public void addStatement(Ast stmt){
-    	this.statementsList.add(stmt);
+    	if(stmt != null){
+        	this.statementsList.add(stmt);
+    	}
     }
 
     // Ejecuta el AST principal
@@ -34,7 +37,7 @@ public class AstController {
     	for(int i = 0; i < this.statementsList.size(); i++){
     		//System.out.println(((Ast)this.statementsList.get(i)).getMainNodeType());
     		if(this.statementsList.get(i) != null){
-                ((Ast) this.statementsList.get(i)).evaluate();	
+                ((Ast) this.statementsList.get(i)).evaluate();
     		}
     	}
     }

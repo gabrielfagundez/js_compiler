@@ -21,6 +21,7 @@ terminal String VAR;
 terminal String NEW;
 terminal String RETURN;
 terminal String FUNCTION;
+terminal String ALERT;
 
 terminal String LINE_BREAK;
 terminal String TABULATION;
@@ -53,9 +54,9 @@ terminal String NOT_EQUAL;
 
 terminal String BLOCK_BEGIN;
 terminal String BLOCK_END;
+terminal String ELSE;
 terminal String IF;
 terminal String WHILE;
-terminal String ELSE;
 terminal String FOR;
 terminal String BREAK;
 terminal String CONTINUE;
@@ -94,6 +95,7 @@ non terminal Ast top_statement;
 
 /* Funciones especificas */
 non terminal Ast console_log;
+non terminal Ast alert;
 
 non terminal Object variable_definition;
 non terminal Ast variable_declaration_list;
@@ -129,6 +131,7 @@ non terminal Object full_new_subexpression;
 non terminal Object short_new_subexpression;
 non terminal Object compound_assignment;
 non terminal Object argument_list;
+non terminal Ast js_function;
 
 non terminal Object field_list;
 non terminal Object literal_field;
@@ -160,19 +163,21 @@ non terminal Object array_literal;
 non terminal Ast element_list;
 non terminal Ast literal_element;
 
-non terminal Object block_statements;
-non terminal Object block_statements_prefix;
+non terminal Ast block_statements;
+non terminal Ast block_statements_prefix;
 
-non terminal Object function_definition;
+non terminal Ast function_definition;
 non terminal Object formal_parameters_and_body;
 non terminal Object formal_parameters;
 non terminal Object formal_parameter;
 non terminal Object formal_parameters_prefix;
-non terminal Object top_statements;
-non terminal Object top_statements_prefix;
+non terminal Ast top_statements;
+non terminal Ast top_statements_function;
+non terminal Ast top_statements_prefix;
+non terminal Ast top_statements_prefix_function;
 
-precedence left PLUS, MINUS;
-precedence left TIMES, DIV;
+precedence left ELSE;
+precedence left POINT;
 
 /* Program */
 
@@ -185,27 +190,39 @@ program ::=
 
 top_statements ::=
     |
-    top_statements_prefix;
+    top_statements_prefix:ts {: RESULT = ts; :};
 
 top_statements_prefix ::=
-    top_statement |
-    top_statements_prefix top_statement;
+    top_statement:ts {: RESULT = ts; :} |
+    top_statements_prefix top_statement:ts {: RESULT = ts; :};
 
 top_statement ::= 
     statement:stmt 
         {:  
             AstController asts = AstController.getInstance();
-            asts.addStatement(stmt);
+            if(!asts.inFunction){
+                asts.addStatement(stmt);
+            } else {
+                FunctionsController fc = FunctionsController.getInstance();
+                Function actual = fc.getFunction(fc.actual_function_name);
+                actual.addStatement(stmt);
+            }; 
+            RESULT = stmt;
         :} |
-    function_definition;
+    function_definition:fd;
 
 /* Funciones especificas */
 console_log ::= 
     CONSOLE_LOG LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
         {: RESULT = Ast.createConsoleLogNode(ae); :};
+        
+alert ::= 
+    ALERT LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
+        {: RESULT = Ast.createAlertNode(ae); :};
     
 known_function ::= 
-    console_log:cl {: RESULT = cl; :};
+    console_log:cl {: RESULT = cl; :} |
+    alert:a {: RESULT = a; :};
 
 optional_semicolon ::= SEMICOLON;
 
@@ -214,7 +231,45 @@ optional_semicolon ::= SEMICOLON;
 primary_expression ::=
     simple_expression:se {: RESULT = se; :} |
     function_expression |
-    object_literal;
+    object_literal |
+    simple_expression:se POINT js_function:js
+        {:
+            Ast ast = js;
+            ast.left = se;
+            RESULT = ast;
+        :};
+
+js_function ::=
+    LENGTH_FUNCT
+        {:
+            RESULT = Ast.createLengthNode();
+        :} |
+    CONCAT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createConcatNode(se);
+        :} |
+    TO_UPPER_CASE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createTUCNode();
+        :} |
+    TO_LOWER_CASE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createTLCNode();
+        :} |
+    CHAR_AT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createCharAtNode(se);
+        :} |
+    INDEX_OF_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createIndexOfNode(se);
+        :} |
+    LAST_INDEX_OF_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createLastIndexOfNode(se);
+        :} |
+    SUBSTRING_FUNCT |
+    SPLIT_FUNCT;
 
 simple_expression ::=
     NULL:n {: RESULT = Ast.createNullNode(); :} |
@@ -262,7 +317,12 @@ call_expression ::=
     primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
     call_expression:ce member_operator:mo {: ce.evaluateArray(mo); :} |
-    call_expression arguments;
+    call_expression:ce arguments
+        {:
+            FunctionsController fc = FunctionsController.getInstance();
+            ArrayList<Ast> arguments = fc.getAndResetArguments();
+            RESULT = Ast.createCallFunctionNode(ce, arguments);
+        :};
     
 full_new_expression ::=
     NEW full_new_subexpression arguments;
@@ -288,8 +348,16 @@ arguments ::=
     LEFT_ROUND_BRACKET argument_list RIGHT_ROUND_BRACKET;
 
 argument_list ::=
-    assignment_expression {:  :} |
-    argument_list COMMA assignment_expression; 
+    assignment_expression:ae 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance();
+            fc.addArgument(ae);
+        :} |
+    argument_list COMMA assignment_expression:ae 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance();
+            fc.addArgument(ae);
+        :}; 
 
 postfix_expression ::=
     left_side_expression:lse {: RESULT = lse ; :} |
@@ -300,7 +368,8 @@ unary_expression ::=
     postfix_expression:pe {: RESULT = pe ; :} |
     TYPEOF_FUNCT unary_expression |
     INCREMENT unary_expression|
-    DECREMENT unary_expression;
+    DECREMENT unary_expression |
+    NOT unary_expression:exp {: RESULT = Ast.createNotNode(exp); :};
 
 multiplicative_expression ::= 
     unary_expression:ue {: RESULT = ue ; :} |
@@ -352,12 +421,12 @@ optional_expression ::=
 /* Statements */
 statement ::=
     empty_statement:stmts {: RESULT = stmts; :} |
-    known_function:stmts optional_semicolon {: RESULT = stmts; :} |
+    known_function:stmts optional_semicolon {:RESULT = stmts; :} |
     expression_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
     block:stmts {: RESULT = stmts; :} |
     labeled_statement:stmts {: RESULT = stmts; :} |
-    if_statement:stmts {: System.out.println(stmts.evaluate()); RESULT = stmts; :} |
+    if_statement:stmts {: RESULT = stmts; :} |
     switch_statemente:stmts {: RESULT = stmts; :} |
     do_statement:stmts optional_semicolon {: RESULT = stmts; :} |
     while_statement:stmts {: RESULT = stmts; :} |
@@ -393,17 +462,18 @@ variable_initializer ::=
 /* Definiciones de Bloques */
 
 block ::=
-    BLOCK_BEGIN block_statements BLOCK_END;
+    BLOCK_BEGIN block_statements:bs BLOCK_END {: RESULT = bs; :};
     
 block_statements ::=
-    block_statements_prefix;
+    block_statements_prefix:bs {: RESULT = bs; :};
     
 block_statements_prefix ::=
-    statement |
-    block_statements_prefix statement;
+    statement:bs {: RESULT = bs; :} |
+    block_statements_prefix:stmts statement:s {: RESULT = new Ast(Ast.BLOCK,stmts,s,null); :};
     
 if_statement ::= 
-    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, null, s, e); :};
+    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :} |
+    IF parenthesized_expression:e statement:s ELSE statement:u {: RESULT = new Ast(Ast.IF, s, u, e); :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;
@@ -421,21 +491,48 @@ in_binding ::=
     VAR variable_declaration_list;
     
 return_statement ::=
-    RETURN optional_expression;
+    RETURN optional_expression:oe 
+        {: 
+            RESULT = Ast.createReturnNode(oe);
+        :};
     
 /* Funciones */
 
 function_definition ::=
-    FUNCTION ID:funct_name LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET BLOCK_BEGIN statement:stmts BLOCK_END 
-        {: 
-            FunctionsController f = FunctionsController.getInstance(); 
-            f.addFunction(funct_name, stmts);
-        :};
+    FUNCTION ID:funct_name 
+            {: 
+                AstController asts = AstController.getInstance(); 
+                asts.inFunction = true; 
+                FunctionsController fc = FunctionsController.getInstance(); 
+                fc.actual_function_name = funct_name; 
+                fc.addFunction(funct_name); 
+            :}
+        LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET 
+        BLOCK_BEGIN 
+            top_statements:stmts {:  :} 
+        BLOCK_END 
+            {:  
+                AstController asts = AstController.getInstance(); 
+                asts.inFunction = false; 
+                FunctionsController fc = FunctionsController.getInstance(); 
+                fc.actual_function_name = null; 
+                RESULT = Ast.createFunctionNode();
+            :};
 
 formal_parameters ::=
     |
     formal_parameters_prefix {:  :};
 
 formal_parameters_prefix ::=
-    ID {:  :} |
-    formal_parameters_prefix COMMA ID {:  :};
+    ID:id 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance(); 
+            Function actual = fc.getFunction(fc.actual_function_name);
+            actual.setCantParameters(actual.getCantParameters() + 1);
+        :} |
+    formal_parameters_prefix COMMA ID:id 
+        {: 
+            FunctionsController fc = FunctionsController.getInstance(); 
+            Function actual = fc.getFunction(fc.actual_function_name);
+            actual.setCantParameters(actual.getCantParameters() + 1);
+        :};

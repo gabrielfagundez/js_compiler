@@ -1,14 +1,8 @@
-console.log(1 + 5 - 4 - 4);
-console.log(1 + 'asd');
+// Pruebo una llamada a una funcion
 
-// function testFunction1(){
-// 	var a = 5;
-// };
+function testFunction1(){
+	console.log("Estoy dentro de la funcion");
+};
 
-// function testFunction2(){
-// 	var b = 5;	
-// };
-
-// function testFunction3(){
-// 	var c = 5;
-// };
+testFunction1();
+testFunction1();

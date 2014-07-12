@@ -1,5 +1,6 @@
 package com.language.model;
 
+import com.language.controller.FunctionsController;
 import com.language.controller.VariablesController;
 
 import java.lang.Math;
@@ -37,21 +38,34 @@ public class Ast {
 	public static final int IF  		= 25;
 	public static final int CONSOLE		= 26;
 	public static final int ALERT		= 27;
+	public static final int CALL_FUNCTION = 28;
+	public static final int RETURN		= 29;
+	public static final int BLOCK		= 30;
+	public static final int CONCAT		= 31;
+	public static final int LENGTH		= 32;
+	public static final int TUC			= 33;
+	public static final int TLC			= 34;
+	public static final int CHAR_AT		= 35;
+	public static final int INDEX_OF	= 36;
+	public static final int LAST_INDEX_OF = 37;
 
 	// Definicion del nodo AST
 	public Integer type;
 	public Object value;
-	private Ast left;
-	private Ast right;
+	public Ast left;
+	public Ast right;
 	private Ast condition;
 	private Integer current_type;
+	public Boolean inFunction = false;
+	public ArrayList<Ast> argsForFunction = null;
 
 	// Metodo privado para crear instancias con todos los parametros
-	private Ast(Integer type, Object value, Ast left, Ast right) {
+	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.value 	= value;
 		this.left 	= left;
 		this.right 	= right;
+		this.condition = condition;
 		this.current_type = type;
 	}
 
@@ -60,50 +74,42 @@ public class Ast {
 	public Ast(Integer type, Ast left, Ast right) {
 		this.type 	= type;
 		this.left 	= left;
-		this.right 	= right;
-
-		// No debemos llamar a evaluate porque si tenemos variables 
-		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
-		// this.type 	= evaluateType(); 
+		this.right 	= right; 
 	}
 	
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
 	// el tipo de la expresion.
-	public Ast(Integer type, Ast right, Ast left,Ast condition) {
+	public Ast	(Integer type, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.right 	= right;
 		this.left 	= left;
 		this.condition = condition;
-		
-		// No debemos llamar a evaluate porque si tenemos variables 
-		// no sabemos el valor cuando lo creamos, sino cuando evaluamos
-		// this.type 	= evaluateType(); 
 	}
 
 	// Metodos para crear hojas
 	public static Ast createBooleanNode(Object value) {
 		Boolean casted_value = new Boolean((String)value);
-		return new Ast(BOOLEAN, casted_value, null, null);
+		return new Ast(BOOLEAN, casted_value, null, null, null);
 	}
 
 	public static Ast createIntegerNode(Object value) {
 		Integer casted_value = new Integer((String)value);
-		return new Ast(INTEGER, casted_value, null, null);
+		return new Ast(INTEGER, casted_value, null, null, null);
 	}
 
 	public static Ast createFloatNode(Object value) {
 		Float casted_value = new Float((String)value);
-		return new Ast(FLOAT, casted_value, null, null);
+		return new Ast(FLOAT, casted_value, null, null, null);
 	}
 
 	public static Ast createStringNode(Object value) {
 		String casted_value = new String(((String)value).substring(1, ((String)value).length() - 1));
-		return new Ast(STRING, casted_value, null, null);
+		return new Ast(STRING, casted_value, null, null, null);
 	}
 
 	public static Ast createArrayNode(Object value) {
 		List<Object> casted_value = createArray((Ast)value);
-		return new Ast(ARRAY, casted_value, null, null);
+		return new Ast(ARRAY, casted_value, null, null, null);
 	}
 	
 	public static Ast createNullNode() {
@@ -111,11 +117,61 @@ public class Ast {
 	}
 
 	public static Ast createVarNode(Object value) {
-		return new Ast(VAR, value, null, null);
+		return new Ast(VAR, value, null, null, null);
 	}
 	
 	public static Ast createConsoleLogNode(Ast expression){
-		return new Ast(CONSOLE, null, expression, null); 
+		return new Ast(CONSOLE, null, expression, null, null); 
+	}
+
+	public static Ast createAlertNode(Ast expression){
+		return new Ast(ALERT, null, expression, null, null); 
+	}
+	
+	public static Ast createFunctionNode(){
+		return new Ast(FUNCTION, null, null, null, null); 
+	}
+	
+	public static Ast createCallFunctionNode(Ast ast, ArrayList<Ast> args){
+		Ast newAst = new Ast(CALL_FUNCTION, ast.value, null, null, null);
+		newAst.argsForFunction = args;
+		return newAst; 
+	}
+	
+	public static Ast createNotNode(Ast ast){
+		return new Ast(NOT, null, ast, null, null); 
+	}
+	
+	public static Ast createReturnNode(Ast ast){
+		return new Ast(RETURN, null, ast, null, null);
+	};
+	
+	public static Ast createConcatNode(Ast right){
+		return new Ast(CONCAT, null, null, right, null);
+	}
+	
+	public static Ast createLengthNode(){
+		return new Ast(LENGTH, null, null, null, null);
+	}
+	
+	public static Ast createTUCNode(){
+		return new Ast(TUC, null, null, null, null);
+	}
+	
+	public static Ast createTLCNode(){
+		return new Ast(TLC, null, null, null, null);
+	}
+	
+	public static Ast createCharAtNode(Ast right){
+		return new Ast(CHAR_AT, null, null, right, null);
+	}
+	
+	public static Ast createIndexOfNode(Ast right){
+		return new Ast(INDEX_OF, null, null, right, null);
+	}
+	
+	public static Ast createLastIndexOfNode(Ast right){
+		return new Ast(LAST_INDEX_OF, null, null, right, null);
 	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
@@ -149,6 +205,10 @@ public class Ast {
 				}else{
 					return this.right.evaluate();
 				}
+			case NOT:
+				this.current_type = this.evaluateType();
+				return evaluateNot();
+				
 			case EQ_EQ:
 			case LESS_EQ:
 			case GREATER_EQ:
@@ -164,20 +224,65 @@ public class Ast {
 				this.current_type = this.evaluateType();
 				return evaluateArithmetic();
 			case CONSOLE:
+			case ALERT:
 				System.out.println(this.left.evaluate());
 				return null;
+			case CALL_FUNCTION:
+				FunctionsController fc = FunctionsController.getInstance();
+				Function f = fc.getFunction((String)this.value);
+				return f.execute(this.argsForFunction);
+			case RETURN:
+				if(this.left != null){
+					return this.left.evaluate();
+				} else {
+					return null;
+				}
+			case CHAR_AT:
+				Integer position = (Integer)this.right.evaluate();
+				if(position > ((String)this.left.evaluate()).length() - 1 || position < 0){
+					return "";
+				} else {
+					return ((String)this.left.evaluate().toString()).charAt(position);	
+				}
+			case TLC:
+				return this.left.evaluate().toString().toLowerCase();
+			case TUC:
+				return this.left.evaluate().toString().toUpperCase();
+			case LENGTH:
+				if(this.left.type == ARRAY){
+					return ((ArrayList)this.left.value).size();
+				}else{
+					return this.left.evaluate().toString().length();	
+				}
+			case CONCAT:
+				if(this.left.type == ARRAY){
+					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
+				}else{
+					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+				}
+			case INDEX_OF:
+				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
+			case LAST_INDEX_OF:
+				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
 			case IF: 
-				this.current_type = this.evaluateType();
+				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
-				
+
 				boolean condition = this.condition.isTrue();
 				if (condition){
-					return this.right.evaluate();
+					return this.left.evaluate();
 				}else{
+					if (this.right !=null){
+						return this.right.evaluate(); 
+					}
 					return null;
 				}
 			case ARRAY:
 				return this.value;
+			case BLOCK:
+				this.left.evaluate();
+				this.right.evaluate();
+				return null;
 			default:
 				return "Error";
 		}
@@ -223,6 +328,14 @@ public class Ast {
 				return left < right;
 		}
 	}
+	
+	// Funcion auxiliar que evalua comparaciones
+		private Object evaluateNot(){
+
+			double left = getComparisonEvaluationForRamification(this.left);
+				
+			return !(left>0);
+		}
 	
 	// Funcion auxiliar que evalua aritmeticamente
 	private Object evaluateArithmetic(){
@@ -309,6 +422,7 @@ public class Ast {
 	// Funciones auxiliares para comparaciones
 		private double getComparisonEvaluationForRamification(Ast e){
 			double returnValue = 0;
+
 			switch(e.current_type){
 				case BOOLEAN:
 					if ((Boolean)e.evaluate()){
@@ -328,6 +442,7 @@ public class Ast {
 						//habria que manejar mas este caso borde y devolver NaN
 						returnValue = 0;
 					}
+					break;
 				default:
 					returnValue = (Integer)e.evaluate();
 					break;
@@ -339,6 +454,7 @@ public class Ast {
 	// Funciones auxiliares para aritmetica
 	private double getArithmeticEvaluationForRamification(Ast ast){
 		double returnValue = 0;
+
 		switch(ast.current_type){
 			case BOOLEAN:
 				if ((Boolean)ast.evaluate()){
@@ -398,7 +514,7 @@ public class Ast {
 		if ((array.size() - 1) >= index) {
 			result += " = " + array.get(index);
 		} else {
-			result += " Error: El índice excede el largo del array.";
+			result += " Error: El ������ndice excede el largo del array.";
 		}
 		
 		return result;
@@ -430,12 +546,16 @@ public class Ast {
 		if (this.left != null){
 			// si left es null entonces el right tambien lo va a ser
 			this.left.current_type = this.left.evaluateType();
-			this.right.current_type = this.right.evaluateType();
 		}else{
 			// es una hoja entonces retorno el tipo de la variable
 			return this.type;
 		}
 		
+		if (this.right != null){
+			// si left es null entonces el right tambien lo va a ser
+			this.right.current_type = this.right.evaluateType();
+		}
+				
 		if(this.type == PLUS){
 			Integer left_type;
 			Integer right_type;
@@ -493,7 +613,7 @@ public class Ast {
 				return this.right.current_type;
 			}
 		} else if ((this.type == EQ_EQ) || (this.type == NOT_EQ) || (this.type == LESS_EQ) ||  
-				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER)) {
+				(this.type == GREATER_EQ) || (this.type == LESS) || (this.type == GREATER) || (this.type == NOT)) {
 			return BOOLEAN;
 		}
 		
