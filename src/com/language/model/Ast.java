@@ -202,7 +202,6 @@ public class Ast {
 				} else {
 					return null;
 				}
-				
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
