@@ -479,7 +479,7 @@ while_statement ::=
     WHILE parenthesized_expression statement;
     
 for_statement ::=
-    FOR LEFT_ROUND_BRACKET for_initializer:ini SEMICOLON optional_expression:condition SEMICOLON optional_expression:what_next RIGHT_ROUND_BRACKET statement:stmt {: new Ast(Ast.FOR, stmt, what_next, condition);
+    FOR LEFT_ROUND_BRACKET for_initializer:ini SEMICOLON optional_expression:condition SEMICOLON optional_expression:what_next RIGHT_ROUND_BRACKET statement:stmt {: RESULT = new Ast(Ast.FOR, stmt, what_next, condition); :};
     
 for_initializer ::=
     |

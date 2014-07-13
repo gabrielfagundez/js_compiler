@@ -360,14 +360,14 @@ public class Ast {
 			case FOR: 
 				this.current_type = FOR;
 				this.condition.current_type = this.condition.evaluateType();	
-
+				VariablesController.getInstance().showVariables();
 				boolean condition_true = this.condition.isTrue();
 				if (condition_true){
+					//do the (.;.;here)
+					this.right.evaluate();
+					this.evaluate();
 					return this.left.evaluate();
 				}else{
-					if (this.right !=null){
-						return this.right.evaluate(); 
-					}
 					return null;
 				}
 			case BLOCK:
@@ -426,7 +426,6 @@ public class Ast {
 	
 	// Funcion auxiliar que evalua comparaciones
 		private Object evaluateNot(){
-
 			double left = getComparisonEvaluationForRamification(this.left);
 				
 			return !(left>0);
