@@ -285,7 +285,9 @@ public class Ast {
 
 				boolean condition = this.condition.isTrue();
 				if (condition){
-					return this.left.evaluate();
+					if(this.left != null){
+						return this.left.evaluate();	
+					}
 				}else{
 					if (this.right !=null){
 						return this.right.evaluate(); 
