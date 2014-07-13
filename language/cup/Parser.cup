@@ -138,7 +138,7 @@ non terminal Object literal_field;
 non terminal Object in_binding;
 
 non terminal Object named_function;
-non terminal Object for_initializer;
+non terminal Ast for_initializer;
 
 non terminal Ast statement;
 non terminal Ast empty_statement;

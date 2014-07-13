@@ -360,13 +360,17 @@ public class Ast {
 			case FOR: 
 				this.current_type = FOR;
 				this.condition.current_type = this.condition.evaluateType();	
-				VariablesController.getInstance().showVariables();
 				boolean condition_true = this.condition.isTrue();
 				if (condition_true){
 					//do the (.;.;here)
-					this.right.evaluate();
-					this.evaluate();
-					return this.left.evaluate();
+					if (this.right !=null){
+						this.right.evaluate();
+					}
+					if (this.left !=null){
+						this.left.evaluate();
+					}
+					
+					return this.evaluate();
 				}else{
 					return null;
 				}
