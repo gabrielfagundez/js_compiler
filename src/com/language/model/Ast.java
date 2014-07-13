@@ -51,6 +51,7 @@ public class Ast {
 	public static final int INCREMENT_P	= 38;
 	public static final int DECREMENT_P	= 39;
 	public static final int FOR 		= 40;
+	public static final int SPLIT 		= 41;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -192,6 +193,10 @@ public class Ast {
 	public static Ast createDecPNode(Ast left){
 		return new Ast(DECREMENT_P, left.value, left, null, null);
 	}
+	
+	public static Ast createSplitNode(Ast right){
+		return new Ast(SPLIT, null, null, right, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -280,6 +285,13 @@ public class Ast {
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
 			case LAST_INDEX_OF:
 				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
+			case SPLIT:
+				String[] out = ((String)this.left.evaluate()).split((String)this.right.evaluate());
+				ArrayList<String> stringList = new ArrayList<String>();
+				for(int i = 0; i < out.length; i++){
+					stringList.add("\"" + out[i] + "\"");
+				}
+				return stringList.toString();
 			case IF: 
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	

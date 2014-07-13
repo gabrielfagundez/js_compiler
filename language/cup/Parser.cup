@@ -280,7 +280,10 @@ js_function ::=
             RESULT = Ast.createLastIndexOfNode(se);
         :} |
     SUBSTRING_FUNCT |
-    SPLIT_FUNCT;
+    SPLIT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createSplitNode(se);
+        :} |;
 
 simple_expression ::=
     NULL:n {: RESULT = Ast.createNullNode(); :} |

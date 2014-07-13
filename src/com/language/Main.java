@@ -9,7 +9,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
 		
-		String fileName = "tests/unit/errors/test10.js";
+		String fileName = "tests/unit/known_functions/test9.js";
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		StringBuilder sb = new StringBuilder();
         String line = br.readLine();
