@@ -70,3 +70,13 @@ if(fifaCorrupta == fifaCorrupta){
  	console.log("La fifa..".concat(" NO es corrupta"));
  	console.log("Ooops, esto no deberia aparecer");
 }
+
+var fifaEsCorrupta = true;
+seguidoresSuarez = 20000000 - 10;
+console.log("Digamos que la fifa es corrupta hasta que Suarez llegue a 20000000 seguidores, y hasta el momento tiene");
+console.log(seguidoresSuarez);
+for(;fifaEsCorrupta==true&&seguidoresSuarez<20000000;seguidoresSuarez++){
+	console.log("Fifa corrupta!");
+	console.log("seguidores: ");
+	console.log(seguidoresSuarez);
+}
