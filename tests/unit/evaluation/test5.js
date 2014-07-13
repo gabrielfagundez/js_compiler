@@ -6,13 +6,13 @@
 // var num = "textoooooo";
 
 // Cargar distintos tipos de variables
-var text_1 = "texto 1";
+// var text_1 = "texto 1";
 // var text_2 = "texto 2";
 // var text_3 = 1;
 // var text_2 = "texto 2";
 // var num_1 = 2;
 // var num_2 = 1.5;
-var array_1 = [1, "a", true];
+// var array_1 = [1, "a", true];
 
 // Texto con texto
 // var prueba_1 = text_1 + text_2;
@@ -94,8 +94,8 @@ var array_1 = [1, "a", true];
 // var prueba_40 = 2 / "text_1";
 
 // Algo con array
-var prueba_41 = 1 + array_1;
-var prueba_42 = 1 + [1,2,3];
+// var prueba_41 = 1 + array_1;
+// var prueba_42 = 1 + [1,2,3];
 
 //var text = text_1 + text_2 + text_3;
 //var a = 1+1+1;
@@ -118,3 +118,7 @@ var prueba_42 = 1 + [1,2,3];
 // numero_1 = 3;
 // numero_2 = 1;
 // resultado = numero_1 + numero_2;
+
+// var indice = 1;
+// var fifaCorrupta = indice + 50;
+// fifaCorrupta = fifaCorrupta * 10 - 10;
