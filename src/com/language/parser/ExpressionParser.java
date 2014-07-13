@@ -9,21 +9,23 @@ import com.language.model.*;
 
 public class ExpressionParser {
 
-	public static Ast parse(String expText) throws Exception {
+	public static Ast parse(String expText) {
 
 		byte[] expbytes = expText.getBytes();
 		ByteArrayInputStream bais = new ByteArrayInputStream(expbytes);
 
-		Parser parser = new Parser(new Scanner(bais));
-//		try {
+		Scanner scanner = new Scanner(bais);
+		Parser parser = new Parser(scanner, scanner);
+		try {
 			Symbol topsym = parser.parse();
 
 			Ast exp = (Ast) topsym.value;
 			return exp;
 
-//		} catch (Throwable ex) {
-//			throw new ParsingException("Error parsing source: " + ex.getMessage());
-//		}
+		} catch (Throwable ex) {
+			System.out.println(ex.getMessage());
+			return null;
+		}
 
 	}
 }

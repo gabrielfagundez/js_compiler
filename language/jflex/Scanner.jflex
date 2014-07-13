@@ -28,6 +28,18 @@ import com.language.model.*;
 	private Symbol symbol(int type, Object value) {
 		return new Symbol(type, yyline, yycolumn, value);
 	}
+    public void errorMsg(String msg, java_cup.runtime.Symbol info) {
+        String syntaxMessage = "Error de sintaxis detectado cerca de la linea ";
+        syntaxMessage = syntaxMessage + yyline;
+        if(info.value != null){
+            syntaxMessage = syntaxMessage + " antes del token \"" + info.value + "\""; 
+        }
+
+        num_errors++;
+        throw new SyntaxError(syntaxMessage);
+    }
+    private int num_errors = 0;
+    public int numErrors() { return num_errors; }
 %}
 
 %eofval{

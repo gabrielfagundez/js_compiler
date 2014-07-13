@@ -6,6 +6,17 @@ import com.language.model.*;
 import com.language.controller.*;
 import com.language.exceptions.*;
 
+parser code  {: 
+  Scanner scanner;
+
+  public Parser(java_cup.runtime.Scanner s, Scanner scan) { super(s); scanner = scan; }
+
+  public void syntax_error(java_cup.runtime.Symbol current) {
+    scanner.errorMsg("Syntax error (" + current.sym + ")", current);
+  }
+
+:};
+
 terminal String NULL;
 
 terminal String POINT;
