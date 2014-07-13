@@ -361,14 +361,14 @@ argument_list ::=
 
 postfix_expression ::=
     left_side_expression:lse {: RESULT = lse ; :} |
-    left_side_expression INCREMENT |
-    left_side_expression DECREMENT;
+    left_side_expression:lse INCREMENT {: RESULT = Ast.createIncNode(lse); :} |
+    left_side_expression:lse DECREMENT {: RESULT = Ast.createDecNode(lse); :};
 
 unary_expression ::=
     postfix_expression:pe {: RESULT = pe ; :} |
     TYPEOF_FUNCT unary_expression |
-    INCREMENT unary_expression|
-    DECREMENT unary_expression |
+    INCREMENT unary_expression:lse {: RESULT = Ast.createIncPNode(lse); :}|
+    DECREMENT unary_expression:lse {: RESULT = Ast.createDecPNode(lse); :}|
     NOT unary_expression:exp {: RESULT = Ast.createNotNode(exp); :};
 
 multiplicative_expression ::= 

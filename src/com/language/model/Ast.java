@@ -48,6 +48,8 @@ public class Ast {
 	public static final int CHAR_AT		= 35;
 	public static final int INDEX_OF	= 36;
 	public static final int LAST_INDEX_OF = 37;
+	public static final int INCREMENT_P	= 38;
+	public static final int DECREMENT_P	= 39;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -173,6 +175,22 @@ public class Ast {
 	public static Ast createLastIndexOfNode(Ast right){
 		return new Ast(LAST_INDEX_OF, null, null, right, null);
 	}
+	
+	public static Ast createIncNode(Ast left){
+		return new Ast(INCREMENT, left.value, left, null, null);
+	}
+	
+	public static Ast createDecNode(Ast left){
+		return new Ast(DECREMENT, left.value, left, null, null);
+	}
+	
+	public static Ast createIncPNode(Ast left){
+		return new Ast(INCREMENT_P, left.value, left, null, null);
+	}
+	
+	public static Ast createDecPNode(Ast left){
+		return new Ast(DECREMENT_P, left.value, left, null, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -276,6 +294,66 @@ public class Ast {
 				}
 			case ARRAY:
 				return this.value;
+			case INCREMENT:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.value);
+					if(v.getType() == INTEGER){
+						Integer prevVal = (Integer)v.getValue();
+						v.setValue((Integer)v.getValue() + 1);
+						return prevVal;
+					}
+					if(v.getType() == FLOAT){
+						Float prevVal = (Float)v.getValue();
+						v.setValue((Float)v.getValue() + 1.0);
+						return prevVal;
+					}
+				}
+				return "NaN";
+			case INCREMENT_P:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.value);
+					if(v.getType() == INTEGER){
+						v.setValue((Integer)v.getValue() + 1);
+						return v.getValue();
+					}
+					if(v.getType() == FLOAT){
+						v.setValue((Float)v.getValue() + 1.0);
+						return v.getValue();
+					}
+				}
+				return "NaN";
+			case DECREMENT:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.value);
+					if(v.getType() == INTEGER){
+						Integer prevVal = (Integer)v.getValue();
+						v.setValue((Integer)v.getValue() - 1);
+						return prevVal;
+					}
+					if(v.getType() == FLOAT){
+						Float prevVal = (Float)v.getValue();
+						v.setValue((Float)v.getValue() - 1.0);
+						return prevVal;
+					}
+				}
+				return "NaN";
+			case DECREMENT_P:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.value);
+					if(v.getType() == INTEGER){
+						v.setValue((Integer)v.getValue() - 1);
+						return v.getValue();
+					}
+					if(v.getType() == FLOAT){
+						v.setValue((Float)v.getValue() - 1.0);
+						return v.getValue();
+					}
+				}
+				return "NaN";
 			case BLOCK:
 				this.left.evaluate();
 				this.right.evaluate();
