@@ -146,6 +146,7 @@ FloatLiteral = (0 | [1-9][0-9]*)\.[0-9]+
 <YYINITIAL> "NaN" 				{return symbol(sym.NAN, "NaN"); }
 <YYINITIAL> "isNaN" 			{return symbol(sym.IS_NAN, "isNaN"); }
 <YYINITIAL> "parse" 			{return symbol(sym.PARSE_FUNCT, "parse"); }
+<YYINITIAL> "parseInt"          {return symbol(sym.PARSE_INT_FUNCT, "parseInt"); }
 
 <YYINITIAL> \"([^\"\r\n\t]*)\"	{ return symbol(sym.STRING, yytext()); }
 <YYINITIAL> '([^\"\r\n\t]*)'	{ return symbol(sym.STRING, yytext()); }

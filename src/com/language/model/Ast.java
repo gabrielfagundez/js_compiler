@@ -53,6 +53,8 @@ public class Ast {
 	public static final int FOR 		= 40;
 	public static final int SPLIT 		= 41;
 	public static final int SUBSTRING	= 42;
+	public static final int IS_NAN		= 43;
+	public static final int PARSE		= 44;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -206,7 +208,19 @@ public class Ast {
 	public static Ast createSubstrNode2(Ast right, Ast condition){
 		return new Ast(SUBSTRING, null, right, condition);
 	}
+	
+	public static Ast createisNaNNode(Ast right){
+		return new Ast(IS_NAN, null, null, right, null);
+	}
 
+	public static Ast createNaNNode(Ast right){
+		return new Ast(NAN, null, null, right, null);
+	}
+
+	public static Ast createParseNode(Ast left){
+		return new Ast(PARSE, null, left, null, null);
+	}
+	
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
@@ -317,6 +331,16 @@ public class Ast {
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
 			case LAST_INDEX_OF:
 				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
+			case IS_NAN:
+				return null;
+			case NAN:
+				return null;
+			case PARSE:
+				try{
+					return Integer.parseInt(((String)this.left.evaluate()));
+				} catch (Exception ex) { 
+					return Float.parseFloat(((String)this.left.evaluate()));
+				}
 			case SPLIT:
 				String[] out = ((String)this.left.evaluate()).split((String)this.right.evaluate());
 				ArrayList<String> stringList = new ArrayList<String>();

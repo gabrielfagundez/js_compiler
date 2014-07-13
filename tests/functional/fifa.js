@@ -91,3 +91,13 @@ console.log(listaTelefonos.split(","));
 
 var listaSuscriptos = "";
 console.log(listaSuscriptos.split(";"));
+
+console.log(parse("123123"));
+console.log(parse("1"));
+console.log(parse("12.0"));
+console.log(parse("12.1"));
+
+console.log(parseInt("123123"));
+console.log(parseInt("1"));
+console.log(parseInt("12.0"));
+console.log(parseInt("12.1"));
