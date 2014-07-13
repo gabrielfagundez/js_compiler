@@ -341,7 +341,10 @@ public class Ast {
 	private Object evaluateArithmetic(){
 		if(this.left.current_type == STRING || this.right.current_type == STRING || this.left.current_type == ARRAY || this.right.current_type == ARRAY){
 			if (this.type == PLUS){
-				return this.left.evaluate().toString() + this.right.evaluate().toString();
+				String left_string = (this.left.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.left.evaluate()) : this.left.evaluate().toString() ; 
+				String right_string = (this.right.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.right.evaluate()) : this.right.evaluate().toString() ;
+
+				return left_string + right_string;
 			} else {
 				return "NaN";
 			}
@@ -623,7 +626,10 @@ public class Ast {
 	private Object evaluateArithmeticWithVars(Integer op_type, Integer left_type, Object left_value, Integer right_type, Object right_value){
 		if(left_type == STRING || right_type == STRING || left_type == ARRAY || right_type == ARRAY){
 			if (op_type == PLUS){
-				return left_value.toString() + right_value.toString();
+				String left_string = (left_value instanceof ArrayList) ? Utils.arrayToString((List) left_value) : left_value.toString() ; 
+				String right_string = (right_value instanceof ArrayList) ? Utils.arrayToString((List) right_value) : right_value.toString() ;
+
+				return left_string + right_string;
 			}
 
 			return "NaN";
