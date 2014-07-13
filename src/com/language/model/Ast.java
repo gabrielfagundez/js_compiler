@@ -209,8 +209,8 @@ public class Ast {
 		return new Ast(SUBSTRING, null, right, condition);
 	}
 	
-	public static Ast createisNaNNode(Ast right){
-		return new Ast(IS_NAN, null, null, right, null);
+	public static Ast createisNaNNode(Ast left){
+		return new Ast(IS_NAN, null, left, null, null);
 	}
 
 	public static Ast createNaNNode(Ast right){
@@ -332,9 +332,22 @@ public class Ast {
 			case LAST_INDEX_OF:
 				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
 			case IS_NAN:
-				return null;
+				try{
+					if(this.left.type == FLOAT || this.left.type == INTEGER){
+						return false;
+					}
+					Integer.parseInt(((String)this.left.evaluate()));
+					return false;
+				} catch (Exception ex) { 
+					try {
+						Float.parseFloat(((String)this.left.evaluate()));
+						return false;
+					} catch (Exception ex2) {
+						return true;	
+					}
+				}
 			case NAN:
-				return null;
+				return "NaN";
 			case PARSE:
 				try{
 					return Integer.parseInt(((String)this.left.evaluate()));

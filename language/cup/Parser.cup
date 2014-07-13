@@ -233,7 +233,11 @@ parse_function ::=
     PARSE_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
         {: RESULT = Ast.createParseNode(se); :} |
     PARSE_INT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
-        {: RESULT = Ast.createParseNode(se); :};
+        {: RESULT = Ast.createParseNode(se); :} |
+    IS_NAN LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createisNaNNode(se);
+        :};
 
 alert ::= 
     ALERT LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
@@ -299,10 +303,6 @@ js_function ::=
     SPLIT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
         {:
             RESULT = Ast.createSplitNode(se);
-        :} |
-    IS_NAN LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
-        {:
-            RESULT = Ast.createisNaNNode(se);
         :} |
     NAN LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
         {:
