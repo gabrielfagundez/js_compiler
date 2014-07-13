@@ -52,6 +52,7 @@ public class Ast {
 	public static final int DECREMENT_P	= 39;
 	public static final int FOR 		= 40;
 	public static final int SPLIT 		= 41;
+	public static final int SUBSTRING	= 42;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -83,7 +84,7 @@ public class Ast {
 	
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
 	// el tipo de la expresion.
-	public Ast	(Integer type, Ast left, Ast right, Ast condition) {
+	public Ast(Integer type, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.right 	= right;
 		this.left 	= left;
@@ -197,6 +198,14 @@ public class Ast {
 	public static Ast createSplitNode(Ast right){
 		return new Ast(SPLIT, null, null, right, null);
 	}
+	
+	public static Ast createSubstrNode1(Ast right){
+		return new Ast(SUBSTRING, null, null, right, null);
+	}
+	
+	public static Ast createSubstrNode2(Ast right, Ast condition){
+		return new Ast(SUBSTRING, null, right, condition);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
@@ -280,6 +289,29 @@ public class Ast {
 					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
 				} else {
 					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+				}
+			case SUBSTRING:
+				// Caso en el que tiene 1 parte
+				if(this.condition == null){
+					if(((String)this.left.evaluate()).length() > (Integer)this.right.evaluate()){
+						return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate());
+					}else{
+						return ((String)this.left.evaluate()).substring(((String)this.left.evaluate()).length());	
+					}
+				} else {
+					if((Integer)this.right.evaluate() > (Integer)this.condition.evaluate()){
+						if(((String)this.left.evaluate()).length() > (Integer)this.right.evaluate()){
+							return ((String)this.left.evaluate()).substring((Integer)this.condition.evaluate(), (Integer)this.right.evaluate());
+						}else{
+							return ((String)this.left.evaluate()).substring((Integer)this.condition.evaluate(), ((String)this.left.evaluate()).length());	
+						}
+					}else {
+						if(((String)this.left.evaluate()).length() > (Integer)this.condition.evaluate()){
+							return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate(), (Integer)this.condition.evaluate());
+						}else{
+							return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate(), ((String)this.left.evaluate()).length());	
+						}
+					}
 				}
 			case INDEX_OF:
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());

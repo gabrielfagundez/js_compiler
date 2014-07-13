@@ -279,7 +279,14 @@ js_function ::=
         {:
             RESULT = Ast.createLastIndexOfNode(se);
         :} |
-    SUBSTRING_FUNCT |
+    SUBSTRING_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createSubstrNode1(se);
+        :}|
+    SUBSTRING_FUNCT LEFT_ROUND_BRACKET simple_expression:se1 COMMA simple_expression:se2 RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createSubstrNode2(se1, se2);
+        :}|
     SPLIT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
         {:
             RESULT = Ast.createSplitNode(se);
@@ -476,7 +483,7 @@ variable_initializer ::=
 /* Definiciones de Bloques */
 
 block ::=
-    BLOCK_BEGIN block_statements:bs BLOCK_END {: RESULT = bs; :};
+    BLOCK_BEGIN {:  :} block_statements:bs BLOCK_END {: RESULT = bs; :};
     
 block_statements ::=
     block_statements_prefix:bs {: RESULT = bs; :};
