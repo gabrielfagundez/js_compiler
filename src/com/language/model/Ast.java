@@ -191,7 +191,6 @@ public class Ast {
 				return variables.getVariable((String)this.value).getValue();
 			case AND:
 				this.current_type = this.evaluateType();
-				
 				if (this.left.isFalse()) {
 					return this.left.evaluate();
 				} else {
@@ -199,7 +198,6 @@ public class Ast {
 				}
 			case OR:
 				this.current_type = this.evaluateType();
-				
 				if (this.left.isTrue()) {
 					return this.left.evaluate();
 				}else{
@@ -208,7 +206,6 @@ public class Ast {
 			case NOT:
 				this.current_type = this.evaluateType();
 				return evaluateNot();
-				
 			case EQ_EQ:
 			case LESS_EQ:
 			case GREATER_EQ:
@@ -257,7 +254,7 @@ public class Ast {
 			case CONCAT:
 				if(this.left.type == ARRAY){
 					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
-				}else{
+				} else {
 					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
 				}
 			case INDEX_OF:
@@ -426,7 +423,7 @@ public class Ast {
 			switch(e.current_type){
 				case BOOLEAN:
 					if ((Boolean)e.evaluate()){
-						returnValue+=1;
+						returnValue += 1;
 					}
 					break;
 				case INTEGER:
@@ -434,6 +431,31 @@ public class Ast {
 					break;
 				case FLOAT:
 					returnValue = (Float)e.evaluate();
+					break;
+				case VAR:
+					VariablesController variables = VariablesController.getInstance();
+					Variable var = variables.getVariable((String)e.value);
+					switch(var.getType()){
+					case BOOLEAN:
+						if ((Boolean)var.getValue()){
+							returnValue += 1;
+						}
+						break;
+					case INTEGER:
+						returnValue = (Integer)var.getValue();
+						break;
+					case FLOAT:
+						returnValue = (Float)var.getValue();
+						break;
+					case STRING:
+						try{
+							returnValue = new Integer((String)var.getValue());
+						}catch (NumberFormatException exc){	
+							//habria que manejar mas este caso borde y devolver NaN
+							returnValue = 0;
+						}
+						break;
+					}
 					break;
 				case STRING:
 					try{
