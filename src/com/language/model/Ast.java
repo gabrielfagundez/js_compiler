@@ -175,6 +175,10 @@ public class Ast {
 		return new Ast(PUSH, null, null, right, null);
 	}
 	
+	public static Ast createJoinNode(Ast right){
+		return new Ast(JOIN, null, null, right, null);
+	}
+	
 	public static Ast createPopNode(){
 		return new Ast(POP, null, null, null, null);
 	}
@@ -322,9 +326,17 @@ public class Ast {
 				}
 			case CONCAT:
 				if(this.left.type == VAR){
-					this.left.evaluate();
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType() == ARRAY){
+						ArrayList array = new ArrayList((ArrayList) v.getValue());
+						((ArrayList)array).add(this.right.evaluate());
+						return array;
+					} else {
+						return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+					}
 				}
-				if(this.left.type == ARRAY){
+				else if(this.left.type == ARRAY){
 					((ArrayList)this.left.value).add(this.right.evaluate());
 					return this.left.value;
 				} else {
@@ -354,20 +366,42 @@ public class Ast {
 					}
 				}
 			case PUSH:
-				if(this.left.type == ARRAY){
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType() == ARRAY){
+						if (((ArrayList)v.getValue()).size()>0){
+							return ((ArrayList)v.getValue()).add(this.right.evaluate());
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
 					((ArrayList)this.left.value).add(this.right.evaluate());
-//					VariablesController vars = VariablesController.getInstance();
-//					vars.getVariable((String)this.value).setValue(this.left.value);
 					return ((ArrayList)this.left.value).size();
 				} else {
 					return null;	
 				}
 			case POP:
-				if(this.left.type == ARRAY){
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType() == ARRAY){
+						if (((ArrayList)v.getValue()).size()>0){
+							return ((ArrayList)v.getValue()).remove(((ArrayList)v.getValue()).size()-1);
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
 					if (((ArrayList)this.left.value).size()>0){
 						Object value = ((ArrayList)this.left.value).remove(((ArrayList)this.left.value).size()-1);
-//						VariablesController vars = VariablesController.getInstance();
-//						vars.getVariable((String)this.value).setValue(this.left.value);
 						return value;
 					}else{
 						return null;
@@ -376,11 +410,22 @@ public class Ast {
 					return null;	
 				}
 			case SHIFT:
-				if(this.left.type == ARRAY){
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType() == ARRAY){
+						if (((ArrayList)v.getValue()).size()>0){
+							return ((ArrayList)v.getValue()).remove(0);
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
 					if (((ArrayList)this.left.value).size()>0){
 						Object value = ((ArrayList)this.left.value).remove(0);
-//						VariablesController vars = VariablesController.getInstance();
-//						vars.getVariable((String)this.value).setValue(this.left.value);
 						return value;
 					}else{
 						return null;
@@ -388,11 +433,40 @@ public class Ast {
 				} else {
 					return null;	
 				}
+			case JOIN:
+				String join = ((String)this.right.evaluate()).toString();
+				
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if (((ArrayList)v.getValue()).size()>0){
+						return Utils.arrayToStringWithJoin((List)v.getValue(), join);
+					}else{
+						return null;
+					}
+				}
+				else if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						return Utils.arrayToStringWithJoin((List)this.left.value, join);
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
 			case REVERSE:
-				if(this.left.type == ARRAY){
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType() == ARRAY){
+						Collections.reverse((ArrayList)v.getValue());
+						return v.getValue();
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
 					Collections.reverse((ArrayList)this.left.value);
-//						VariablesController vars = VariablesController.getInstance();
-//						vars.getVariable((String)this.value).setValue(this.left.value);
 					return (ArrayList)this.left.value;
 				} else {
 					return null;	
@@ -513,14 +587,13 @@ public class Ast {
 				this.condition.current_type = this.condition.evaluateType();	
 				boolean condition_true = this.condition.isTrue();
 				if (condition_true){
+					if (this.left !=null){
+						this.left.evaluate();
+					}
 					//do the (.;.;here)
 					if (this.right !=null){
 						this.right.evaluate();
 					}
-					if (this.left !=null){
-						this.left.evaluate();
-					}
-					
 					return this.evaluate();
 				}else{
 					return null;
@@ -590,8 +663,8 @@ public class Ast {
 	private Object evaluateArithmetic(){
 		if(this.left.current_type == STRING || this.right.current_type == STRING || this.left.current_type == ARRAY || this.right.current_type == ARRAY){
 			if (this.type == PLUS){
-				String left_string = (this.left.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.left.evaluate()) : this.left.evaluate().toString() ; 
-				String right_string = (this.right.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.right.evaluate()) : this.right.evaluate().toString() ;
+				String left_string = (this.left.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.left.evaluate()).substring(0,Utils.arrayToString((List) this.left.evaluate()).length()-1) : this.left.evaluate().toString() ; 
+				String right_string = (this.right.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.right.evaluate()).substring(0,Utils.arrayToString((List) this.right.evaluate()).length()-1) : this.right.evaluate().toString() ;
 
 				return left_string + right_string;
 			} else {
@@ -690,12 +763,14 @@ public class Ast {
 				case VAR:
 					VariablesController variables = VariablesController.getInstance();
 					Variable var = variables.getVariable((String)e.value);
+
 					switch(var.getType()){
 					case BOOLEAN:
 						if ((Boolean)var.getValue()){
 							returnValue += 1;
 						}
 						break;
+					case 0: //workaround, no se por que
 					case INTEGER:
 						returnValue = (Integer)var.getValue();
 						break;
@@ -703,6 +778,7 @@ public class Ast {
 						returnValue = (Float)var.getValue();
 						break;
 					case STRING:
+
 						try{
 							returnValue = new Integer((String)var.getValue());
 						}catch (NumberFormatException exc){	
