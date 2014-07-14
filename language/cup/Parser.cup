@@ -265,6 +265,26 @@ primary_expression ::=
         :};
 
 js_function ::=
+	JOIN_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createJoinNode(se);
+		:} |
+	REVERSE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createReverseNode();
+		:} |
+	SHIFT_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createShiftNode();
+		:} |
+	POP_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createPopNode();
+		:} |
+	PUSH_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createPushNode(se);
+		:} |
     LENGTH_FUNCT
         {:
             RESULT = Ast.createLengthNode();

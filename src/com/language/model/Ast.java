@@ -5,6 +5,7 @@ import com.language.controller.VariablesController;
 
 import java.lang.Math;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -55,6 +56,11 @@ public class Ast {
 	public static final int SUBSTRING	= 42;
 	public static final int IS_NAN		= 43;
 	public static final int PARSE		= 44;
+	public static final int PUSH		= 45;
+	public static final int POP  		= 46;
+	public static final int SHIFT  		= 47;
+	public static final int REVERSE		= 48;
+	public static final int JOIN 		= 49;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -163,6 +169,22 @@ public class Ast {
 	
 	public static Ast createTUCNode(){
 		return new Ast(TUC, null, null, null, null);
+	}
+	
+	public static Ast createPushNode(Ast right){
+		return new Ast(PUSH, null, null, right, null);
+	}
+	
+	public static Ast createPopNode(){
+		return new Ast(POP, null, null, null, null);
+	}
+	
+	public static Ast createShiftNode(){
+		return new Ast(SHIFT, null, null, null, null);
+	}
+	
+	public static Ast createReverseNode(){
+		return new Ast(REVERSE, null, null, null, null);
 	}
 	
 	public static Ast createTLCNode(){
@@ -299,8 +321,12 @@ public class Ast {
 					return this.left.evaluate().toString().length();	
 				}
 			case CONCAT:
+				if(this.left.type == VAR){
+					this.left.evaluate();
+				}
 				if(this.left.type == ARRAY){
-					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
+					((ArrayList)this.left.value).add(this.right.evaluate());
+					return this.left.value;
 				} else {
 					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
 				}
@@ -326,6 +352,50 @@ public class Ast {
 							return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate(), ((String)this.left.evaluate()).length());	
 						}
 					}
+				}
+			case PUSH:
+				if(this.left.type == ARRAY){
+					((ArrayList)this.left.value).add(this.right.evaluate());
+//					VariablesController vars = VariablesController.getInstance();
+//					vars.getVariable((String)this.value).setValue(this.left.value);
+					return ((ArrayList)this.left.value).size();
+				} else {
+					return null;	
+				}
+			case POP:
+				if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						Object value = ((ArrayList)this.left.value).remove(((ArrayList)this.left.value).size()-1);
+//						VariablesController vars = VariablesController.getInstance();
+//						vars.getVariable((String)this.value).setValue(this.left.value);
+						return value;
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
+			case SHIFT:
+				if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						Object value = ((ArrayList)this.left.value).remove(0);
+//						VariablesController vars = VariablesController.getInstance();
+//						vars.getVariable((String)this.value).setValue(this.left.value);
+						return value;
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
+			case REVERSE:
+				if(this.left.type == ARRAY){
+					Collections.reverse((ArrayList)this.left.value);
+//						VariablesController vars = VariablesController.getInstance();
+//						vars.getVariable((String)this.value).setValue(this.left.value);
+					return (ArrayList)this.left.value;
+				} else {
+					return null;	
 				}
 			case INDEX_OF:
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());

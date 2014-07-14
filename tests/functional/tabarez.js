@@ -84,3 +84,4 @@ for(;h<4;){
 	h++;
 	console.log(h);
 }
+console.log([1,"asdasd",[1,2,3]].shift());
