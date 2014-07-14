@@ -168,6 +168,7 @@ non terminal Ast for_statement;
 non terminal Ast with_statement;
 non terminal Ast continue_statement;
 non terminal Ast break_statement;
+non terminal Ast optional_label;
 non terminal Ast return_statement;
 non terminal Ast throw_statement;
 non terminal Ast try_statement;
@@ -477,6 +478,16 @@ statement ::=
     try_statement:stmts {: RESULT = stmts; :} ;
 
 empty_statement ::= SEMICOLON;
+
+continue_statement ::= 
+    CONTINUE optional_label;
+
+break_statement ::= 
+    BREAK optional_label;
+    
+optional_label ::=
+    |
+    ID; 
 
 expression_statement ::= expression:e {: RESULT = e; :} ;
 
