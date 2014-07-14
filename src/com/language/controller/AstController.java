@@ -34,6 +34,7 @@ public class AstController {
 
     // Ejecuta el AST principal
     public void execute(){
+    	VariablesController.getInstance().actualScope = 0;
     	for(int i = 0; i < this.statementsList.size(); i++){
     		//System.out.println(((Ast)this.statementsList.get(i)).getMainNodeType());
     		if(this.statementsList.get(i) != null){

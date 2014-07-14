@@ -122,3 +122,81 @@
 // var indice = 1;
 // var fifaCorrupta = indice + 50;
 // fifaCorrupta = fifaCorrupta * 10 - 10;
+
+// a = 1;
+// {
+// 	{
+// 		b = "hola";
+// 		console.log(a);
+// 		console.log(b);
+// 	}
+// }
+// console.log(b);
+// {
+// 	a = 3;
+// 	console.log(a);
+// 	console.log(b);
+// }
+// console.log(a);
+
+// a = 1;
+// if (true) {
+// 	if (true) {
+// 		b = "hola";
+// 		console.log(a);
+// 		console.log(b);
+// 	};
+// };
+// console.log(b);
+// if (true) {
+// 	a = 3;
+// 	console.log(a);
+// 	console.log(b);
+// };
+// console.log(a);
+
+// {
+// 	a = 1;
+// 	a = 2;
+// }
+// console.log(a);
+
+// a = 1;
+// {
+//     {
+// 		b = "hola";
+// 		console.log(a);
+// 		console.log(b);
+// 	}
+// 	b = "ceci";
+// }
+// b = "lala";
+// console.log(b);
+
+// var a = "hola";
+// { 
+// 	var a = "pepe";
+// 	console.log(a);
+// }
+// console.log(a);
+
+// var a = "pepe";
+// if (true) {
+// 	var a = 9879;
+// 	console.log(a);
+// }
+
+// var a = "pepe";
+// for (var i = 0; i <= 1; i++) {
+//  var a = "hola";
+//  console.log(a);
+// };
+
+for(var i=0;i<4;i++){
+	console.log(i);
+}
+
+for(;h<4;){
+	h++;
+	console.log(h);
+}

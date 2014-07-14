@@ -2,6 +2,7 @@ package com.language;
 
 import java.io.*;
 
+import com.language.controller.VariablesController;
 import com.language.model.*;
 import com.language.parser.ExpressionParser;
 
@@ -9,7 +10,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
 		
-		String fileName = "tests/unit/errors/test10.js";
+		String fileName = "tests/functional/iva.js";
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		StringBuilder sb = new StringBuilder();
         String line = br.readLine();
@@ -26,5 +27,6 @@ public class Main {
 
 	    Ast expobj = ExpressionParser.parse(exptext);
 
+	    //VariablesController.getInstance().showVariables();
 	}
 }

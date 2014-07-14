@@ -40,8 +40,9 @@ public class FunctionsController {
     }
 
     // Agrega una nueva funcion a la tabla de funciones que se almacena
-    public void addFunction(String function_name){
+    public void addFunction(String function_name, Integer scope){
     	Function function = new Function();
+    	function.scope = scope;
     	this.functions.put(function_name, function);
     }
     

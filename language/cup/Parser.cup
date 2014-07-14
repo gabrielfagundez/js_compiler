@@ -189,6 +189,7 @@ non terminal Ast top_statements_prefix_function;
 
 precedence left ELSE;
 precedence left POINT;
+//precedence left LEFT_ROUND_BRACKET;
 
 /* Program */
 
@@ -307,9 +308,6 @@ field_list ::=
     literal_field |
     field_list COMMA literal_field;
 
-literal_field ::= 
-    ID COLON assignment_expression;
-
 array_literal ::=
     LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET {: RESULT = new Ast(Ast.ARRAY, null, null); :} |
     LEFT_SQUARE_BRACKET element_list:el RIGHT_SQUARE_BRACKET {: RESULT = el; :} ;
@@ -418,7 +416,12 @@ conditional_expression ::=
 
 assignment_expression ::=
     conditional_expression:ce {: RESULT = ce; :} |
-    left_side_expression:lse EQUAL assignment_expression:ae {: if (lse.type == Ast.VAR) { VariablesController.getInstance().addVariable(lse.value.toString(), ae); }; :} |
+    left_side_expression:lse EQUAL assignment_expression:ae 
+    {: 
+        if (lse.type == Ast.VAR) {
+            VariablesController.getInstance().addVariable(lse.value.toString(), ae);
+        }; 
+    :} |
     left_side_expression compound_assignment assignment_expression;
 
 expression ::=
@@ -473,24 +476,53 @@ variable_initializer ::=
 /* Definiciones de Bloques */
 
 block ::=
-    BLOCK_BEGIN block_statements:bs BLOCK_END {: RESULT = bs; :};
+    BLOCK_BEGIN 
+        {: VariablesController.getInstance().setBeginBlockScope(); :} 
+        block_statements:bs 
+        BLOCK_END 
+        {: RESULT = bs; VariablesController.getInstance().setEndBlockScope();:};
     
 block_statements ::=
     block_statements_prefix:bs {: RESULT = bs; :};
     
 block_statements_prefix ::=
     statement:bs {: RESULT = bs; :} |
-    block_statements_prefix:stmts statement:s {: RESULT = new Ast(Ast.BLOCK,stmts,s,null); :};
+    block_statements_prefix:stmts statement:s 
+    {: 
+        Ast block = new Ast(Ast.BLOCK,stmts,s,null);
+        block.scope = VariablesController.getInstance().actualScope;
+        RESULT = block;
+        
+    :};
     
-if_statement ::= 
-    IF parenthesized_expression:e statement:s {: RESULT = new Ast(Ast.IF, s, null, e); :} |
-    IF parenthesized_expression:e statement:s ELSE statement:u {: RESULT = new Ast(Ast.IF, s, u, e); :};
+if_statement ::=
+    IF parenthesized_expression:e statement:s
+        {:
+            Ast ast_if = new Ast(Ast.IF, s, null, e);
+            ast_if.scope = VariablesController.getInstance().actualScope;
+            RESULT = ast_if;
+        :} |
+    IF parenthesized_expression:e statement:s ELSE statement:u
+        {:
+            Ast ast_if = new Ast(Ast.IF, s, u, e);
+            ast_if.scope = VariablesController.getInstance().actualScope;
+            RESULT = ast_if;
+        :};
     
 while_statement ::= 
     WHILE parenthesized_expression statement;
     
 for_statement ::=
-    FOR LEFT_ROUND_BRACKET for_initializer:ini SEMICOLON optional_expression:condition SEMICOLON optional_expression:what_next RIGHT_ROUND_BRACKET statement:stmt {: RESULT = new Ast(Ast.FOR, stmt, what_next, condition); :};
+    FOR  
+        LEFT_ROUND_BRACKET for_initializer:ini SEMICOLON 
+        optional_expression:condition SEMICOLON 
+        optional_expression:what_next RIGHT_ROUND_BRACKET 
+        statement:stmt 
+        {:
+            Ast ast_for = new Ast(Ast.FOR, stmt, what_next, condition);
+            ast_for.scope = VariablesController.getInstance().actualScope;
+            RESULT = ast_for;
+        :};
     
 for_initializer ::=
     |
@@ -516,11 +548,13 @@ function_definition ::=
                 asts.inFunction = true; 
                 FunctionsController fc = FunctionsController.getInstance(); 
                 fc.actual_function_name = funct_name; 
-                fc.addFunction(funct_name); 
+                fc.addFunction(funct_name, VariablesController.getInstance().actualScope); 
             :}
         LEFT_ROUND_BRACKET formal_parameters RIGHT_ROUND_BRACKET 
         BLOCK_BEGIN 
-            top_statements:stmts {:  :} 
+            {: VariablesController.getInstance().setBeginBlockScope(); :}
+            top_statements:stmts
+            {: VariablesController.getInstance().setEndBlockScope(); :}
         BLOCK_END 
             {:  
                 AstController asts = AstController.getInstance(); 

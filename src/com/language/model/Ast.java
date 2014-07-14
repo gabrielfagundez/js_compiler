@@ -61,6 +61,7 @@ public class Ast {
 	private Integer current_type;
 	public Boolean inFunction = false;
 	public ArrayList<Ast> argsForFunction = null;
+	public Integer scope = 0;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
@@ -192,11 +193,16 @@ public class Ast {
 	public static Ast createDecPNode(Ast left){
 		return new Ast(DECREMENT_P, left.value, left, null, null);
 	}
+	
+	public static Ast createNameVariableNode(String name_variable) {
+		return new Ast(STRING, name_variable, null, null, null);
+	}
 
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
 	public Object evaluate(){
+		Integer previousScope; 
 		switch(this.type){
 			case BOOLEAN:
 			case INTEGER:
@@ -207,7 +213,7 @@ public class Ast {
 				return null;
 			case VAR:
 				VariablesController variables = VariablesController.getInstance();
-				return variables.getVariable((String)this.value).getValue();
+				return variables.getVariable((String)this.value).getValue(VariablesController.getInstance().actualScope);
 			case AND:
 				this.current_type = this.evaluateType();
 				if (this.left.isFalse()) {
@@ -280,19 +286,30 @@ public class Ast {
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
 			case LAST_INDEX_OF:
 				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
-			case IF: 
+			case IF:
+				previousScope = VariablesController.getInstance().actualScope;
+				VariablesController.getInstance().actualScope = this.scope;
+				Object return_value;
+				
 				this.current_type = IF;
 				this.condition.current_type = this.condition.evaluateType();	
 
 				boolean condition = this.condition.isTrue();
 				if (condition){
 					if(this.left != null){
-						return this.left.evaluate();	
+						return_value = this.left.evaluate();
+						VariablesController.getInstance().actualScope = previousScope;
+						return return_value;
 					}
+					VariablesController.getInstance().actualScope = previousScope;
 				}else{
 					if (this.right !=null){
-						return this.right.evaluate(); 
+						return_value = this.right.evaluate();
+						VariablesController.getInstance().actualScope = previousScope;
+						return return_value; 
 					}
+
+					VariablesController.getInstance().actualScope = previousScope; 
 					return null;
 				}
 			case ARRAY:
@@ -301,14 +318,14 @@ public class Ast {
 				if(this.left.type == VAR){
 					VariablesController vc = VariablesController.getInstance();
 					Variable v = vc.getVariable((String)this.value);
-					if(v.getType() == INTEGER){
-						Integer prevVal = (Integer)v.getValue();
-						v.setValue((Integer)v.getValue() + 1);
+					if(v.getType(VariablesController.getInstance().actualScope) == INTEGER){
+						Integer prevVal = (Integer)v.getValue(VariablesController.getInstance().actualScope);
+						v.setValue(VariablesController.getInstance().actualScope, (Integer)v.getValue(VariablesController.getInstance().actualScope) + 1);
 						return prevVal;
 					}
-					if(v.getType() == FLOAT){
-						Float prevVal = (Float)v.getValue();
-						v.setValue((Float)v.getValue() + 1.0);
+					if(v.getType(VariablesController.getInstance().actualScope) == FLOAT){
+						Float prevVal = (Float)v.getValue(VariablesController.getInstance().actualScope);
+						v.setValue(VariablesController.getInstance().actualScope, (Float)v.getValue(VariablesController.getInstance().actualScope) + 1.0);
 						return prevVal;
 					}
 				}
@@ -317,13 +334,13 @@ public class Ast {
 				if(this.left.type == VAR){
 					VariablesController vc = VariablesController.getInstance();
 					Variable v = vc.getVariable((String)this.value);
-					if(v.getType() == INTEGER){
-						v.setValue((Integer)v.getValue() + 1);
-						return v.getValue();
+					if(v.getType(VariablesController.getInstance().actualScope) == INTEGER){
+						v.setValue(VariablesController.getInstance().actualScope, (Integer)v.getValue(VariablesController.getInstance().actualScope) + 1);
+						return v.getValue(VariablesController.getInstance().actualScope);
 					}
-					if(v.getType() == FLOAT){
-						v.setValue((Float)v.getValue() + 1.0);
-						return v.getValue();
+					if(v.getType(VariablesController.getInstance().actualScope) == FLOAT){
+						v.setValue(VariablesController.getInstance().actualScope, (Float)v.getValue(VariablesController.getInstance().actualScope) + 1.0);
+						return v.getValue(VariablesController.getInstance().actualScope);
 					}
 				}
 				return "NaN";
@@ -331,14 +348,14 @@ public class Ast {
 				if(this.left.type == VAR){
 					VariablesController vc = VariablesController.getInstance();
 					Variable v = vc.getVariable((String)this.value);
-					if(v.getType() == INTEGER){
-						Integer prevVal = (Integer)v.getValue();
-						v.setValue((Integer)v.getValue() - 1);
+					if(v.getType(VariablesController.getInstance().actualScope) == INTEGER){
+						Integer prevVal = (Integer)v.getValue(VariablesController.getInstance().actualScope);
+						v.setValue(VariablesController.getInstance().actualScope, (Integer)v.getValue(VariablesController.getInstance().actualScope) - 1);
 						return prevVal;
 					}
-					if(v.getType() == FLOAT){
-						Float prevVal = (Float)v.getValue();
-						v.setValue((Float)v.getValue() - 1.0);
+					if(v.getType(VariablesController.getInstance().actualScope) == FLOAT){
+						Float prevVal = (Float)v.getValue(VariablesController.getInstance().actualScope);
+						v.setValue(VariablesController.getInstance().actualScope, (Float)v.getValue(VariablesController.getInstance().actualScope) - 1.0);
 						return prevVal;
 					}
 				}
@@ -347,19 +364,23 @@ public class Ast {
 				if(this.left.type == VAR){
 					VariablesController vc = VariablesController.getInstance();
 					Variable v = vc.getVariable((String)this.value);
-					if(v.getType() == INTEGER){
-						v.setValue((Integer)v.getValue() - 1);
-						return v.getValue();
+					if(v.getType(VariablesController.getInstance().actualScope) == INTEGER){
+						v.setValue(VariablesController.getInstance().actualScope, (Integer)v.getValue(VariablesController.getInstance().actualScope) - 1);
+						return v.getValue(VariablesController.getInstance().actualScope);
 					}
-					if(v.getType() == FLOAT){
-						v.setValue((Float)v.getValue() - 1.0);
-						return v.getValue();
+					if(v.getType(VariablesController.getInstance().actualScope) == FLOAT){
+						v.setValue(VariablesController.getInstance().actualScope, (Float)v.getValue(VariablesController.getInstance().actualScope) - 1.0);
+						return v.getValue(VariablesController.getInstance().actualScope);
 					}
 				}
 				return "NaN";
 			case FOR: 
+				previousScope = VariablesController.getInstance().actualScope;
+				VariablesController.getInstance().actualScope = this.scope;
+				Object for_value_return;
+				
 				this.current_type = FOR;
-				this.condition.current_type = this.condition.evaluateType();	
+				this.condition.current_type = this.condition.evaluateType();
 				boolean condition_true = this.condition.isTrue();
 				if (condition_true){
 					//do the (.;.;here)
@@ -369,18 +390,23 @@ public class Ast {
 					if (this.left !=null){
 						this.left.evaluate();
 					}
-					
-					return this.evaluate();
+					for_value_return = this.evaluate();
+					VariablesController.getInstance().actualScope = previousScope;
+					return for_value_return;
 				}else{
+					VariablesController.getInstance().actualScope = previousScope; 
 					return null;
 				}
 			case BLOCK:
+				previousScope = VariablesController.getInstance().actualScope;
+				VariablesController.getInstance().actualScope = this.scope;
 				if(this.left != null){
 					this.left.evaluate();
 				}
 				if(this.right != null){
 					this.right.evaluate();
 				}
+				VariablesController.getInstance().actualScope = previousScope; 
 				return null;
 			default:
 				return "Error";
@@ -395,6 +421,8 @@ public class Ast {
 			return (Boolean)this.evaluate();
 		} else if (this.current_type == STRING){
 			return ((String)this.evaluate()).length() > 0;
+		} else if (this.current_type == VAR){
+			return (boolean)VariablesController.getInstance().getVariable((String)this.value).getValue(VariablesController.getInstance().actualScope);
 		} else {
 			return false;
 		}
@@ -407,7 +435,6 @@ public class Ast {
 	
 	// Funcion auxiliar que evalua comparaciones
 	private Object evaluateComparison(){
-
 		double left = getComparisonEvaluationForRamification(this.left);
 		double right = getComparisonEvaluationForRamification(this.right);
 			
@@ -458,20 +485,20 @@ public class Ast {
 				Variable var_left = VariablesController.getInstance().getVariable(this.left.value.toString());
 				Variable var_right = VariablesController.getInstance().getVariable(this.right.value.toString());
 
-				left_type = var_left.getType();
-				right_type = var_right.getType();
+				left_type = var_left.getType(VariablesController.getInstance().actualScope);
+				right_type = var_right.getType(VariablesController.getInstance().actualScope);
 
-				left_value = var_left.getValue();
-				right_value = var_right.getValue();
+				left_value = var_left.getValue(VariablesController.getInstance().actualScope);
+				right_value = var_right.getValue(VariablesController.getInstance().actualScope);
 			} else if (this.left.current_type == VAR) {
 				// El nodo izquierdo es VAR
 
 				Variable var = VariablesController.getInstance().getVariable(this.left.value.toString());
 
-				left_type = var.getType();
+				left_type = var.getType(VariablesController.getInstance().actualScope);
 				right_type = this.right.evaluateType();
 
-				left_value = var.getValue();
+				left_value = var.getValue(VariablesController.getInstance().actualScope);
 				right_value = this.right.evaluate();
 			} else {
 				// El nodo derecho
@@ -479,10 +506,10 @@ public class Ast {
 				Variable var = VariablesController.getInstance().getVariable(this.right.value.toString());
 
 				left_type = this.left.evaluateType();
-				right_type = var.getType();
+				right_type = var.getType(VariablesController.getInstance().actualScope);
 
 				left_value = this.left.evaluate();
-				right_value = var.getValue();
+				right_value = var.getValue(VariablesController.getInstance().actualScope);
 			}
 
 			return evaluateArithmeticWithVars(this.type, left_type, left_value, right_type, right_value);
@@ -539,21 +566,22 @@ public class Ast {
 				case VAR:
 					VariablesController variables = VariablesController.getInstance();
 					Variable var = variables.getVariable((String)e.value);
-					switch(var.getType()){
+					
+					switch(var.getType(VariablesController.getInstance().actualScope)){
 					case BOOLEAN:
-						if ((Boolean)var.getValue()){
+						if ((Boolean)var.getValue(VariablesController.getInstance().actualScope)){
 							returnValue += 1;
 						}
 						break;
 					case INTEGER:
-						returnValue = (Integer)var.getValue();
+						returnValue = (Integer)var.getValue(VariablesController.getInstance().actualScope);
 						break;
 					case FLOAT:
-						returnValue = (Float)var.getValue();
+						returnValue = (Float)var.getValue(VariablesController.getInstance().actualScope);
 						break;
 					case STRING:
 						try{
-							returnValue = new Integer((String)var.getValue());
+							returnValue = new Integer((String)var.getValue(VariablesController.getInstance().actualScope));
 						}catch (NumberFormatException exc){	
 							//habria que manejar mas este caso borde y devolver NaN
 							returnValue = 0;
@@ -632,7 +660,7 @@ public class Ast {
 		Variable var = VariablesController.getInstance().getVariable(this.value.toString());
 
 		//List<Object> array = (List<Object>) ((Ast) var.getValue()).value;
-		List<Object> array = (List<Object>) var.getValue();
+		List<Object> array = (List<Object>) var.getValue(VariablesController.getInstance().actualScope);
 
 		Integer index = (Integer) index_ast.value;
 
@@ -688,14 +716,14 @@ public class Ast {
 
 			if(this.left.current_type == VAR || this.right.current_type == VAR) {
 				if (this.left.current_type == VAR && this.right.current_type == VAR) {
-					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
-					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType(VariablesController.getInstance().actualScope);
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType(VariablesController.getInstance().actualScope);
 				} else if (this.left.current_type == VAR) {
-					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType(VariablesController.getInstance().actualScope);
 					right_type = this.right.current_type;
 				} else {
 					left_type = this.left.current_type;
-					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType(VariablesController.getInstance().actualScope);
 				}
 			} else {
 				left_type = this.left.current_type;
@@ -710,14 +738,14 @@ public class Ast {
 
 			if(this.left.current_type == VAR || this.right.current_type == VAR) {
 				if (this.left.current_type == VAR && this.right.current_type == VAR) {
-					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
-					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType(VariablesController.getInstance().actualScope);
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType(VariablesController.getInstance().actualScope);
 				} else if (this.left.current_type == VAR) {
-					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType();
+					left_type = VariablesController.getInstance().getVariable(this.left.value.toString()).getType(VariablesController.getInstance().actualScope);
 					right_type = this.right.current_type;
 				} else {
 					left_type = this.left.current_type;
-					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType();
+					right_type = VariablesController.getInstance().getVariable(this.right.value.toString()).getType(VariablesController.getInstance().actualScope);
 				}
 			} else {
 				left_type = this.left.current_type;
