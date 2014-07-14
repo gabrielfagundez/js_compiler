@@ -192,11 +192,26 @@
 //  console.log(a);
 // };
 
-for(var i=0;i<4;i++){
-	console.log(i);
-}
+// for(var i=0;i<4;i++){
+// 	console.log(i);
+// }
 
-for(;h<4;){
-	h++;
-	console.log(h);
-}
+// for(var i=0;i<4;i++){
+// 	console.log(i);
+// }
+// var j = 1;
+
+// //for sin el primer elemento
+// for(;j<4;j++){
+// 	console.log(j);
+// }
+
+// NO ANDA LO DE ABAJO
+
+// var h = 2;
+
+// //for sin el primer elemento y el tercero
+// for(;h<4;){
+// 	h++;
+// 	console.log(h);
+// }
