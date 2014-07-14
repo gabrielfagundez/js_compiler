@@ -9,7 +9,7 @@ import com.language.parser.ExpressionParser;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
-		
+
 		String fileName = "tests/functional/iva.js";
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		StringBuilder sb = new StringBuilder();

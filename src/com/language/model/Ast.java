@@ -5,6 +5,7 @@ import com.language.controller.VariablesController;
 
 import java.lang.Math;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -51,6 +52,15 @@ public class Ast {
 	public static final int INCREMENT_P	= 38;
 	public static final int DECREMENT_P	= 39;
 	public static final int FOR 		= 40;
+	public static final int SPLIT 		= 41;
+	public static final int SUBSTRING	= 42;
+	public static final int IS_NAN		= 43;
+	public static final int PARSE		= 44;
+	public static final int PUSH		= 45;
+	public static final int POP  		= 46;
+	public static final int SHIFT  		= 47;
+	public static final int REVERSE		= 48;
+	public static final int JOIN 		= 49;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -83,7 +93,7 @@ public class Ast {
 	
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
 	// el tipo de la expresion.
-	public Ast	(Integer type, Ast left, Ast right, Ast condition) {
+	public Ast(Integer type, Ast left, Ast right, Ast condition) {
 		this.type 	= type;
 		this.right 	= right;
 		this.left 	= left;
@@ -162,6 +172,26 @@ public class Ast {
 		return new Ast(TUC, null, null, null, null);
 	}
 	
+	public static Ast createPushNode(Ast right){
+		return new Ast(PUSH, null, null, right, null);
+	}
+	
+	public static Ast createJoinNode(Ast right){
+		return new Ast(JOIN, null, null, right, null);
+	}
+	
+	public static Ast createPopNode(){
+		return new Ast(POP, null, null, null, null);
+	}
+	
+	public static Ast createShiftNode(){
+		return new Ast(SHIFT, null, null, null, null);
+	}
+	
+	public static Ast createReverseNode(){
+		return new Ast(REVERSE, null, null, null, null);
+	}
+	
 	public static Ast createTLCNode(){
 		return new Ast(TLC, null, null, null, null);
 	}
@@ -193,11 +223,35 @@ public class Ast {
 	public static Ast createDecPNode(Ast left){
 		return new Ast(DECREMENT_P, left.value, left, null, null);
 	}
-	
+
 	public static Ast createNameVariableNode(String name_variable) {
 		return new Ast(STRING, name_variable, null, null, null);
 	}
+	
+	public static Ast createSplitNode(Ast right){
+		return new Ast(SPLIT, null, null, right, null);
+	}
+	
+	public static Ast createSubstrNode1(Ast right){
+		return new Ast(SUBSTRING, null, null, right, null);
+	}
+	
+	public static Ast createSubstrNode2(Ast right, Ast condition){
+		return new Ast(SUBSTRING, null, right, condition);
+	}
+	
+	public static Ast createisNaNNode(Ast left){
+		return new Ast(IS_NAN, null, left, null, null);
+	}
 
+	public static Ast createNaNNode(Ast right){
+		return new Ast(NAN, null, null, right, null);
+	}
+
+	public static Ast createParseNode(Ast left){
+		return new Ast(PARSE, null, left, null, null);
+	}
+	
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
@@ -277,16 +331,187 @@ public class Ast {
 					return this.left.evaluate().toString().length();	
 				}
 			case CONCAT:
-				if(this.left.type == ARRAY){
-					return ((ArrayList)this.left.value).addAll((ArrayList)this.right.value);
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType(VariablesController.getInstance().actualScope) == ARRAY){
+						ArrayList array = new ArrayList((ArrayList) v.getValue(VariablesController.getInstance().actualScope));
+						((ArrayList)array).add(this.right.evaluate());
+						return array;
+					} else {
+						return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+					}
+				}
+				else if(this.left.type == ARRAY){
+					((ArrayList)this.left.value).add(this.right.evaluate());
+					return this.left.value;
 				} else {
 					return (String)this.left.evaluate().toString() + (String)this.right.evaluate().toString();	
+				}
+			case SUBSTRING:
+				// Caso en el que tiene 1 parte
+				if(this.condition == null){
+					if(((String)this.left.evaluate()).length() > (Integer)this.right.evaluate()){
+						return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate());
+					}else{
+						return ((String)this.left.evaluate()).substring(((String)this.left.evaluate()).length());	
+					}
+				} else {
+					if((Integer)this.right.evaluate() > (Integer)this.condition.evaluate()){
+						if(((String)this.left.evaluate()).length() > (Integer)this.right.evaluate()){
+							return ((String)this.left.evaluate()).substring((Integer)this.condition.evaluate(), (Integer)this.right.evaluate());
+						}else{
+							return ((String)this.left.evaluate()).substring((Integer)this.condition.evaluate(), ((String)this.left.evaluate()).length());	
+						}
+					}else {
+						if(((String)this.left.evaluate()).length() > (Integer)this.condition.evaluate()){
+							return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate(), (Integer)this.condition.evaluate());
+						}else{
+							return ((String)this.left.evaluate()).substring((Integer)this.right.evaluate(), ((String)this.left.evaluate()).length());	
+						}
+					}
+				}
+			case PUSH:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType(VariablesController.getInstance().actualScope) == ARRAY){
+						if (((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).size()>0){
+							return ((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).add(this.right.evaluate());
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
+					((ArrayList)this.left.value).add(this.right.evaluate());
+					return ((ArrayList)this.left.value).size();
+				} else {
+					return null;	
+				}
+			case POP:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType(VariablesController.getInstance().actualScope) == ARRAY){
+						if (((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).size()>0){
+							return ((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).remove(((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).size()-1);
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						Object value = ((ArrayList)this.left.value).remove(((ArrayList)this.left.value).size()-1);
+						return value;
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
+			case SHIFT:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType(VariablesController.getInstance().actualScope) == ARRAY){
+						if (((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).size()>0){
+							return ((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).remove(0);
+						}else{
+							return null;
+						}
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						Object value = ((ArrayList)this.left.value).remove(0);
+						return value;
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
+			case JOIN:
+				String join = ((String)this.right.evaluate()).toString();
+				
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if (((ArrayList)v.getValue(VariablesController.getInstance().actualScope)).size()>0){
+						return Utils.arrayToStringWithJoin((List)v.getValue(VariablesController.getInstance().actualScope), join);
+					}else{
+						return null;
+					}
+				}
+				else if(this.left.type == ARRAY){
+					if (((ArrayList)this.left.value).size()>0){
+						return Utils.arrayToStringWithJoin((List)this.left.value, join);
+					}else{
+						return null;
+					}
+				} else {
+					return null;	
+				}
+			case REVERSE:
+				if(this.left.type == VAR){
+					VariablesController vc = VariablesController.getInstance();
+					Variable v = vc.getVariable((String)this.left.value);
+					if(v.getType(VariablesController.getInstance().actualScope) == ARRAY){
+						Collections.reverse((ArrayList)v.getValue(VariablesController.getInstance().actualScope));
+						return v.getValue(VariablesController.getInstance().actualScope);
+					} else {
+						return null;	
+					}
+				}
+				else if(this.left.type == ARRAY){
+					Collections.reverse((ArrayList)this.left.value);
+					return (ArrayList)this.left.value;
+				} else {
+					return null;	
 				}
 			case INDEX_OF:
 				return ((String)this.left.evaluate()).indexOf((String)this.right.evaluate());
 			case LAST_INDEX_OF:
 				return ((String)this.left.evaluate()).lastIndexOf((String)this.right.evaluate());
-			case IF:
+			case IS_NAN:
+				try{
+					if(this.left.type == FLOAT || this.left.type == INTEGER){
+						return false;
+					}
+					Integer.parseInt(((String)this.left.evaluate()));
+					return false;
+				} catch (Exception ex) { 
+					try {
+						Float.parseFloat(((String)this.left.evaluate()));
+						return false;
+					} catch (Exception ex2) {
+						return true;	
+					}
+				}
+			case NAN:
+				return "NaN";
+			case PARSE:
+				try{
+					return Integer.parseInt(((String)this.left.evaluate()));
+				} catch (Exception ex) { 
+					return Float.parseFloat(((String)this.left.evaluate()));
+				}
+			case SPLIT:
+				String[] out = ((String)this.left.evaluate()).split((String)this.right.evaluate());
+				ArrayList<String> stringList = new ArrayList<String>();
+				for(int i = 0; i < out.length; i++){
+					stringList.add("\"" + out[i] + "\"");
+				}
+				return stringList.toString();
+			case IF: 
 				previousScope = VariablesController.getInstance().actualScope;
 				VariablesController.getInstance().actualScope = this.scope;
 				Object return_value;
@@ -383,15 +608,17 @@ public class Ast {
 				this.condition.current_type = this.condition.evaluateType();
 				boolean condition_true = this.condition.isTrue();
 				if (condition_true){
+					if (this.left !=null){
+						this.left.evaluate();
+					}
 					//do the (.;.;here)
 					if (this.right !=null){
 						this.right.evaluate();
 					}
-					if (this.left !=null){
-						this.left.evaluate();
-					}
+
 					for_value_return = this.evaluate();
 					VariablesController.getInstance().actualScope = previousScope;
+
 					return for_value_return;
 				}else{
 					VariablesController.getInstance().actualScope = previousScope; 
@@ -466,8 +693,8 @@ public class Ast {
 	private Object evaluateArithmetic(){
 		if(this.left.current_type == STRING || this.right.current_type == STRING || this.left.current_type == ARRAY || this.right.current_type == ARRAY){
 			if (this.type == PLUS){
-				String left_string = (this.left.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.left.evaluate()) : this.left.evaluate().toString() ; 
-				String right_string = (this.right.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.right.evaluate()) : this.right.evaluate().toString() ;
+				String left_string = (this.left.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.left.evaluate()).substring(0,Utils.arrayToString((List) this.left.evaluate()).length()-1) : this.left.evaluate().toString() ; 
+				String right_string = (this.right.evaluate() instanceof ArrayList) ? Utils.arrayToString((List) this.right.evaluate()).substring(0,Utils.arrayToString((List) this.right.evaluate()).length()-1) : this.right.evaluate().toString() ;
 
 				return left_string + right_string;
 			} else {
@@ -566,13 +793,14 @@ public class Ast {
 				case VAR:
 					VariablesController variables = VariablesController.getInstance();
 					Variable var = variables.getVariable((String)e.value);
-					
+
 					switch(var.getType(VariablesController.getInstance().actualScope)){
 					case BOOLEAN:
 						if ((Boolean)var.getValue(VariablesController.getInstance().actualScope)){
 							returnValue += 1;
 						}
 						break;
+					case 0: //workaround, no se por que
 					case INTEGER:
 						returnValue = (Integer)var.getValue(VariablesController.getInstance().actualScope);
 						break;
@@ -580,6 +808,7 @@ public class Ast {
 						returnValue = (Float)var.getValue(VariablesController.getInstance().actualScope);
 						break;
 					case STRING:
+
 						try{
 							returnValue = new Integer((String)var.getValue(VariablesController.getInstance().actualScope));
 						}catch (NumberFormatException exc){	

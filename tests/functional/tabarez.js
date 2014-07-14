@@ -84,3 +84,41 @@ for(;h<4;){
 	h++;
 	console.log(h);
 }
+
+console.log(["bien shifteado en arrays","asdasd",[1,2,3]].shift());
+
+var a = [1,2,3,[4,5,[6,7,8]],[9,10]];
+console.log(a.concat("funciono bien el concat"));
+console.log(a);
+
+b = [1,2,3,[4,5,[6,7,8]],[9,10]];
+console.log(b.join("bien join"));
+
+var array = [1, 2, 3];
+var ultimo = array.pop(); 
+if (ultimo == 3){
+	console.log("funciono bien el pop");
+}else{
+	console.log("no funciona bien el pop");
+}
+
+var push_arr = [1,2,3];
+push_arr.push(4);
+console.log(push_arr);
+console.log("funciona bien el push");
+
+var array_shift = [1, 2, 3];
+var shift_num = array_shift.shift(); 
+if (shift_num == 1){
+	console.log(array_shift);
+	console.log("funciono bien el shift");
+}else{
+	console.log("no funciona bien el shift");
+}
+
+
+var array_reverse = [1,2,3];
+array_reverse.reverse();
+console.log("funciona bien el reverse");
+console.log(array_reverse);
+

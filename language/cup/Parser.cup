@@ -93,6 +93,7 @@ terminal String REVERSE_FUNCT;
 terminal String NAN;
 terminal String IS_NAN;
 terminal String PARSE_FUNCT;
+terminal String PARSE_INT_FUNCT;
 
 terminal String STRING;
 
@@ -106,6 +107,7 @@ non terminal Ast top_statement;
 
 /* Funciones especificas */
 non terminal Ast console_log;
+non terminal Ast parse_function;
 non terminal Ast alert;
 
 non terminal Object variable_definition;
@@ -166,6 +168,7 @@ non terminal Ast for_statement;
 non terminal Ast with_statement;
 non terminal Ast continue_statement;
 non terminal Ast break_statement;
+non terminal Ast optional_label;
 non terminal Ast return_statement;
 non terminal Ast throw_statement;
 non terminal Ast try_statement;
@@ -228,6 +231,16 @@ console_log ::=
     CONSOLE_LOG LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
         {: RESULT = Ast.createConsoleLogNode(ae); :};
         
+parse_function ::=
+    PARSE_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {: RESULT = Ast.createParseNode(se); :} |
+    PARSE_INT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {: RESULT = Ast.createParseNode(se); :} |
+    IS_NAN LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createisNaNNode(se);
+        :};
+
 alert ::= 
     ALERT LEFT_ROUND_BRACKET expression:ae RIGHT_ROUND_BRACKET
         {: RESULT = Ast.createAlertNode(ae); :};
@@ -244,6 +257,7 @@ primary_expression ::=
     simple_expression:se {: RESULT = se; :} |
     function_expression |
     object_literal |
+    parse_function:pf {: RESULT = pf; :} |
     simple_expression:se POINT js_function:js
         {:
             Ast ast = js;
@@ -252,6 +266,26 @@ primary_expression ::=
         :};
 
 js_function ::=
+	JOIN_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createJoinNode(se);
+		:} |
+	REVERSE_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createReverseNode();
+		:} |
+	SHIFT_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createShiftNode();
+		:} |
+	POP_FUNCT LEFT_ROUND_BRACKET RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createPopNode();
+		:} |
+	PUSH_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+		{:
+			RESULT = Ast.createPushNode(se);
+		:} |
     LENGTH_FUNCT
         {:
             RESULT = Ast.createLengthNode();
@@ -280,8 +314,22 @@ js_function ::=
         {:
             RESULT = Ast.createLastIndexOfNode(se);
         :} |
-    SUBSTRING_FUNCT |
-    SPLIT_FUNCT;
+    SUBSTRING_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createSubstrNode1(se);
+        :}|
+    SUBSTRING_FUNCT LEFT_ROUND_BRACKET simple_expression:se1 COMMA simple_expression:se2 RIGHT_ROUND_BRACKET 
+        {:
+            RESULT = Ast.createSubstrNode2(se1, se2);
+        :}|
+    SPLIT_FUNCT LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createSplitNode(se);
+        :} |
+    NAN LEFT_ROUND_BRACKET simple_expression:se RIGHT_ROUND_BRACKET
+        {:
+            RESULT = Ast.createNaNNode(se);
+        :};
 
 simple_expression ::=
     NULL:n {: RESULT = Ast.createNullNode(); :} |
@@ -453,6 +501,16 @@ statement ::=
     try_statement:stmts {: RESULT = stmts; :} ;
 
 empty_statement ::= SEMICOLON;
+
+continue_statement ::= 
+    CONTINUE optional_label;
+
+break_statement ::= 
+    BREAK optional_label;
+    
+optional_label ::=
+    |
+    ID; 
 
 expression_statement ::= expression:e {: RESULT = e; :} ;
 
