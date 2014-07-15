@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.language.exceptions.SyntaxError;
 import com.language.model.Ast;
 import com.language.model.Variable;
 
@@ -28,11 +29,6 @@ public class VariablesController {
         return instance;
     }
     
-//    public void incrementActualScope() {
-//    	//System.out.println("incrementActualScope");
-//    	this.actualScope++;
-//    }
-    
     public void setBeginBlockScope() {
     	this.previousActualScope = actualScope;
     	this.blockScope++;
@@ -46,7 +42,6 @@ public class VariablesController {
     }
     
     public void addVariable(String var_name, Ast var_ast){
-    	//System.out.println("agregar variable: "+var_name);
     	Object value = var_ast.evaluate();
     	Integer type = var_ast.evaluateType();
     	
@@ -61,8 +56,12 @@ public class VariablesController {
     }
 
     public Variable getVariable(String variable_name){
-    	//System.out.println("obtener variable: "+variable_name);
-    	return variables.get(variable_name);
+    	Variable v = variables.get(variable_name);
+    	if(v == null){
+    		throw new SyntaxError("Variable no conocida: \"" + variable_name + "\"");
+    	}else{
+    		return v;
+    	}
     }
 
     public void showVariables() {
