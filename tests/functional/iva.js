@@ -108,3 +108,11 @@ console.log('hola'.substring(3, 0));
 console.log('hola'.substring(4, 0));
 console.log('hola'.substring(5, 0));
 
+for(i = 0;i<5;i++){
+	break;
+	console.log(5);
+}
+
+var some_array = [1,2,3,4];
+console.log(some_array[1]);
+

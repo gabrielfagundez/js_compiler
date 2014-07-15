@@ -503,10 +503,10 @@ statement ::=
 empty_statement ::= SEMICOLON;
 
 continue_statement ::= 
-    CONTINUE optional_label;
+    CONTINUE optional_label {: RESULT = Ast.createContinueNode(); :};
 
 break_statement ::= 
-    BREAK optional_label;
+    BREAK optional_label {: RESULT = Ast.createBreakNode(); :};
     
 optional_label ::=
     |
