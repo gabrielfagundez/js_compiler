@@ -110,7 +110,7 @@ non terminal Ast console_log;
 non terminal Ast parse_function;
 non terminal Ast alert;
 
-non terminal Object variable_definition;
+non terminal Ast variable_definition;
 non terminal Ast variable_declaration_list;
 non terminal Ast variable_declaration;
 non terminal Ast variable_initializer;
@@ -173,7 +173,7 @@ non terminal Ast return_statement;
 non terminal Ast throw_statement;
 non terminal Ast try_statement;
 
-non terminal Object array_literal;
+non terminal Ast array_literal;
 non terminal Ast element_list;
 non terminal Ast literal_element;
 
@@ -467,7 +467,8 @@ assignment_expression ::=
     left_side_expression:lse EQUAL assignment_expression:ae 
     {: 
         if (lse.type == Ast.VAR) {
-            VariablesController.getInstance().addVariable(lse.value.toString(), ae);
+            RESULT = Ast.createVarAddNode(lse.value.toString(), ae);
+            //VariablesController.getInstance().addVariable(lse.value.toString(), ae);
         }; 
     :} |
     left_side_expression compound_assignment assignment_expression;
@@ -485,7 +486,7 @@ statement ::=
     empty_statement:stmts {: RESULT = stmts; :} |
     known_function:stmts optional_semicolon {:RESULT = stmts; :} |
     expression_statement:stmts optional_semicolon {: RESULT = stmts; :} |
-    variable_definition optional_semicolon:stmts {: RESULT = stmts; :} |
+    variable_definition:stmts optional_semicolon {: RESULT = stmts; :} |
     block:stmts {: RESULT = stmts; :} |
     labeled_statement:stmts {: RESULT = stmts; :} |
     if_statement:stmts {: RESULT = stmts; :} |
@@ -518,14 +519,14 @@ expression_statement ::= expression:e {: RESULT = e; :} ;
 /* Definiciones de Variables */
 
 variable_definition ::= 
-    VAR variable_declaration_list;
+    VAR variable_declaration_list:v {: RESULT = v; :};
 
 variable_declaration_list ::=
-    variable_declaration |
+    variable_declaration:v {: RESULT = v; :} |
     variable_declaration_list COMMA variable_declaration;
 
 variable_declaration ::= 
-    ID:id variable_initializer:vi {: VariablesController.getInstance().addVariable(id, vi); :};
+    ID:id variable_initializer:vi {: RESULT = Ast.createVarAddNode(id, vi); :};
     
 variable_initializer ::=
     |

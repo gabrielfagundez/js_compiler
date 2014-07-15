@@ -28,12 +28,12 @@ public class Variable {
 		Integer type = null;
 		Integer scope_aux = scope;
 		
-		do {
-			type = this.scope_type_relation.get(scope_aux);
-			scope_aux--;
-		} while (type == null && scope_aux >= 0);
+//		do {
+//			type = this.scope_type_relation.get(scope_aux);
+//			scope_aux--;
+//		} while (type == null && scope_aux >= 0);
 		
-		if (type == null) {
+//		if (type == null) {
 			Object[] scope_list = this.scope_type_relation.keySet().toArray();
 			int scope_index = this.scope_type_relation.keySet().toArray().length - 1;
 			
@@ -41,7 +41,7 @@ public class Variable {
 				type = this.scope_type_relation.get(scope_list[scope_index]);
 				scope_index--;
 			} while (type == null && scope_index >= 0);
-		}
+//		}
 		
 		return type;
 	}
@@ -54,12 +54,12 @@ public class Variable {
 		Object value = null;
 		Integer scope_aux = scope;
 		
-		do {
-			value = this.scope_value_relation.get(scope_aux);
-			scope_aux--;
-		} while (value == null && scope_aux >= 0);
+//		do {
+//			value = this.scope_value_relation.get(scope_aux);
+//			scope_aux--;
+//		} while (value == null && scope_aux >= 0);
 
-		if (value == null) {
+//		if (value == null) {
 			Object[] scope_list = this.scope_value_relation.keySet().toArray();
 			int scope_index = this.scope_value_relation.keySet().toArray().length - 1;
 
@@ -68,7 +68,7 @@ public class Variable {
 				scope_index--;
 				
 			} while (value == null && scope_index >= 0);
-		}
+//		}
 		
 		return value;
 	}

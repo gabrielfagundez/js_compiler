@@ -61,6 +61,7 @@ public class Ast {
 	public static final int SHIFT  		= 47;
 	public static final int REVERSE		= 48;
 	public static final int JOIN 		= 49;
+	public static final int V_ADD 		= 50;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -72,6 +73,10 @@ public class Ast {
 	public Boolean inFunction = false;
 	public ArrayList<Ast> argsForFunction = null;
 	public Integer scope = 0;
+	
+	// Manejo de variables
+	public String id;
+	public Ast vi;
 
 	// Metodo privado para crear instancias con todos los parametros
 	private Ast(Integer type, Object value, Ast left, Ast right, Ast condition) {
@@ -82,6 +87,12 @@ public class Ast {
 		this.condition = condition;
 		this.current_type = type;
 	}
+	
+	public Ast(String id, Ast vi){
+		this.type = V_ADD;
+		this.id = id;
+		this.vi = vi;
+	};
 
 	// Este metodo incializa nodos intermedios, y calcula en base a los nodos izquierdo y derecho,  
 	// el tipo de la expresion.
@@ -252,12 +263,18 @@ public class Ast {
 		return new Ast(PARSE, null, left, null, null);
 	}
 	
+	public static Ast createVarAddNode(String id, Ast vi){
+		return new Ast(id, vi);
+	}
+	
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
 	public Object evaluate(){
 		Integer previousScope; 
 		switch(this.type){
+			case V_ADD:
+				VariablesController.getInstance().addVariable(this.id, this.vi);
 			case BOOLEAN:
 			case INTEGER:
 			case FLOAT:
