@@ -578,6 +578,7 @@ for_statement ::=
         optional_expression:what_next RIGHT_ROUND_BRACKET 
         statement:stmt 
         {:
+            VariablesController.getInstance().addVariable(ini.id, ini.vi);
             Ast ast_for = new Ast(Ast.FOR, stmt, what_next, condition);
             ast_for.scope = VariablesController.getInstance().actualScope;
             RESULT = ast_for;
@@ -585,8 +586,8 @@ for_statement ::=
     
 for_initializer ::=
     |
-    expression |
-    VAR variable_declaration_list;
+    expression:e {: RESULT = e; :} |
+    VAR variable_declaration_list:v {: RESULT = v; :};
     
 in_binding ::=
     left_side_expression |

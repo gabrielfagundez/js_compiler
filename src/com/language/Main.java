@@ -10,7 +10,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
 
-		String fileName = "tests/unit/evaluation/test5.js";
+		String fileName = "tests/functional/auto.js";
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		StringBuilder sb = new StringBuilder();
         String line = br.readLine();
@@ -22,11 +22,8 @@ public class Main {
             }
         }
         String exptext = sb.toString();
-
 		br.close();
-
-	    Ast expobj = ExpressionParser.parse(exptext);
-
-	    //VariablesController.getInstance().showVariables();
+	    
+		Ast expobj = ExpressionParser.parse(exptext);
 	}
 }
