@@ -61,7 +61,9 @@ public class Ast {
 	public static final int SHIFT  		= 47;
 	public static final int REVERSE		= 48;
 	public static final int JOIN 		= 49;
-	public static final int V_ADD 		= 50;
+	public static final int BREAK		= 50;
+	public static final int CONTINUE	= 51;
+	public static final int V_ADD 		= 52;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -193,6 +195,14 @@ public class Ast {
 	
 	public static Ast createPopNode(){
 		return new Ast(POP, null, null, null, null);
+	}
+	
+	public static Ast createContinueNode(){
+		return new Ast(CONTINUE, null, null, null, null);
+	}
+	
+	public static Ast createBreakNode(){
+		return new Ast(BREAK, null, null, null, null);
 	}
 	
 	public static Ast createShiftNode(){
@@ -651,6 +661,10 @@ public class Ast {
 					this.right.evaluate();
 				}
 				VariablesController.getInstance().actualScope = previousScope; 
+				return null;
+			case BREAK:
+				return null;
+			case CONTINUE:
 				return null;
 			default:
 				return "Error";
