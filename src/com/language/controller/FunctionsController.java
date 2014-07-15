@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.language.exceptions.SyntaxError;
 import com.language.model.*;
 
 public class FunctionsController {
@@ -50,7 +51,12 @@ public class FunctionsController {
     	if(functions.size() == 0){
     		return null;
     	} else {
-    		return functions.get(function_name);
+    		Function f = functions.get(function_name);
+    		if(f == null){
+    			throw new SyntaxError("Funcion no conocida: \"" + function_name + "\"");
+    		}else{
+    			return f;
+    		}
     	}
     }
 

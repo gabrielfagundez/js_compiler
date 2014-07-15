@@ -9,9 +9,11 @@ public class Function {
 	public ArrayList<Ast> statementsList = null;
 	private Integer cantParameters = 0;
 	public Integer scope = 0;
+	public ArrayList<String> parametersName = null;
 	
 	public Function() {
 		this.statementsList = new ArrayList<Ast>();
+		this.parametersName = new ArrayList<String>();
 	}
 	
     // Agrega un nuevo statement
@@ -20,10 +22,35 @@ public class Function {
         	this.statementsList.add(stmt);
     	}
     }
+    
+    public void addParameterName(String name){
+    	this.parametersName.add(name);
+    }
 	
 	public Object execute(ArrayList<Ast> argumentsOnCall) {
 		Boolean returnDetected = false;
 		Integer previousScope;
+		
+		Ast var_def = null;
+		if(argumentsOnCall.size() <= this.cantParameters){
+			for(int j = 0; j < argumentsOnCall.size(); j++){
+				var_def = Ast.createVarAddNode(this.parametersName.get(j), argumentsOnCall.get(j));
+				var_def.evaluate();
+			}
+			for(int k = argumentsOnCall.size(); k < this.cantParameters; k++){
+				var_def = Ast.createVarAddNode(this.parametersName.get(k), null);
+				var_def.evaluate();
+			}
+		} else {
+			for(int k = 0; k < this.cantParameters; k++){
+				var_def = Ast.createVarAddNode(this.parametersName.get(k), null);
+				var_def.evaluate();
+			}
+		}
+		for(int j = 0; j < this.cantParameters; j++){
+			var_def = Ast.createVarAddNode(this.parametersName.get(j), argumentsOnCall.get(j));
+			var_def.evaluate();
+		}
 		
 		for(int i = 0; i < this.statementsList.size(); i++){
     		if(this.statementsList.get(i) != null && 

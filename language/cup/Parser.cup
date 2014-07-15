@@ -139,11 +139,11 @@ non terminal Ast optional_expression;
 non terminal Ast short_new_expression;
 non terminal Ast full_new_expression;
 non terminal Ast member_operator;
-non terminal Object arguments;
-non terminal Object full_new_subexpression;
-non terminal Object short_new_subexpression;
-non terminal Object compound_assignment;
-non terminal Object argument_list;
+non terminal Ast arguments;
+non terminal Ast full_new_subexpression;
+non terminal Ast short_new_subexpression;
+non terminal Ast compound_assignment;
+non terminal Ast argument_list;
 non terminal Ast js_function;
 
 non terminal Object field_list;
@@ -258,7 +258,7 @@ primary_expression ::=
     function_expression |
     object_literal |
     parse_function:pf {: RESULT = pf; :} |
-    simple_expression:se POINT js_function:js
+    primary_expression:se POINT js_function:js
         {:
             Ast ast = js;
             ast.left = se;
@@ -388,7 +388,7 @@ short_new_expression ::=
     NEW short_new_subexpression;
     
 full_new_subexpression ::=
-    primary_expression |
+    primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
     full_new_subexpression member_operator;
     
@@ -633,10 +633,12 @@ formal_parameters_prefix ::=
             FunctionsController fc = FunctionsController.getInstance(); 
             Function actual = fc.getFunction(fc.actual_function_name);
             actual.setCantParameters(actual.getCantParameters() + 1);
+            actual.addParameterName(id);
         :} |
     formal_parameters_prefix COMMA ID:id 
         {: 
             FunctionsController fc = FunctionsController.getInstance(); 
             Function actual = fc.getFunction(fc.actual_function_name);
             actual.setCantParameters(actual.getCantParameters() + 1);
+            actual.addParameterName(id);
         :};
