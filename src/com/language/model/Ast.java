@@ -64,6 +64,7 @@ public class Ast {
 	public static final int BREAK		= 50;
 	public static final int CONTINUE	= 51;
 	public static final int V_ADD 		= 52;
+	public static final int MEMBER_OP	= 53;
 
 	// Definicion del nodo AST
 	public Integer type;
@@ -277,6 +278,10 @@ public class Ast {
 		return new Ast(id, vi);
 	}
 	
+	public static Ast createMemberOperatorNode(Ast var, Ast index) {
+		return new Ast(MEMBER_OP, var, index);
+	}
+	
 	// Metodo recursivo que retorna el valor de la expresion. 
 	// Defino metodos para evaluar cada uno de los casos.
 	// Los nodos que son hojas retornan el valor.
@@ -285,6 +290,11 @@ public class Ast {
 		switch(this.type){
 			case V_ADD:
 				VariablesController.getInstance().addVariable(this.id, this.vi);
+			case MEMBER_OP:
+				if (this.left != null) { 
+					return this.left.evaluateArray(this.right);
+				}
+				return null;
 			case BOOLEAN:
 			case INTEGER:
 			case FLOAT:
@@ -919,18 +929,14 @@ public class Ast {
 	public Object evaluateArray(Ast index_ast) {
 		Variable var = VariablesController.getInstance().getVariable(this.value.toString());
 
-		//List<Object> array = (List<Object>) ((Ast) var.getValue()).value;
 		List<Object> array = (List<Object>) var.getValue(VariablesController.getInstance().actualScope);
 
 		Integer index = (Integer) index_ast.value;
 
-		String result = var.getName() + "[" + index + "]";
+		Object result = null;
 		if ((array.size() - 1) >= index) {
-			result += " = " + array.get(index);
-		} else {
-			result += " Error: El ������������������ndice excede el largo del array.";
+			result = array.get(index);
 		}
-		
 		return result;
 	}
 

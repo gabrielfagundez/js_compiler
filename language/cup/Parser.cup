@@ -373,7 +373,7 @@ left_side_expression ::=
 call_expression ::=
     primary_expression:pe {: RESULT = pe ; :} |
     full_new_expression |
-    call_expression:ce member_operator:mo {: ce.evaluateArray(mo); :} |
+    call_expression:ce member_operator:mo {: RESULT = Ast.createMemberOperatorNode(ce, mo); :} |
     call_expression:ce arguments
         {:
             FunctionsController fc = FunctionsController.getInstance();

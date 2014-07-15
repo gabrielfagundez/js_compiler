@@ -215,3 +215,10 @@
 // 	h++;
 // 	console.log(h);
 // }
+
+// var a = ["pepe","hole","lalas"];
+// {
+// 	var b = a[0];
+// 	console.log(b);
+// 	console.log(a[2]);
+// }
