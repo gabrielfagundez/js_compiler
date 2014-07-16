@@ -8,7 +8,7 @@ import com.language.parser.ExpressionParser;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
-		String fileName = System.getProperty("user.dir").substring(0, System.getProperty("user.dir").length() - new String("/jar").length()) + "2014/tests/";
+		String fileName = System.getProperty("user.dir")+ "/tests/";
 		if (args.length == 2){
 			fileName += args[1] + "/" +args[0] ;
 		}else if (args.length == 3){
