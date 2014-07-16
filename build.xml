@@ -14,6 +14,7 @@
         <pathelement location="language/bin/JFlex.jar"/>
         <pathelement location="language/bin/java-cup-11a.jar"/>
     </path>
+              	
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
@@ -36,6 +37,7 @@
             <classpath refid="Compilador.classpath"/>
         </javac>
     </target>
+              	
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target name="Main">
         <java classname="com.language.Main" failonerror="true" fork="yes">
