@@ -45,9 +45,11 @@
         </java>
     </target>
               	
-	<target name="jar">
+	<target name="jar" depends="build">
         <mkdir dir="jar"/>
         <jar destfile="jar/interprete.jar" basedir="bin">
+        	<zipgroupfileset dir="lib" includes="*.jar"/>
+        	
             <manifest>
                 <attribute name="Main-Class" value="com.language.Main"/>
             </manifest>
