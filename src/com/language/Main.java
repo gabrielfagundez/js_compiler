@@ -2,15 +2,14 @@ package com.language;
 
 import java.io.*;
 
-import com.language.controller.VariablesController;
 import com.language.model.*;
 import com.language.parser.ExpressionParser;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
 		//Reader fr = new BufferedReader(new FileReader(args[0]));
-
-		String fileName = "tests/functional/auto.js";
+		
+		String fileName = System.getProperty("user.dir") + "./"+ args[0] ;
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		StringBuilder sb = new StringBuilder();
         String line = br.readLine();
